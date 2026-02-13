@@ -58,6 +58,7 @@ Requirement: one clear content column, concise metadata, lightweight filter cont
   - each tab target >= 44px height
   - active state obvious but minimal
 - Keep top header and bottom tabs visually simple and consistent.
+- Exception for `/map`: hide bottom tab bar and switch to full-screen map mode with compact top controls.
 
 ### Desktop header (required)
 - Single row preferred.
@@ -92,6 +93,7 @@ Requirement: one clear content column, concise metadata, lightweight filter cont
 - Galleries: filter + directory rows.
 - Map: map-first with synced list.
 - Gallery profile: details first, then grouped exhibitions.
+- Exhibition profile: focused what/where/when detail for one exhibition.
 
 ## 5) Screen-by-screen execution detail
 
@@ -115,7 +117,8 @@ Requirement: one clear content column, concise metadata, lightweight filter cont
   - gallery | precinct
   - date range
   - opening meta
-  - profile link
+  - primary link to exhibition detail page
+  - optional secondary link to gallery profile
 
 ### Galleries (`/galleries`)
 - Keep controls compact: search + precinct + sort.
@@ -124,10 +127,18 @@ Requirement: one clear content column, concise metadata, lightweight filter cont
 - “Open Map” is secondary text link/button.
 
 ### Map (`/map`)
-- Map is primary area (60-70vh mobile).
+- Map runs in full-screen mode on mobile.
+- Persistent compact top overlay must include:
+  - back button (left)
+  - search field (center)
+  - `Filters` trigger (right)
 - Use `Search this area` flow after pan/zoom.
-- Keep map filters compact and limited.
+- Keep map filters inside dismissible filter panel/sheet (not always-expanded inline controls).
 - List/map must be synchronized.
+- Results list must be a draggable bottom sheet with detents:
+  - collapsed: shows count (`N galleries in this area`)
+  - half: list scroll while map remains visible in upper half
+  - full: list-focused state
 - Preserve map state on back navigation.
 
 ### Gallery Profile (`/gallery/[slug]`)
@@ -137,6 +148,15 @@ Requirement: one clear content column, concise metadata, lightweight filter cont
   - address + practical contact CTA
 - Then grouped exhibitions: current, upcoming, past.
 - No global filter modules in profile page body.
+
+### Exhibition Profile (`/exhibition/[slug]`)
+- Above fold:
+  - exhibition title + artist
+  - status + date range
+  - opening date/time (if available)
+  - gallery link/CTA
+- Keep this page focused on one exhibition, with extended detail below fold.
+- Do not dump full global filter UI on this route.
 
 ## 6) Visual styling rules (strict)
 - Background: flat neutral (`#f7f7f5` family), no glow overlays.
@@ -155,6 +175,8 @@ A route fails if any of these are true:
 5. Tap targets are below 44px.
 6. Active filters are hidden from user.
 7. Back navigation loses filter/map state unexpectedly.
+8. Exhibition list rows have no dedicated detail page path.
+9. Map route does not provide full-screen mode with top compact overlay + draggable bottom sheet behavior.
 
 ## 8) Required implementation order
 1. Rebuild header/nav structure (mobile + desktop).

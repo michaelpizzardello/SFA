@@ -18,6 +18,7 @@ Required top-level routes:
 - `/galleries`
 - `/map`
 - `/gallery/[slug]`
+- `/exhibition/[slug]`
 
 Rules:
 - Each route has one primary job.
@@ -65,7 +66,8 @@ Result card contract:
 - Gallery + precinct
 - Date range
 - Opening info (if exists)
-- Link to gallery profile
+- Link to exhibition detail page (primary)
+- Link to gallery profile (secondary)
 
 Acceptance criteria:
 - User can filter and get results without scrolling past complex controls.
@@ -131,6 +133,23 @@ Constraints:
 Acceptance criteria:
 - User can find address + current show status immediately.
 
+### F) Exhibition Detail
+Purpose: decision page for a specific exhibition.
+
+Required layout order:
+1. Back link + exhibition identity (title, artist, status)
+2. Critical visit metadata (date range, opening date/time, cost if available)
+3. Gallery context (gallery name + link to `/gallery/[slug]`)
+4. Extended description/details
+
+Constraints:
+- Do not include global filter modules in body.
+- Keep navigation focused on this exhibition and its gallery.
+
+Acceptance criteria:
+- User can understand what/where/when in one viewport.
+- User can move to gallery profile in one interaction.
+
 ## 4) Navigation and State Contracts
 - Preserve filter state when navigating back from profile.
 - URL should reflect active filters where practical.
@@ -173,4 +192,5 @@ Pass only if all are true:
 2. Mobile flows are simple and obvious.
 3. Visual style is restrained and professional.
 4. Map, directory, and exhibition workflows are clearly separated.
-5. No obvious UI anti-patterns from `STYLE_GUIDE.md`.
+5. Exhibition detail exists as its own route and is reachable from list views.
+6. No obvious UI anti-patterns from `STYLE_GUIDE.md`.

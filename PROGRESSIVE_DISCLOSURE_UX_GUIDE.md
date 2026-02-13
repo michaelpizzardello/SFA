@@ -32,6 +32,7 @@ Use step-by-step disclosure:
 ### L3 - Full detail page
 - Dedicated route for full information.
 - Used only after explicit user selection.
+- Required detail routes include `/gallery/[slug]` and `/exhibition/[slug]`.
 
 ## 3) Mandatory Global Interaction Patterns
 
@@ -46,6 +47,7 @@ Use step-by-step disclosure:
 - Show critical fields only.
 - No long summaries by default in index lists.
 - Add `View details`/tap-through for full content.
+- In exhibitions lists, `View details` must go to `/exhibition/[slug]`.
 
 3. Advanced options
 - Hidden by default.
@@ -67,6 +69,8 @@ Use step-by-step disclosure:
 - On mobile, list should appear as a bottom sheet:
   - collapsed: summary/count
   - expanded: scrollable list
+- The map screen itself should be full-screen while active, with compact top controls only.
+- Bottom app tab/nav bars should be hidden in map full-screen mode.
 
 3. Selection flow
 - Tap marker -> preview sheet opens.
@@ -77,6 +81,13 @@ Use step-by-step disclosure:
 - Pan/zoom -> show `Search this area`.
 - Apply -> refresh map markers + list summary.
 - Do not auto-jump the viewport or scroll list unexpectedly.
+
+5. Top controls flow
+- Persistent compact top row:
+  - Back (left)
+  - Search (center)
+  - Filters trigger (right)
+- `Filters` opens a dismissible panel/sheet; filter controls are not always expanded.
 
 ## 5) What's On Behavior
 
@@ -96,7 +107,7 @@ Result row should include only:
 - Artist
 - Gallery + precinct
 - Date range/opening indicator
-- CTA to detail
+- Primary CTA to `/exhibition/[slug]`
 
 Not default-visible in list:
 - Full summary paragraphs
@@ -162,3 +173,4 @@ Implementation is not complete unless all pass:
 3. Lists show concise fields only; details require an extra user action.
 4. Overlay close returns user to same context without reset.
 5. Mobile first viewport is not overloaded with controls and metadata.
+6. Exhibition list rows link to dedicated exhibition detail routes.

@@ -1,6 +1,7 @@
 import BackLinkButton from './BackLinkButton'
+import Link from 'next/link'
 import { formatDate, formatDateRange } from '../lib/utils/date'
-import { getExhibitionStatus } from '../lib/utils/exhibitions'
+import { getExhibitionSlug, getExhibitionStatus } from '../lib/utils/exhibitions'
 
 const statusLabels = {
   current: 'Current',
@@ -28,8 +29,7 @@ function ExhibitionList({ exhibitions }) {
               <h3 className="item-title">{exhibition.title}</h3>
               <span className={`status-tag status-${status}`}>{statusLabels[status]}</span>
             </div>
-            <p className="item-meta">{exhibition.artist}</p>
-            <p className="item-copy">{exhibition.summary || 'Details coming soon.'}</p>
+            <p className="item-artist">{exhibition.artist}</p>
             <p className="item-meta">{formatDateRange(exhibition.startDate, exhibition.endDate)}</p>
             {exhibition.openingDate ? (
               <p className="item-meta">
@@ -37,6 +37,14 @@ function ExhibitionList({ exhibitions }) {
                 {exhibition.openingTime ? ` | ${exhibition.openingTime}` : ''}
               </p>
             ) : null}
+            <div className="item-actions">
+              <Link
+                className="text-link"
+                href={`/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`}
+              >
+                Exhibition details
+              </Link>
+            </div>
           </li>
         )
       })}
@@ -102,8 +110,10 @@ export default function GalleryProfilePage({ gallery, groupedExhibitions }) {
           </article>
 
           <article>
-            <h2>About</h2>
-            <p className="section-copy">{gallery.about || 'Gallery details coming soon.'}</p>
+            <details className="profile-disclosure">
+              <summary>About</summary>
+              <p className="section-copy">{gallery.about || 'Gallery details coming soon.'}</p>
+            </details>
           </article>
         </div>
       </section>
@@ -119,8 +129,10 @@ export default function GalleryProfilePage({ gallery, groupedExhibitions }) {
       </section>
 
       <section className="page-block">
-        <h2>Past Exhibitions</h2>
-        <ExhibitionList exhibitions={groupedExhibitions.past} />
+        <details className="profile-disclosure">
+          <summary>Past Exhibitions ({groupedExhibitions.past.length})</summary>
+          <ExhibitionList exhibitions={groupedExhibitions.past} />
+        </details>
       </section>
     </>
   )

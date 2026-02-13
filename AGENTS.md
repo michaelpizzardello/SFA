@@ -72,6 +72,17 @@ Must include:
 Must NOT include:
 - Global browsing controls from other screens
 
+### 6) Exhibition Profile (`/exhibition/[slug]`)
+Purpose: focused exhibition detail and conversion context.
+Must include:
+- Exhibition title, artist(s), status, and date range
+- Opening date/time and key visit details
+- Gallery name with clear link to gallery profile
+- Description and any extended details not shown in list views
+Must NOT include:
+- Full global filter controls in page body
+- Dense unrelated navigation modules
+
 ## Visual System (Ocula-Inspired, Not Copying)
 
 ### Tone
@@ -133,11 +144,12 @@ Before claiming a UI task done, verify:
 5. `npm run build` succeeds.
 
 ## Immediate Task Order for Current Agent
-1. Separate workflows cleanly across Home, What's On, Galleries, Map, Gallery Profile.
+1. Separate workflows cleanly across Home, What's On, Galleries, Map, Gallery Profile, Exhibition Profile.
 2. Remove cluttered nested card styling and decorative background noise.
 3. Rebuild mobile-first spacing/typography and navigation ergonomics.
 4. Improve map UX and coordinate validity handling.
-5. Keep current functionality while simplifying interaction model.
+5. Add exhibition detail pages and route-level navigation from list/map/profile contexts.
+6. Keep current functionality while simplifying interaction model.
 
 ## Live Monitoring Corrections (2026-02-13)
 These corrections are based on observed in-progress implementation and are mandatory.
@@ -149,6 +161,13 @@ These corrections are based on observed in-progress implementation and are manda
 6. Provide before/after screenshots (390px and 1280px) with each map/header iteration.
 7. Sitewide progressive disclosure is mandatory: filters behind a `Filters` entry point, concise lists by default, details through overlays/sheets/routes.
 8. On map, marker interaction must open local preview (sheet/popup), never force-scroll the user down the page.
+9. Every exhibition list item must have a clear path to `/exhibition/[slug]` for full details.
+10. Exhibition list rows must follow strict info hierarchy (what/when/where/action) and remain concise by default.
+11. Map default zoom should be tighter (target `zoom 12`) so bubbles/clusters are visible on first load.
+12. Map route UX must use full-screen mode with persistent compact top controls: back (left), search (center), `Filters` button (right).
+13. Hide bottom menu/tab bar while on map full-screen route.
+14. Map results must use draggable bottom sheet detents (collapsed count, half, full) instead of a long fixed list under the map.
+15. `/whats-on` must follow a clean app-grade filter/list pattern: collapsed filters, compact control hierarchy, concise result rows, and minimal dead space above first item.
 
 
 ## Additional Mandatory Reference
@@ -166,3 +185,5 @@ These corrections are based on observed in-progress implementation and are manda
 - `UX_RESEARCH_IMPLEMENTATION_BRIEF.md` is the research-backed execution spec for header/layout usability fixes. Follow it exactly for structure, measurements, and acceptance gates.
 - `MONITORING_CORRECTIONS.md` contains latest course-correction notes from live review. Implement those changes before adding new features.
 - `PROGRESSIVE_DISCLOSURE_UX_GUIDE.md` defines mandatory step-by-step interaction behavior (filters/sheets/popups/detail routes) and prohibits all-in-one long-page UI patterns.
+- `EXHIBITION_CARD_HIERARCHY_GUIDE.md` defines required exhibition card information order, typography hierarchy, and density limits.
+- `WHATS_ON_POLISH_SPEC.md` defines exact `/whats-on` header/filter/list hierarchy for professional app-grade UX.

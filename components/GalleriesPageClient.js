@@ -9,6 +9,7 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
   const [search, setSearch] = useState(initialFilters.search)
   const [precinct, setPrecinct] = useState(initialFilters.precinct)
   const [sort, setSort] = useState(initialFilters.sort)
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   const pathname = usePathname()
   const router = useRouter()
@@ -95,37 +96,63 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
       </div>
       <p className="section-copy">Search and browse the Sydney gallery directory.</p>
 
-      <div className="filter-bar" role="group" aria-label="Gallery filters">
-        <label className="field">
-          <span>Search</span>
-          <input
-            type="search"
-            placeholder="Gallery, suburb, precinct"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-          />
-        </label>
-
-        <label className="field">
-          <span>Precinct</span>
-          <select value={precinct} onChange={(event) => setPrecinct(event.target.value)}>
-            <option value="all">All precincts</option>
-            {precinctOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label className="field">
-          <span>Sort</span>
-          <select value={sort} onChange={(event) => setSort(event.target.value)}>
-            <option value="alphabetical">A-Z</option>
-            <option value="precinct">By precinct</option>
-          </select>
-        </label>
+      <div className="section-tools">
+        <button type="button" className="button button-secondary" onClick={() => setFiltersOpen(true)}>
+          Filters
+        </button>
       </div>
+
+      {filtersOpen ? (
+        <div className="filter-sheet-overlay" role="presentation" onClick={() => setFiltersOpen(false)}>
+          <section
+            className="filter-sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Gallery filters"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="filter-sheet-head">
+              <h2>Filters</h2>
+              <button type="button" className="text-link text-link-button" onClick={() => setFiltersOpen(false)}>
+                Close
+              </button>
+            </div>
+            <div className="filter-sheet-body">
+              <div className="filter-bar" role="group" aria-label="Gallery filters">
+                <label className="field">
+                  <span>Search</span>
+                  <input
+                    type="search"
+                    placeholder="Gallery, suburb, precinct"
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                  />
+                </label>
+
+                <label className="field">
+                  <span>Precinct</span>
+                  <select value={precinct} onChange={(event) => setPrecinct(event.target.value)}>
+                    <option value="all">All precincts</option>
+                    {precinctOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="field">
+                  <span>Sort</span>
+                  <select value={sort} onChange={(event) => setSort(event.target.value)}>
+                    <option value="alphabetical">A-Z</option>
+                    <option value="precinct">By precinct</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+          </section>
+        </div>
+      ) : null}
 
       <div className="active-filters" aria-label="Applied filters">
         {activeFilters.map((filter) => (

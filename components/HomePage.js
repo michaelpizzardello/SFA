@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { addDaysISO, compareISO, formatDate, todayISOInSydney } from '../lib/utils/date'
-import { getGalleryBySlug } from '../lib/utils/exhibitions'
+import { getExhibitionSlug, getGalleryBySlug } from '../lib/utils/exhibitions'
 
 function OpeningRows({ items, galleries }) {
   if (!items.length) {
@@ -15,7 +15,11 @@ function OpeningRows({ items, galleries }) {
         return (
           <li key={exhibition.id} className="simple-row">
             <div>
-              <p className="row-title">{exhibition.title}</p>
+              <p className="row-title">
+                <Link className="text-link" href={`/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`}>
+                  {exhibition.title}
+                </Link>
+              </p>
               <p className="row-meta">
                 {gallery?.name || 'Unknown gallery'} | {gallery?.precinct || 'Unspecified precinct'}
               </p>

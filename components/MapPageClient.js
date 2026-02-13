@@ -3,10 +3,16 @@
 import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import BackLinkButton from './BackLinkButton'
 import { filterMapGalleries, getPrecinctOptions } from '../lib/utils/filters'
 import { serializeBounds, SYDNEY_CENTER, SYDNEY_DEFAULT_ZOOM } from '../lib/utils/map'
 
 const LIST_SCROLL_STORAGE_KEY = 'saf_map_list_scroll'
+const DETENT_ORDER = ['collapsed', 'half', 'full']
+
+function normalizeDetent(value) {
+  return DETENT_ORDER.includes(value) ? value : 'collapsed'
+}
 
 function toBoundsObject(bounds) {
   return {
@@ -47,6 +53,16 @@ function createMarkerIcon(L, selected = false) {
   })
 }
 
+function getNextDetent(currentDetent, direction) {
+  const currentIndex = DETENT_ORDER.indexOf(currentDetent)
+  if (currentIndex < 0) {
+    return 'collapsed'
+  }
+
+  const nextIndex = Math.max(0, Math.min(DETENT_ORDER.length - 1, currentIndex + direction))
+  return DETENT_ORDER[nextIndex]
+}
+
 export default function MapPageClient({ galleries, initialFilters }) {
   const [search, setSearch] = useState(initialFilters.search)
   const [precinct, setPrecinct] = useState(initialFilters.precinct)
@@ -56,6 +72,8 @@ export default function MapPageClient({ galleries, initialFilters }) {
   const [mapMoved, setMapMoved] = useState(false)
   const [selectedSlug, setSelectedSlug] = useState(initialFilters.selectedSlug || null)
   const [mapError, setMapError] = useState(false)
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [sheetDetent, setSheetDetent] = useState(normalizeDetent(initialFilters.sheetDetent))
 
   const pathname = usePathname()
   const router = useRouter()
@@ -66,10 +84,11 @@ export default function MapPageClient({ galleries, initialFilters }) {
   const clusterRef = useRef(null)
   const markerBySlugRef = useRef(new Map())
   const leafletRef = useRef(null)
-  const rowRefs = useRef(new Map())
   const resultsScrollRef = useRef(null)
   const moveDebounceRef = useRef(null)
   const initialMoveHandledRef = useRef(false)
+  const sheetDragStartRef = useRef(null)
+  const listTouchStartRef = useRef(null)
 
   const precinctOptions = useMemo(() => getPrecinctOptions(galleries), [galleries])
 
@@ -140,6 +159,10 @@ export default function MapPageClient({ galleries, initialFilters }) {
     return filters
   }, [areaEnabled, precinct, search])
 
+  const resultsLabel = `${resultGalleries.length} ${resultGalleries.length === 1 ? 'gallery' : 'galleries'} ${
+    areaEnabled ? 'in this area' : 'matching filters'
+  }`
+
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString())
 
@@ -173,13 +196,30 @@ export default function MapPageClient({ galleries, initialFilters }) {
     params.set('lng', mapView.lng.toFixed(5))
     params.set('zoom', String(Math.round(mapView.zoom)))
 
+    if (sheetDetent !== 'collapsed') {
+      params.set('sheet', sheetDetent)
+    } else {
+      params.delete('sheet')
+    }
+
     const nextQuery = params.toString()
     const currentQuery = searchParams.toString()
 
     if (nextQuery !== currentQuery) {
       router.replace(`${pathname}?${nextQuery}`, { scroll: false })
     }
-  }, [areaEnabled, mapView, pathname, precinct, router, search, searchParams, selectedSlug, viewportBounds])
+  }, [
+    areaEnabled,
+    mapView,
+    pathname,
+    precinct,
+    router,
+    search,
+    searchParams,
+    selectedSlug,
+    sheetDetent,
+    viewportBounds
+  ])
 
   useEffect(() => {
     const scrollNode = resultsScrollRef.current
@@ -291,8 +331,6 @@ export default function MapPageClient({ galleries, initialFilters }) {
 
       marker.on('click', () => {
         setSelectedSlug(gallery.slug)
-        const row = rowRefs.current.get(gallery.slug)
-        row?.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
       })
 
       marker.bindPopup(createPopupContent(gallery))
@@ -326,13 +364,9 @@ export default function MapPageClient({ galleries, initialFilters }) {
         mapRef.current.remove()
       }
 
-      try {
-        const scrollNode = resultsScrollRef.current
-        if (scrollNode) {
-          window.sessionStorage.setItem(LIST_SCROLL_STORAGE_KEY, String(scrollNode.scrollTop))
-        }
-      } catch (error) {
-        console.error('Unable to persist map results scroll state.', error)
+      const scrollNode = resultsScrollRef.current
+      if (scrollNode) {
+        persistResultsScroll(scrollNode.scrollTop)
       }
 
       mapRef.current = null
@@ -342,6 +376,14 @@ export default function MapPageClient({ galleries, initialFilters }) {
       initialMoveHandledRef.current = false
     }
   }, [])
+
+  function persistResultsScroll(scrollTopValue) {
+    try {
+      window.sessionStorage.setItem(LIST_SCROLL_STORAGE_KEY, String(scrollTopValue))
+    } catch (error) {
+      console.error('Unable to persist map results scroll state.', error)
+    }
+  }
 
   function applyCurrentViewport() {
     if (!mapRef.current) {
@@ -401,23 +443,63 @@ export default function MapPageClient({ galleries, initialFilters }) {
     marker.openPopup()
   }
 
-  const mapAction = mapMoved
-    ? {
-        label: areaEnabled ? 'Update this area' : 'Search this area',
-        onClick: applyCurrentViewport,
-        variant: 'button-primary'
+  function nudgeSheetDetent(direction) {
+    setSheetDetent((currentDetent) => getNextDetent(currentDetent, direction))
+  }
+
+  function handleSheetPointerDown(event) {
+    sheetDragStartRef.current = event.clientY
+  }
+
+  function handleSheetPointerUp(event) {
+    if (sheetDragStartRef.current === null) {
+      return
+    }
+
+    const delta = event.clientY - sheetDragStartRef.current
+
+    if (delta < -40) {
+      nudgeSheetDetent(1)
+    }
+
+    if (delta > 40) {
+      nudgeSheetDetent(-1)
+    }
+
+    sheetDragStartRef.current = null
+  }
+
+  function handleSheetPointerCancel() {
+    sheetDragStartRef.current = null
+  }
+
+  function handleListTouchStart(event) {
+    listTouchStartRef.current = event.touches[0]?.clientY ?? null
+  }
+
+  function handleListTouchMove(event) {
+    if (listTouchStartRef.current === null) {
+      return
+    }
+
+    const scrollNode = event.currentTarget
+    const nextY = event.touches[0]?.clientY ?? listTouchStartRef.current
+    const delta = nextY - listTouchStartRef.current
+
+    if (delta > 48 && scrollNode.scrollTop === 0) {
+      if (sheetDetent === 'full') {
+        setSheetDetent('half')
+      } else if (sheetDetent === 'half') {
+        setSheetDetent('collapsed')
       }
-    : areaEnabled
-      ? {
-          label: 'Clear area',
-          onClick: clearAreaFilter,
-          variant: 'button-secondary'
-        }
-      : {
-          label: 'Reset map',
-          onClick: resetView,
-          variant: 'button-secondary'
-        }
+
+      listTouchStartRef.current = nextY
+    }
+  }
+
+  function handleListTouchEnd() {
+    listTouchStartRef.current = null
+  }
 
   if (mapError) {
     return (
@@ -432,83 +514,121 @@ export default function MapPageClient({ galleries, initialFilters }) {
   }
 
   return (
-    <section className="page-block map-page">
-      <div className="map-control-rail" role="group" aria-label="Map filters and actions">
-        <label className="field">
-          <span>Search</span>
+    <section className="map-page map-fullscreen" aria-label="Sydney gallery map">
+      <div className="map-top-overlay">
+        <BackLinkButton fallbackHref="/galleries" label="Back" />
+        <label className="field map-search-field">
+          <span className="visually-hidden">Search map</span>
           <input
             type="search"
-            placeholder="Gallery, suburb, precinct"
+            placeholder="Search galleries"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
         </label>
-
-        <label className="field">
-          <span>Precinct</span>
-          <select value={precinct} onChange={(event) => setPrecinct(event.target.value)}>
-            <option value="all">All precincts</option>
-            {precinctOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <button type="button" className={`button ${mapAction.variant}`} onClick={mapAction.onClick}>
-          {mapAction.label}
+        <button type="button" className="button button-secondary map-filter-trigger" onClick={() => setFiltersOpen(true)}>
+          Filters
         </button>
       </div>
 
-      <div className="map-layout">
-        <div>
-          <div className="map-canvas" ref={mapContainerRef} role="region" aria-label="Sydney gallery map" />
-
-          {selectedGallery ? (
-            <article className="map-selection-card" aria-live="polite">
-              <h2 className="item-title">{selectedGallery.name}</h2>
-              <p className="item-meta">
-                {selectedGallery.precinct}
-                {selectedGallery.suburb ? ` | ${selectedGallery.suburb}` : ''}
-              </p>
-              <p className="item-meta">{selectedGallery.address}</p>
-              <Link className="button button-primary" href={`/gallery/${encodeURIComponent(selectedGallery.slug)}`}>
-                View gallery
-              </Link>
-            </article>
-          ) : null}
-
-          <div className="map-secondary-actions">
-            {areaEnabled ? (
-              <button type="button" className="text-link text-link-button" onClick={clearAreaFilter}>
-                Clear area filter
+      {filtersOpen ? (
+        <div className="filter-sheet-overlay" role="presentation" onClick={() => setFiltersOpen(false)}>
+          <section
+            className="filter-sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Map filters"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="filter-sheet-head">
+              <h2>Map filters</h2>
+              <button type="button" className="text-link text-link-button" onClick={() => setFiltersOpen(false)}>
+                Close
               </button>
-            ) : null}
-            <button type="button" className="text-link text-link-button" onClick={resetView}>
-              Reset map view
-            </button>
-          </div>
-        </div>
+            </div>
+            <div className="filter-sheet-body">
+              <label className="field">
+                <span>Precinct</span>
+                <select value={precinct} onChange={(event) => setPrecinct(event.target.value)}>
+                  <option value="all">All precincts</option>
+                  {precinctOptions.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-        <div
-          className="map-results-scroll"
-          ref={resultsScrollRef}
-          onScroll={(event) => {
-            try {
-              window.sessionStorage.setItem(
-                LIST_SCROLL_STORAGE_KEY,
-                String(event.currentTarget.scrollTop)
-              )
-            } catch (error) {
-              console.error('Unable to persist map results scroll state.', error)
+              <div className="map-secondary-actions">
+                {areaEnabled ? (
+                  <button type="button" className="text-link text-link-button" onClick={clearAreaFilter}>
+                    Clear area filter
+                  </button>
+                ) : null}
+                <button type="button" className="text-link text-link-button" onClick={resetView}>
+                  Reset map view
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+      ) : null}
+
+      <div className="map-canvas map-canvas-full" ref={mapContainerRef} role="region" aria-label="Sydney gallery map" />
+
+      {mapMoved ? (
+        <button type="button" className="button button-primary map-search-area-cta" onClick={applyCurrentViewport}>
+          {areaEnabled ? 'Update this area' : 'Search this area'}
+        </button>
+      ) : null}
+
+      {selectedGallery ? (
+        <article className="map-selection-card map-selection-floating" aria-live="polite">
+          <h2 className="item-title">{selectedGallery.name}</h2>
+          <p className="item-meta">
+            {selectedGallery.precinct}
+            {selectedGallery.suburb ? ` | ${selectedGallery.suburb}` : ''}
+          </p>
+          <p className="item-meta">{selectedGallery.address}</p>
+          <Link className="button button-primary" href={`/gallery/${encodeURIComponent(selectedGallery.slug)}`}>
+            View gallery
+          </Link>
+        </article>
+      ) : null}
+
+      <section className={`map-bottom-sheet detent-${sheetDetent}`} aria-label="Map results">
+        <button
+          type="button"
+          className="map-sheet-handle"
+          onPointerDown={handleSheetPointerDown}
+          onPointerUp={handleSheetPointerUp}
+          onPointerCancel={handleSheetPointerCancel}
+          onClick={() => {
+            if (sheetDetent === 'collapsed') {
+              setSheetDetent('half')
+              return
             }
+
+            if (sheetDetent === 'half') {
+              setSheetDetent('full')
+              return
+            }
+
+            setSheetDetent('half')
           }}
         >
-          <p className="results-meta">
-            {resultGalleries.length} {resultGalleries.length === 1 ? 'gallery' : 'galleries'}{' '}
-            {areaEnabled ? 'in this area' : 'matching filters'}
-          </p>
+          <span className="map-sheet-grab" aria-hidden="true" />
+          <span className="map-sheet-label">{resultsLabel}</span>
+        </button>
+
+        <div
+          className="map-sheet-content"
+          ref={resultsScrollRef}
+          onScroll={(event) => persistResultsScroll(event.currentTarget.scrollTop)}
+          onTouchStart={handleListTouchStart}
+          onTouchMove={handleListTouchMove}
+          onTouchEnd={handleListTouchEnd}
+        >
           <div className="active-filters" aria-label="Applied filters">
             {activeFilters.map((filter) =>
               filter.removable ? (
@@ -532,18 +652,7 @@ export default function MapPageClient({ galleries, initialFilters }) {
             <ul className="directory-list map-results-list">
               {resultGalleries.map((gallery) => (
                 <li key={gallery.id} className={`directory-item ${selectedSlug === gallery.slug ? 'is-selected' : ''}`}>
-                  <button
-                    type="button"
-                    className="map-result-button"
-                    ref={(node) => {
-                      if (node) {
-                        rowRefs.current.set(gallery.slug, node)
-                      } else {
-                        rowRefs.current.delete(gallery.slug)
-                      }
-                    }}
-                    onClick={() => focusGallery(gallery.slug)}
-                  >
+                  <button type="button" className="map-result-button" onClick={() => focusGallery(gallery.slug)}>
                     <div>
                       <p className="item-kicker">{gallery.precinct}</p>
                       <h2 className="item-title">{gallery.name}</h2>
@@ -560,7 +669,7 @@ export default function MapPageClient({ galleries, initialFilters }) {
             </div>
           )}
         </div>
-      </div>
+      </section>
     </section>
   )
 }

@@ -1,11 +1,11 @@
 export default function DataBadge({ source }) {
   const isLive = source === 'google-sheets'
 
+  if (!isLive) {
+    return null
+  }
+
   return (
-    <p className={`data-badge ${isLive ? 'is-live' : ''}`}>
-      {isLive
-        ? 'Live from Google Sheets'
-        : 'Sample dataset loaded. Add sheet CSV URLs in .env.local to go live.'}
-    </p>
+    <p className="data-badge is-live">Live from Google Sheets</p>
   )
 }

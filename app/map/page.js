@@ -24,6 +24,7 @@ export default async function MapPage({ searchParams }) {
     areaEnabled: normalizeQueryString(params.area) === '1' && Boolean(parsedBounds),
     viewportBounds: parsedBounds,
     selectedSlug: normalizeQueryString(params.selected),
+    sheetDetent: normalizeQueryString(params.sheet, 'collapsed'),
     mapView: parsedMapView || {
       lat: SYDNEY_CENTER.lat,
       lng: SYDNEY_CENTER.lng,

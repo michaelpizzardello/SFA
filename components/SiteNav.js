@@ -19,11 +19,20 @@ function isActive(pathname, href) {
     return pathname === '/galleries' || pathname.startsWith('/gallery/')
   }
 
+  if (href === '/whats-on') {
+    return pathname === '/whats-on' || pathname.startsWith('/exhibition/')
+  }
+
   return pathname.startsWith(href)
 }
 
 export default function SiteNav() {
   const pathname = usePathname()
+  const isMapRoute = pathname.startsWith('/map')
+
+  if (isMapRoute) {
+    return null
+  }
 
   return (
     <>

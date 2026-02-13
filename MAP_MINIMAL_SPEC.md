@@ -45,16 +45,25 @@ Primary user outcome:
 ## 3) Screen Layout Rules
 
 ### Mobile
-- Map is primary: target `60-70vh` visible height.
-- Compact control bar at top of map.
-- Results list below map as simple rows (not bulky cards).
-- Controls must not block pan/zoom interactions.
+- Map is full-screen by default on `/map`.
+- Persistent compact top bar overlays map:
+  - left: back button
+  - center: search field
+  - right: `Filters` button
+- Results are in a draggable bottom sheet, not a fixed list below map.
+- Controls must stay compact and must not block core pan/zoom interactions.
 
 ### Desktop
 - Split view preferred:
   - Left: map
   - Right: synced results list
 - Keep controls near top-left of map area.
+
+## 3.1 Default Camera (Required)
+- Default center: Sydney CBD corridor (`lat ~ -33.8688`, `lng ~ 151.2093`) unless better center is explicitly justified.
+- Default zoom: `12` (not broad metro-level zoom).
+- Goal at first load: users should immediately see meaningful marker bubbles/clusters without manually zooming in.
+- If default data density changes, tune center/zoom but keep first-load marker visibility as the priority.
 
 ## 4) Functional Requirements
 
@@ -64,15 +73,18 @@ Primary user outcome:
 3. User taps CTA.
 4. Results update to viewport.
 5. Marker and list interactions remain synchronized.
+6. User drags bottom sheet between `collapsed`, `half`, and `full`.
 
 ### Sync contracts
 - Marker click highlights/selects corresponding list row.
 - Row click centers map on marker and opens popover.
 - Selection state is visually obvious but understated.
+- Marker selection must not auto-scroll the page.
 
 ### State persistence
 - Preserve map center, zoom, and filters when navigating to `/gallery/[slug]` and returning.
 - Preserve current result context on browser back.
+- Preserve bottom-sheet detent and list scroll position when feasible.
 
 ### Data validity
 - Exclude invalid coordinates.
@@ -81,8 +93,9 @@ Primary user outcome:
 
 ## 5) Controls (Allowed Set)
 Allowed:
+- Back button
 - Search input (gallery/suburb/precinct).
-- Precinct filter.
+- `Filters` button (opens panel/sheet).
 - `Search this area` button.
 - Zoom +/- controls.
 - Optional `Reset view`.
@@ -92,6 +105,8 @@ Not allowed by default:
 - Extra map widgets unrelated to discovery.
 - Dense stacks of chips/toggles floating over map.
 - Multiple competing action bars.
+- Persistent bottom tab bar while in full-screen map mode.
+- Always-visible expanded filter blocks.
 
 ## 6) Performance Requirements
 - Use marker clustering for dense views.
@@ -118,3 +133,5 @@ Not allowed by default:
 4. Returning from profile restores prior map state.
 5. No visual clutter (gradients/glows/decorative effects).
 6. Invalid coordinates are excluded safely.
+7. First map load is sufficiently zoomed to show useful bubbles/clusters without immediate manual zoom-in.
+8. Full-screen map mode is used with top compact bar and draggable bottom sheet behavior.

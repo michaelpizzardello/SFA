@@ -24,26 +24,38 @@ If implementation conflicts with this guide, this guide wins.
 10. On back, previous map viewport + filters + selection are restored.
 
 ## 3) Layout Contract (Mobile)
-- Top overlay: compact filter rail (search + precinct + optional quick reset).
-- Map canvas: dominant area (`~60-70vh`).
+- Map route runs in full-screen map mode.
+- Top overlay is persistent and compact:
+  - left: back button
+  - center: search field
+  - right: `Filters` button
+- No bottom tab bar while on `/map`.
+- Map canvas occupies full viewport behind overlays.
 - Floating CTA: `Search this area` shown only when viewport changed and not yet applied.
-- Bottom sheet/list: compact results rows; supports swipe/scroll without blocking map usage.
+- Bottom sheet/list is draggable with explicit detents:
+  - collapsed: handle + results count (`N galleries in this area`)
+  - half: list visible and scrollable while map remains visible in top half
+  - full: list dominates viewport
 
 Hard constraints:
 - Do not show dense control walls over the map.
 - Do not place long checklists above map.
 - Do not show more than one primary floating action at a time.
+- Do not use inline full-page list blocks under the map in map mode.
+- Do not keep filters permanently expanded on map screen.
 
 ## 4) Controls Contract
 Allowed controls on map screen:
+- Back button
 - Search field (location/gallery text)
-- Precinct filter (single select)
+- `Filters` button that opens filter sheet/modal
 - `Search this area` button
 - Zoom controls
 - Optional `Reset map`
 
 Control behavior:
 - `Search this area` appears after map move and disappears after apply.
+- `Filters` opens secondary panel/sheet; filters are not always visible.
 - Filter changes can auto-refresh results or require explicit apply, but behavior must be consistent.
 - Active filters must always be visible and removable.
 
@@ -52,6 +64,7 @@ Control behavior:
 - List row tap centers map on marker and opens marker detail.
 - Selected marker remains selected until dismissed or replaced.
 - Results count always matches current visible/filter state.
+- Marker tap must not force long-page scroll jumps.
 
 ## 6) Detail Card Contract (Map Selection)
 Compact card content order:
@@ -65,6 +78,19 @@ Constraints:
 - One CTA only.
 - No long body copy.
 - No unrelated controls inside card.
+- Keep map context intact when opening/closing card.
+
+## 6.1 Bottom Sheet Mechanics (Required)
+- Sheet must include visible drag handle.
+- Supported detents: `collapsed`, `half`, `full`.
+- Collapsed state copy format: `{count} galleries in this area`.
+- In `half` state:
+  - list scrolls independently
+  - map remains visible and usable in upper portion.
+- In `full` state:
+  - list consumes most/all viewport.
+- If user scrolls list to top and continues pulling down, sheet should move toward lower detent (`full -> half -> collapsed`) depending on release point.
+- Sheet transitions must be smooth and interruptible.
 
 ## 7) State Persistence Rules
 Must persist when navigating away/back:
@@ -115,3 +141,6 @@ Don't:
 3. Back from profile returns user to same map context.
 4. Minimal controls only; no cluttered overlays.
 5. Mobile interaction feels fast, obvious, and stable.
+6. `/map` hides bottom tab bar and uses full-screen map mode.
+7. Top overlay always shows back + search + filters trigger.
+8. Bottom sheet supports collapsed/half/full drag behavior with count in collapsed state.

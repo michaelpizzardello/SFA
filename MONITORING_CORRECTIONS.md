@@ -82,3 +82,43 @@ Status after latest implementation pass:
     - Index lists show only critical summary fields by default.
     - Extra details appear only after explicit user action (preview sheet/popup or detail route).
     - Map marker clicks must open local preview state (popup/sheet), never force long-page scroll jumps.
+
+  5. P0 - Add dedicated exhibition detail route.
+  - Current requirement: each exhibition must have its own page.
+  - Required:
+    - Implement `/exhibition/[slug]`.
+    - Every exhibition row/card must include navigation to that route.
+    - Keep list rows concise and move extended exhibition content to this detail page.
+
+  6. P0 - Enforce exhibition card hierarchy.
+  - Current requirement: cards must prioritize what/when/where with clear typography hierarchy.
+  - Required:
+    - Use concise default row content only (title, artist, gallery+precinct, date/opening, primary CTA).
+    - Remove summary paragraphs from default list rows.
+    - Apply consistent type scale so title is clearly primary and metadata clearly secondary.
+
+  7. P1 - Increase default map zoom for first-load marker visibility.
+  - Current requirement: map should feel immediately useful on open.
+  - Required:
+    - Set default map zoom to a tighter level (target `12`) with Sydney-centered view.
+    - Validate that first load shows clear bubbles/clusters without immediate user zoom-in.
+
+  8. P0 - Switch map route to full-screen top-bar + bottom-sheet interaction model.
+  - Current requirement: avoid long-page map/list stack.
+  - Required:
+    - Use compact persistent top bar on `/map`: back (left), search (center), `Filters` button (right).
+    - Hide bottom tab/menu while map route is active.
+    - Move results to draggable bottom sheet with detents:
+      - collapsed: `{count} galleries in this area`
+      - half: scrollable list while map remains visible above
+      - full: list-dominant state
+    - Marker/list interactions must update local map/sheet state, not trigger page scroll jumps.
+
+  9. P0 - Polish `/whats-on` filter/list hierarchy to professional app standard.
+  - Current issue pattern: control stack and spacing can feel visually disconnected and less professional.
+  - Required:
+    - Keep filters collapsed by default behind `Filters`.
+    - Ensure control order is compact and predictable (title -> subtitle -> controls -> active filters -> result count -> list).
+    - Reduce dead space before first list item.
+    - Keep date-window control integrated (segmented control or concise active chip pattern).
+    - Keep rows concise and hierarchy-driven (no default long detail blocks).
