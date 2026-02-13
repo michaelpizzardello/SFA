@@ -139,6 +139,7 @@ export default function MapPageClient({ galleries, initialFilters }) {
   const [sheetDragHeight, setSheetDragHeight] = useState(null)
   const [sheetIsDragging, setSheetIsDragging] = useState(false)
   const [isLocatingUser, setIsLocatingUser] = useState(false)
+  const [hasUserLocation, setHasUserLocation] = useState(false)
   const [locationError, setLocationError] = useState('')
   const [selectionDragOffset, setSelectionDragOffset] = useState(0)
   const [selectionIsDragging, setSelectionIsDragging] = useState(false)
@@ -368,6 +369,11 @@ export default function MapPageClient({ galleries, initialFilters }) {
           scrollWheelZoom: false
         }).setView([mapView.lat, mapView.lng], mapView.zoom)
 
+        if (!map.getPane('user-location-pane')) {
+          const userLocationPane = map.createPane('user-location-pane')
+          userLocationPane.style.zIndex = '900'
+        }
+
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
           maxZoom: 19,
           attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
@@ -470,6 +476,10 @@ export default function MapPageClient({ galleries, initialFilters }) {
     markerBySlugRef.current.forEach((marker, slug) => {
       marker.setIcon(createMarkerIcon(L, marker.options.galleryName, slug === selectedSlug))
     })
+
+    if (userLocationMarkerRef.current) {
+      userLocationMarkerRef.current.bringToFront()
+    }
   }, [selectedSlug])
 
   useEffect(() => {
@@ -508,6 +518,7 @@ export default function MapPageClient({ galleries, initialFilters }) {
       userLocationMarkerRef.current = null
       leafletRef.current = null
       initialMoveHandledRef.current = false
+      setHasUserLocation(false)
     }
   }, [])
 
@@ -620,16 +631,20 @@ export default function MapPageClient({ galleries, initialFilters }) {
 
         if (userLocationMarkerRef.current) {
           userLocationMarkerRef.current.setLatLng([latitude, longitude])
+          userLocationMarkerRef.current.bringToFront()
         } else {
           userLocationMarkerRef.current = L.circleMarker([latitude, longitude], {
-            radius: 7,
+            pane: 'user-location-pane',
+            radius: 8,
             color: '#ffffff',
-            weight: 2,
-            fillColor: '#0f4c81',
+            weight: 3,
+            fillColor: '#1e88ff',
             fillOpacity: 1
           }).addTo(map)
+          userLocationMarkerRef.current.bringToFront()
         }
 
+        setHasUserLocation(true)
         setFiltersOpen(false)
         setIsLocatingUser(false)
       },
@@ -1210,6 +1225,21 @@ export default function MapPageClient({ galleries, initialFilters }) {
       ) : null}
 
       <div className="map-canvas map-canvas-full" ref={mapContainerRef} role="region" aria-label="Sydney gallery map" />
+
+      <div className="map-locate-control">
+        <button
+          type="button"
+          className={`map-locate-button${hasUserLocation ? ' is-active' : ''}`}
+          aria-label="Use current location"
+          onClick={centerOnUserLocation}
+          disabled={isLocatingUser}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <circle cx="12" cy="12" r="3" fill="currentColor" />
+            <path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+        </button>
+      </div>
 
       {mapMoved ? (
         <button type="button" className="button button-primary map-search-area-cta" onClick={applyCurrentViewport}>
