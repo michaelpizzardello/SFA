@@ -21,7 +21,8 @@ function OpeningRows({ items, galleries }) {
                 </Link>
               </p>
               <p className="row-meta">
-                {gallery?.name || 'Unknown gallery'} | {gallery?.precinct || 'Unspecified precinct'}
+                <span className="row-gallery-name">{gallery?.name || 'Unknown gallery'}</span>
+                <span className="row-gallery-location">{gallery?.suburb || gallery?.precinct || 'Unspecified precinct'}</span>
               </p>
             </div>
             <p className="row-date">{formatDate(exhibition.openingDate || exhibition.startDate)}</p>

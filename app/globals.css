@@ -432,6 +432,11 @@ a {
   white-space: nowrap;
 }
 
+.row-gallery-name,
+.row-gallery-location {
+  display: block;
+}
+
 .item-artist {
   color: var(--color-text);
   font-size: 0.9375rem;
@@ -462,19 +467,33 @@ a {
 .item-actions-split {
   width: 100%;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: baseline;
 }
 
 .item-gallery-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-end;
-  min-height: 44px;
+  display: inline-grid;
+  gap: 2px;
+  align-items: end;
+  justify-items: end;
+  min-height: 0;
   color: var(--color-text-muted);
-  font-size: 0.8125rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: 500;
   text-decoration: none;
   text-align: right;
+  line-height: 1.25;
+}
+
+.item-gallery-name {
+  color: var(--color-text);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.item-gallery-location {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
 }
 
 .item-gallery-link:hover {

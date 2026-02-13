@@ -344,8 +344,10 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
                   </Link>
                   {gallery ? (
                     <Link className="item-gallery-link" href={`/gallery/${encodeURIComponent(gallery.slug)}`}>
-                      {gallery.name}
-                      {gallery.suburb ? ` | ${gallery.suburb}` : ''}
+                      <span className="item-gallery-name">{gallery.name}</span>
+                      <span className="item-gallery-location">
+                        {gallery.suburb || gallery.precinct || 'Unspecified location'}
+                      </span>
                     </Link>
                   ) : null}
                 </div>
