@@ -139,10 +139,6 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
         </div>
       ) : null}
 
-      <p className="results-meta">
-        {directoryRows.length} {directoryRows.length === 1 ? 'gallery' : 'galleries'} found
-      </p>
-
       {directoryRows.length ? (
         <ul className="directory-list">
           {directoryRows.map(({ gallery, summary }) => (

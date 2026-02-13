@@ -244,9 +244,7 @@ export default function MapPageClient({ galleries, initialFilters }) {
     return filters
   }, [areaEnabled, precinct, search])
 
-  const resultsLabel = `${resultGalleries.length} ${
-    resultGalleries.length === 1 ? 'gallery' : 'galleries'
-  } in this area`
+  const resultsLabel = 'Results'
   const activeSheetHeight = Math.round(sheetDragHeight ?? detentHeights[sheetDetent] ?? detentHeights.collapsed)
   const sheetIsPeeking = sheetDetent === 'collapsed' && activeSheetHeight > detentHeights.collapsed + 14
   const sheetInlineStyle = useMemo(

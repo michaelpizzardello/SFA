@@ -308,10 +308,6 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
             ))}
           </div>
         ) : null}
-
-        <p className="results-meta">
-          {filteredExhibitions.length} {filteredExhibitions.length === 1 ? 'exhibition' : 'exhibitions'}
-        </p>
       </div>
 
       {filteredExhibitions.length ? (
@@ -335,12 +331,6 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
                   </p>
                 ) : null}
                 <div className="item-actions item-actions-split">
-                  <Link
-                    className="text-link"
-                    href={`/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`}
-                  >
-                    View details
-                  </Link>
                   {gallery ? (
                     <Link className="item-gallery-link" href={`/gallery/${encodeURIComponent(gallery.slug)}`}>
                       <span className="item-gallery-name">{gallery.name}</span>
@@ -349,6 +339,12 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
                       </span>
                     </Link>
                   ) : null}
+                  <Link
+                    className="text-link"
+                    href={`/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`}
+                  >
+                    View details
+                  </Link>
                 </div>
               </li>
             )
