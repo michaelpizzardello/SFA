@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useMemo, useEffect, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { filterGalleries, getGalleryDirectoryData, getPrecinctOptions } from '../lib/utils/filters'
+import FilterSlidersIcon from './icons/FilterSlidersIcon'
 
 export default function GalleriesPageClient({ galleries, exhibitions, initialFilters }) {
   const [search, setSearch] = useState(initialFilters.search)
@@ -27,27 +28,6 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
     [exhibitions, filteredGalleries]
   )
 
-  const activeFilters = useMemo(() => {
-    const filters = []
-
-    if (search.trim()) {
-      filters.push(`Search: ${search.trim()}`)
-    }
-
-    if (precinct !== 'all') {
-      filters.push(`Precinct: ${precinct}`)
-    }
-
-    if (sort !== 'alphabetical') {
-      filters.push('Sort: By precinct')
-    }
-
-    if (!filters.length) {
-      filters.push('All galleries')
-    }
-
-    return filters
-  }, [precinct, search, sort])
   const mapParams = new URLSearchParams(
     precinct !== 'all' || search.trim()
       ? {
@@ -96,19 +76,23 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
       </div>
       <p className="section-copy">Search and browse the Sydney gallery directory.</p>
 
-      <div className="section-tools">
+      <div className="compact-control-row">
+        <label className="field">
+          <span className="visually-hidden">Search galleries</span>
+          <input
+            type="search"
+            placeholder="Search galleries"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
+        </label>
         <button
           type="button"
           className="button button-secondary icon-button filter-icon-button"
           aria-label="Open filters"
           onClick={() => setFiltersOpen(true)}
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path
-              d="M3 6v2h10V6H3zm0 10v2h6v-2H3zm10 0v2h8v-2h-8zm-4-5v2h12v-2H9zm8-5v2h4V6h-4z"
-              fill="currentColor"
-            />
-          </svg>
+          <FilterSlidersIcon />
           <span className="visually-hidden">Filters</span>
         </button>
       </div>
@@ -129,17 +113,7 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
               </button>
             </div>
             <div className="filter-sheet-body">
-              <div className="filter-bar" role="group" aria-label="Gallery filters">
-                <label className="field">
-                  <span>Search</span>
-                  <input
-                    type="search"
-                    placeholder="Gallery, suburb, precinct"
-                    value={search}
-                    onChange={(event) => setSearch(event.target.value)}
-                  />
-                </label>
-
+              <div className="filter-bar filter-bar-two" role="group" aria-label="Gallery filters">
                 <label className="field">
                   <span>Precinct</span>
                   <select value={precinct} onChange={(event) => setPrecinct(event.target.value)}>
@@ -164,14 +138,6 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
           </section>
         </div>
       ) : null}
-
-      <div className="active-filters" aria-label="Applied filters">
-        {activeFilters.map((filter) => (
-          <span key={filter} className="filter-pill">
-            {filter}
-          </span>
-        ))}
-      </div>
 
       <p className="results-meta">
         {directoryRows.length} {directoryRows.length === 1 ? 'gallery' : 'galleries'} found

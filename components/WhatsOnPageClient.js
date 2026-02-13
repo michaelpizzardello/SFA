@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { formatDate, formatDateRange } from '../lib/utils/date'
 import { filterExhibitions, getPrecinctOptions } from '../lib/utils/filters'
 import { getExhibitionSlug, getExhibitionStatus, getGalleryBySlug } from '../lib/utils/exhibitions'
+import FilterSlidersIcon from './icons/FilterSlidersIcon'
 
 const statusLabels = {
   current: 'Current',
@@ -13,36 +14,45 @@ const statusLabels = {
   past: 'Past'
 }
 
-function mapToWindowMode(statusFilter, openingFilter) {
-  if (openingFilter === 'tonight') {
-    return 'tonight'
-  }
+const statusFilterOptions = [
+  { value: 'current', label: 'Current' },
+  { value: 'upcoming', label: 'Upcoming' }
+]
 
-  if (openingFilter === 'week') {
-    return 'week'
-  }
+const openingFilterOptions = [
+  { value: 'tonight', label: 'Opening tonight' },
+  { value: 'week', label: 'Opening this week' }
+]
 
-  return statusFilter === 'all' ? 'all' : 'current-upcoming'
+const defaultStatusFilters = ['current', 'upcoming']
+
+function normalizeStatusSelection(values) {
+  const normalized = statusFilterOptions
+    .map((option) => option.value)
+    .filter((value) => values.includes(value))
+
+  return normalized.length ? normalized : [...defaultStatusFilters]
 }
 
-function getViewMode(statusFilter, openingFilter) {
-  if (openingFilter === 'tonight') {
-    return 'opening-tonight'
-  }
+function normalizeOpeningSelection(values) {
+  return openingFilterOptions
+    .map((option) => option.value)
+    .filter((value) => values.includes(value))
+}
 
-  if (openingFilter === 'week') {
-    return 'opening-week'
-  }
-
-  return statusFilter === 'all' ? 'all' : 'current-upcoming'
+function isDefaultStatusSelection(values) {
+  return values.length === defaultStatusFilters.length && defaultStatusFilters.every((value) => values.includes(value))
 }
 
 export default function WhatsOnPageClient({ galleries, exhibitions, initialFilters }) {
   const [search, setSearch] = useState(initialFilters.search)
   const [precinct, setPrecinct] = useState(initialFilters.precinct)
-  const [statusFilter, setStatusFilter] = useState(initialFilters.status)
-  const [openingFilter, setOpeningFilter] = useState(initialFilters.opening)
-  const [selectedGalleries, setSelectedGalleries] = useState(new Set(initialFilters.selectedGalleries))
+  const [selectedStatuses, setSelectedStatuses] = useState(
+    () => new Set(normalizeStatusSelection(initialFilters.statuses || []))
+  )
+  const [selectedOpeningWindows, setSelectedOpeningWindows] = useState(
+    () => new Set(normalizeOpeningSelection(initialFilters.openingWindows || []))
+  )
   const [filtersOpen, setFiltersOpen] = useState(false)
 
   const pathname = usePathname()
@@ -51,72 +61,52 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
 
   const precinctOptions = useMemo(() => getPrecinctOptions(galleries), [galleries])
 
-  const sortedGalleries = useMemo(
-    () => [...galleries].sort((first, second) => first.name.localeCompare(second.name)),
-    [galleries]
+  const orderedStatuses = useMemo(
+    () => normalizeStatusSelection([...selectedStatuses]),
+    [selectedStatuses]
   )
 
-  const windowMode = mapToWindowMode(statusFilter, openingFilter)
-  const viewMode = getViewMode(statusFilter, openingFilter)
+  const orderedOpeningWindows = useMemo(
+    () => normalizeOpeningSelection([...selectedOpeningWindows]),
+    [selectedOpeningWindows]
+  )
 
   const filteredExhibitions = useMemo(
     () =>
       filterExhibitions(galleries, exhibitions, {
         search,
         precinct,
-        openingWindow: windowMode,
-        selectedGallerySlugs: [...selectedGalleries]
+        statuses: orderedStatuses,
+        openingWindows: orderedOpeningWindows
       }),
-    [exhibitions, galleries, openingFilter, precinct, search, selectedGalleries, statusFilter, windowMode]
+    [exhibitions, galleries, orderedOpeningWindows, orderedStatuses, precinct, search]
   )
 
   const activeFilters = useMemo(() => {
     const filters = []
 
-    if (viewMode === 'all') {
-      filters.push({
-        key: 'viewMode',
-        label: 'Date: All dates'
-      })
+    if (!isDefaultStatusSelection(orderedStatuses)) {
+      filters.push(`Status: ${orderedStatuses.map((status) => statusLabels[status]).join(' + ')}`)
     }
 
-    if (viewMode === 'opening-tonight') {
-      filters.push({
-        key: 'viewMode',
-        label: 'Date: Opening tonight'
-      })
-    }
-
-    if (viewMode === 'opening-week') {
-      filters.push({
-        key: 'viewMode',
-        label: 'Date: Opening this week'
-      })
+    if (orderedOpeningWindows.length) {
+      filters.push(
+        `Opening: ${orderedOpeningWindows
+          .map((window) => openingFilterOptions.find((option) => option.value === window)?.label || window)
+          .join(' + ')}`
+      )
     }
 
     if (precinct !== 'all') {
-      filters.push({
-        key: 'precinct',
-        label: `Precinct: ${precinct}`
-      })
+      filters.push(`Precinct: ${precinct}`)
     }
 
     if (search.trim()) {
-      filters.push({
-        key: 'search',
-        label: `Search: ${search.trim()}`
-      })
-    }
-
-    if (selectedGalleries.size > 0) {
-      filters.push({
-        key: 'galleries',
-        label: `Galleries: ${selectedGalleries.size}`
-      })
+      filters.push(`Search: ${search.trim()}`)
     }
 
     return filters
-  }, [precinct, search, selectedGalleries, viewMode])
+  }, [orderedOpeningWindows, orderedStatuses, precinct, search])
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString())
@@ -133,23 +123,19 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
       params.delete('precinct')
     }
 
-    if (statusFilter !== 'current-upcoming') {
-      params.set('status', statusFilter)
-    } else {
+    if (isDefaultStatusSelection(orderedStatuses)) {
       params.delete('status')
+    } else {
+      params.set('status', orderedStatuses.join(','))
     }
 
-    if (openingFilter !== 'any') {
-      params.set('opening', openingFilter)
+    if (orderedOpeningWindows.length) {
+      params.set('opening', orderedOpeningWindows.join(','))
     } else {
       params.delete('opening')
     }
 
-    if (selectedGalleries.size > 0) {
-      params.set('galleries', [...selectedGalleries].join(','))
-    } else {
-      params.delete('galleries')
-    }
+    params.delete('galleries')
 
     const nextQuery = params.toString()
     const currentQuery = searchParams.toString()
@@ -157,77 +143,45 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
     if (nextQuery !== currentQuery) {
       router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, { scroll: false })
     }
-  }, [openingFilter, pathname, precinct, router, search, searchParams, selectedGalleries, statusFilter])
+  }, [orderedOpeningWindows, orderedStatuses, pathname, precinct, router, search, searchParams])
 
-  function toggleGallery(gallerySlug) {
-    setSelectedGalleries((current) => {
+  function toggleStatus(status) {
+    setSelectedStatuses((current) => {
       const next = new Set(current)
 
-      if (next.has(gallerySlug)) {
-        next.delete(gallerySlug)
+      if (next.has(status)) {
+        if (next.size === 1) {
+          return current
+        }
+
+        next.delete(status)
       } else {
-        next.add(gallerySlug)
+        next.add(status)
       }
 
       return next
     })
   }
 
-  function handleViewModeChange(nextViewMode) {
-    if (nextViewMode === 'all') {
-      setStatusFilter('all')
-      setOpeningFilter('any')
-      return
-    }
+  function toggleOpeningWindow(window) {
+    setSelectedOpeningWindows((current) => {
+      const next = new Set(current)
 
-    if (nextViewMode === 'opening-tonight') {
-      setStatusFilter('current-upcoming')
-      setOpeningFilter('tonight')
-      return
-    }
+      if (next.has(window)) {
+        next.delete(window)
+      } else {
+        next.add(window)
+      }
 
-    if (nextViewMode === 'opening-week') {
-      setStatusFilter('current-upcoming')
-      setOpeningFilter('week')
-      return
-    }
-
-    setStatusFilter('current-upcoming')
-    setOpeningFilter('any')
-  }
-
-  function resetAdvancedFilters() {
-    setSelectedGalleries(new Set())
+      return next
+    })
   }
 
   function clearAllFilters() {
     setSearch('')
     setPrecinct('all')
-    setStatusFilter('current-upcoming')
-    setOpeningFilter('any')
-    setSelectedGalleries(new Set())
-  }
-
-  function clearAppliedFilter(filterKey) {
-    if (filterKey === 'search') {
-      setSearch('')
-      return
-    }
-
-    if (filterKey === 'precinct') {
-      setPrecinct('all')
-      return
-    }
-
-    if (filterKey === 'viewMode') {
-      setStatusFilter('current-upcoming')
-      setOpeningFilter('any')
-      return
-    }
-
-    if (filterKey === 'galleries') {
-      setSelectedGalleries(new Set())
-    }
+    setSelectedStatuses(new Set(defaultStatusFilters))
+    setSelectedOpeningWindows(new Set())
   }
 
   return (
@@ -237,7 +191,7 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
       </div>
       <p className="section-copy">Current and upcoming exhibitions across Sydney galleries.</p>
 
-      <div className="whats-on-control-row">
+      <div className="compact-control-row">
         <label className="field">
           <span className="visually-hidden">Search exhibitions</span>
           <input
@@ -253,44 +207,8 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
           aria-label="Open filters"
           onClick={() => setFiltersOpen(true)}
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path
-              d="M3 6v2h10V6H3zm0 10v2h6v-2H3zm10 0v2h8v-2h-8zm-4-5v2h12v-2H9zm8-5v2h4V6h-4z"
-              fill="currentColor"
-            />
-          </svg>
+          <FilterSlidersIcon />
           <span className="visually-hidden">Filters</span>
-        </button>
-      </div>
-
-      <div className="segmented-control" role="group" aria-label="Date window quick filters">
-        <button
-          type="button"
-          className={viewMode === 'current-upcoming' ? 'is-active' : ''}
-          onClick={() => handleViewModeChange('current-upcoming')}
-        >
-          Current + upcoming
-        </button>
-        <button
-          type="button"
-          className={viewMode === 'all' ? 'is-active' : ''}
-          onClick={() => handleViewModeChange('all')}
-        >
-          All dates
-        </button>
-        <button
-          type="button"
-          className={viewMode === 'opening-tonight' ? 'is-active' : ''}
-          onClick={() => handleViewModeChange('opening-tonight')}
-        >
-          Tonight
-        </button>
-        <button
-          type="button"
-          className={viewMode === 'opening-week' ? 'is-active' : ''}
-          onClick={() => handleViewModeChange('opening-week')}
-        >
-          This week
         </button>
       </div>
 
@@ -310,7 +228,7 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
               </button>
             </div>
             <div className="filter-sheet-body">
-              <div className="filter-bar filter-bar-three" role="group" aria-label="Exhibition filters">
+              <div className="filter-bar filter-bar-two" role="group" aria-label="Exhibition filters">
                 <label className="field">
                   <span>Search</span>
                   <input
@@ -319,16 +237,6 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
                   />
-                </label>
-
-                <label className="field">
-                  <span>Date window</span>
-                  <select value={viewMode} onChange={(event) => handleViewModeChange(event.target.value)}>
-                    <option value="current-upcoming">Current + upcoming</option>
-                    <option value="all">All dates</option>
-                    <option value="opening-tonight">Opening tonight</option>
-                    <option value="opening-week">Opening this week</option>
-                  </select>
                 </label>
 
                 <label className="field">
@@ -344,61 +252,47 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
                 </label>
               </div>
 
-              <details className="whats-on-advanced">
-                <summary>Advanced gallery filters</summary>
-                <div className="whats-on-advanced-panel">
-                  <label className="field">
-                    <span>Galleries</span>
-                    <select
-                      value=""
-                      onChange={(event) => {
-                        if (!event.target.value) {
-                          return
-                        }
-
-                        toggleGallery(event.target.value)
-                        event.target.value = ''
-                      }}
-                    >
-                      <option value="">Add gallery filter</option>
-                      {sortedGalleries.map((gallery) => (
-                        <option key={gallery.id} value={gallery.slug}>
-                          {gallery.name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-
-                  <div className="active-filters" aria-label="Selected galleries">
-                    {[...selectedGalleries].map((slug) => {
-                      const matchedGallery = galleries.find((gallery) => gallery.slug === slug)
-
-                      if (!matchedGallery) {
-                        return null
-                      }
-
-                      return (
-                        <button
-                          key={slug}
-                          type="button"
-                          className="filter-pill is-removable"
-                          onClick={() => toggleGallery(slug)}
-                        >
-                          Remove {matchedGallery.name}
-                        </button>
-                      )
-                    })}
+              <div className="filter-toggle-grid">
+                <div className="field">
+                  <span>Status</span>
+                  <div className="toggle-chip-row" role="group" aria-label="Status filters">
+                    {statusFilterOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        className={`toggle-chip ${selectedStatuses.has(option.value) ? 'is-active' : ''}`}
+                        onClick={() => toggleStatus(option.value)}
+                        aria-pressed={selectedStatuses.has(option.value)}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
                   </div>
-
-                  <button type="button" className="button button-secondary" onClick={resetAdvancedFilters}>
-                    Clear gallery filters
-                  </button>
                 </div>
-              </details>
 
-              <button type="button" className="button button-secondary" onClick={clearAllFilters}>
-                Clear all filters
-              </button>
+                <div className="field">
+                  <span>Opening</span>
+                  <div className="toggle-chip-row" role="group" aria-label="Opening filters">
+                    {openingFilterOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        className={`toggle-chip ${selectedOpeningWindows.has(option.value) ? 'is-active' : ''}`}
+                        onClick={() => toggleOpeningWindow(option.value)}
+                        aria-pressed={selectedOpeningWindows.has(option.value)}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {activeFilters.length ? (
+                <button type="button" className="button button-secondary" onClick={clearAllFilters}>
+                  Clear filters
+                </button>
+              ) : null}
             </div>
           </section>
         </div>
@@ -408,14 +302,9 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
         {activeFilters.length ? (
           <div className="active-filters" aria-label="Applied filters">
             {activeFilters.map((filter) => (
-              <button
-                key={filter.key}
-                type="button"
-                className="filter-pill is-removable"
-                onClick={() => clearAppliedFilter(filter.key)}
-              >
-                {filter.label} ×
-              </button>
+              <span key={filter} className="filter-pill">
+                {filter}
+              </span>
             ))}
           </div>
         ) : null}
@@ -454,12 +343,6 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
                     href={`/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`}
                   >
                     View details
-                  </Link>
-                  <Link
-                    className="text-link text-link-secondary"
-                    href={`/gallery/${encodeURIComponent(exhibition.gallerySlug)}`}
-                  >
-                    Gallery
                   </Link>
                 </div>
               </li>

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import BackLinkButton from './BackLinkButton'
+import FilterSlidersIcon from './icons/FilterSlidersIcon'
 import { filterMapGalleries, getPrecinctOptions } from '../lib/utils/filters'
 import { serializeBounds, SYDNEY_CENTER, SYDNEY_DEFAULT_ZOOM } from '../lib/utils/map'
 
@@ -1139,12 +1140,7 @@ export default function MapPageClient({ galleries, initialFilters }) {
           aria-label="Open filters"
           onClick={() => setFiltersOpen(true)}
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path
-              d="M3 6v2h10V6H3zm0 10v2h6v-2H3zm10 0v2h8v-2h-8zm-4-5v2h12v-2H9zm8-5v2h4V6h-4z"
-              fill="currentColor"
-            />
-          </svg>
+          <FilterSlidersIcon />
           <span className="visually-hidden">Filters</span>
         </button>
       </div>

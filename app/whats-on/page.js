@@ -5,53 +5,70 @@ import { normalizeOpeningWindow, normalizeQueryString } from '../../lib/utils/ma
 
 export const dynamic = 'force-dynamic'
 
-const validStatus = new Set(['current-upcoming', 'all'])
-const validOpening = new Set(['any', 'tonight', 'week'])
+const defaultStatuses = ['current', 'upcoming']
+const validStatuses = new Set(defaultStatuses)
+const validOpeningWindows = new Set(['tonight', 'week'])
+
+function parseCommaList(value) {
+  if (typeof value !== 'string') {
+    return []
+  }
+
+  return value
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+}
+
+function parseStatusSelections(rawStatus, legacyOpeningWindow) {
+  const entries = parseCommaList(rawStatus)
+  const parsedStatuses = entries.filter((entry) => validStatuses.has(entry))
+
+  if (parsedStatuses.length) {
+    return [...new Set(parsedStatuses)]
+  }
+
+  if (entries.includes('current-upcoming') || entries.includes('all')) {
+    return [...defaultStatuses]
+  }
+
+  if (legacyOpeningWindow === 'all' || legacyOpeningWindow === 'current-upcoming') {
+    return [...defaultStatuses]
+  }
+
+  return [...defaultStatuses]
+}
+
+function parseOpeningSelections(rawOpening, legacyOpeningWindow) {
+  const entries = parseCommaList(rawOpening)
+  const parsedOpening = entries.filter((entry) => validOpeningWindows.has(entry))
+
+  if (parsedOpening.length) {
+    return [...new Set(parsedOpening)]
+  }
+
+  if (entries.includes('any')) {
+    return []
+  }
+
+  if (legacyOpeningWindow === 'tonight' || legacyOpeningWindow === 'week') {
+    return [legacyOpeningWindow]
+  }
+
+  return []
+}
 
 export default async function WhatsOnPage({ searchParams }) {
   const params = (await searchParams) || {}
   const data = await loadSiteData()
 
-  const selectedGalleries =
-    typeof params.galleries === 'string' && params.galleries.trim()
-      ? params.galleries
-          .split(',')
-          .map((entry) => entry.trim())
-          .filter(Boolean)
-      : []
-
   const legacyOpeningWindow = normalizeOpeningWindow(normalizeQueryString(params.openingWindow))
-
-  let status = normalizeQueryString(params.status, 'current-upcoming')
-  let opening = normalizeQueryString(params.opening, 'any')
-
-  if (!validStatus.has(status) && !validOpening.has(opening)) {
-    if (legacyOpeningWindow === 'all') {
-      status = 'all'
-      opening = 'any'
-    } else if (legacyOpeningWindow === 'tonight' || legacyOpeningWindow === 'week') {
-      status = 'current-upcoming'
-      opening = legacyOpeningWindow
-    } else {
-      status = 'current-upcoming'
-      opening = 'any'
-    }
-  } else {
-    if (!validStatus.has(status)) {
-      status = 'current-upcoming'
-    }
-
-    if (!validOpening.has(opening)) {
-      opening = 'any'
-    }
-  }
 
   const initialFilters = {
     search: normalizeQueryString(params.search),
     precinct: normalizeQueryString(params.precinct, 'all') || 'all',
-    status,
-    opening,
-    selectedGalleries
+    statuses: parseStatusSelections(normalizeQueryString(params.status), legacyOpeningWindow),
+    openingWindows: parseOpeningSelections(normalizeQueryString(params.opening), legacyOpeningWindow)
   }
 
   return (
