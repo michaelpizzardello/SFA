@@ -13,10 +13,36 @@ const statusLabels = {
   past: 'Past'
 }
 
+function mapToWindowMode(statusFilter, openingFilter) {
+  if (openingFilter === 'tonight') {
+    return 'tonight'
+  }
+
+  if (openingFilter === 'week') {
+    return 'week'
+  }
+
+  return statusFilter === 'all' ? 'all' : 'current-upcoming'
+}
+
+function getViewMode(statusFilter, openingFilter) {
+  if (openingFilter === 'tonight') {
+    return 'opening-tonight'
+  }
+
+  if (openingFilter === 'week') {
+    return 'opening-week'
+  }
+
+  return statusFilter === 'all' ? 'all' : 'current-upcoming'
+}
+
 export default function WhatsOnPageClient({ galleries, exhibitions, initialFilters }) {
   const [search, setSearch] = useState(initialFilters.search)
   const [precinct, setPrecinct] = useState(initialFilters.precinct)
-  const [openingWindow, setOpeningWindow] = useState(initialFilters.openingWindow)
+  const [statusFilter, setStatusFilter] = useState(initialFilters.status)
+  const [openingFilter, setOpeningFilter] = useState(initialFilters.opening)
+  const [selectedGalleries, setSelectedGalleries] = useState(new Set(initialFilters.selectedGalleries))
 
   const pathname = usePathname()
   const router = useRouter()
@@ -24,10 +50,58 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
 
   const precinctOptions = useMemo(() => getPrecinctOptions(galleries), [galleries])
 
-  const filteredExhibitions = useMemo(
-    () => filterExhibitions(galleries, exhibitions, { search, precinct, openingWindow }),
-    [exhibitions, galleries, openingWindow, precinct, search]
+  const sortedGalleries = useMemo(
+    () => [...galleries].sort((first, second) => first.name.localeCompare(second.name)),
+    [galleries]
   )
+
+  const windowMode = mapToWindowMode(statusFilter, openingFilter)
+  const viewMode = getViewMode(statusFilter, openingFilter)
+
+  const filteredExhibitions = useMemo(
+    () =>
+      filterExhibitions(galleries, exhibitions, {
+        search,
+        precinct,
+        openingWindow: windowMode,
+        selectedGallerySlugs: [...selectedGalleries]
+      }),
+    [exhibitions, galleries, openingFilter, precinct, search, selectedGalleries, statusFilter, windowMode]
+  )
+
+  const activeFilters = useMemo(() => {
+    const filters = []
+
+    if (viewMode === 'current-upcoming') {
+      filters.push('Date window: Current + upcoming')
+    }
+
+    if (viewMode === 'all') {
+      filters.push('Date window: All dates')
+    }
+
+    if (viewMode === 'opening-tonight') {
+      filters.push('Date window: Opening tonight')
+    }
+
+    if (viewMode === 'opening-week') {
+      filters.push('Date window: Opening this week')
+    }
+
+    if (precinct !== 'all') {
+      filters.push(`Precinct: ${precinct}`)
+    }
+
+    if (search.trim()) {
+      filters.push(`Search: ${search.trim()}`)
+    }
+
+    if (selectedGalleries.size > 0) {
+      filters.push(`Galleries: ${selectedGalleries.size}`)
+    }
+
+    return filters
+  }, [precinct, search, selectedGalleries, viewMode])
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString())
@@ -44,10 +118,22 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
       params.delete('precinct')
     }
 
-    if (openingWindow !== 'current-upcoming') {
-      params.set('openingWindow', openingWindow)
+    if (statusFilter !== 'current-upcoming') {
+      params.set('status', statusFilter)
     } else {
-      params.delete('openingWindow')
+      params.delete('status')
+    }
+
+    if (openingFilter !== 'any') {
+      params.set('opening', openingFilter)
+    } else {
+      params.delete('opening')
+    }
+
+    if (selectedGalleries.size > 0) {
+      params.set('galleries', [...selectedGalleries].join(','))
+    } else {
+      params.delete('galleries')
     }
 
     const nextQuery = params.toString()
@@ -56,7 +142,48 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
     if (nextQuery !== currentQuery) {
       router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, { scroll: false })
     }
-  }, [openingWindow, pathname, precinct, router, search, searchParams])
+  }, [openingFilter, pathname, precinct, router, search, searchParams, selectedGalleries, statusFilter])
+
+  function toggleGallery(gallerySlug) {
+    setSelectedGalleries((current) => {
+      const next = new Set(current)
+
+      if (next.has(gallerySlug)) {
+        next.delete(gallerySlug)
+      } else {
+        next.add(gallerySlug)
+      }
+
+      return next
+    })
+  }
+
+  function handleViewModeChange(nextViewMode) {
+    if (nextViewMode === 'all') {
+      setStatusFilter('all')
+      setOpeningFilter('any')
+      return
+    }
+
+    if (nextViewMode === 'opening-tonight') {
+      setStatusFilter('current-upcoming')
+      setOpeningFilter('tonight')
+      return
+    }
+
+    if (nextViewMode === 'opening-week') {
+      setStatusFilter('current-upcoming')
+      setOpeningFilter('week')
+      return
+    }
+
+    setStatusFilter('current-upcoming')
+    setOpeningFilter('any')
+  }
+
+  function resetAdvancedFilters() {
+    setSelectedGalleries(new Set())
+  }
 
   return (
     <section className="page-block">
@@ -78,11 +205,11 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
 
         <label className="field">
           <span>Date window</span>
-          <select value={openingWindow} onChange={(event) => setOpeningWindow(event.target.value)}>
+          <select value={viewMode} onChange={(event) => handleViewModeChange(event.target.value)}>
             <option value="current-upcoming">Current + upcoming</option>
-            <option value="tonight">Opening tonight</option>
-            <option value="week">Opening this week</option>
             <option value="all">All dates</option>
+            <option value="opening-tonight">Opening tonight</option>
+            <option value="opening-week">Opening this week</option>
           </select>
         </label>
 
@@ -97,6 +224,66 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
             ))}
           </select>
         </label>
+      </div>
+
+      <details className="whats-on-advanced">
+        <summary>Advanced gallery filters</summary>
+        <div className="whats-on-advanced-panel">
+          <label className="field">
+            <span>Galleries</span>
+            <select
+              value=""
+              onChange={(event) => {
+                if (!event.target.value) {
+                  return
+                }
+
+                toggleGallery(event.target.value)
+                event.target.value = ''
+              }}
+            >
+              <option value="">Add gallery filter</option>
+              {sortedGalleries.map((gallery) => (
+                <option key={gallery.id} value={gallery.slug}>
+                  {gallery.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <div className="active-filters" aria-label="Selected galleries">
+            {[...selectedGalleries].map((slug) => {
+              const matchedGallery = galleries.find((gallery) => gallery.slug === slug)
+
+              if (!matchedGallery) {
+                return null
+              }
+
+              return (
+                <button
+                  key={slug}
+                  type="button"
+                  className="filter-pill is-removable"
+                  onClick={() => toggleGallery(slug)}
+                >
+                  Remove {matchedGallery.name}
+                </button>
+              )
+            })}
+          </div>
+
+          <button type="button" className="button button-secondary" onClick={resetAdvancedFilters}>
+            Clear gallery filters
+          </button>
+        </div>
+      </details>
+
+      <div className="active-filters" aria-label="Applied filters">
+        {activeFilters.map((filter) => (
+          <span key={filter} className="filter-pill">
+            {filter}
+          </span>
+        ))}
       </div>
 
       <p className="results-meta">

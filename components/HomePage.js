@@ -68,7 +68,7 @@ export default function HomePage({ galleries, exhibitions }) {
         <article className="highlight-block">
           <div className="section-head">
             <h2>Opening Tonight</h2>
-            <Link className="text-link" href="/whats-on?openingWindow=tonight">
+            <Link className="text-link" href="/whats-on?opening=tonight">
               View all
             </Link>
           </div>
@@ -78,7 +78,7 @@ export default function HomePage({ galleries, exhibitions }) {
         <article className="highlight-block">
           <div className="section-head">
             <h2>Opening This Week</h2>
-            <Link className="text-link" href="/whats-on?openingWindow=week">
+            <Link className="text-link" href="/whats-on?opening=week">
               View all
             </Link>
           </div>

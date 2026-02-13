@@ -26,25 +26,38 @@ export default function SiteNav() {
   const pathname = usePathname()
 
   return (
-    <header className="site-header">
-      <div className="brand-wrap">
-        <Link className="brand" href="/">
-          Sydney Art Finder
-        </Link>
-        <p className="tagline">Your guide to the Sydney art scene</p>
-      </div>
+    <>
+      <header className="site-header">
+        <div className="brand-wrap">
+          <Link className="brand" href="/">
+            Sydney Art Finder
+          </Link>
+        </div>
 
-      <nav className="main-nav" aria-label="Main navigation">
+        <nav className="main-nav" aria-label="Main navigation">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              className={`nav-link ${isActive(pathname, item.href) ? 'is-active' : ''}`}
+              href={item.href}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+      </header>
+
+      <nav className="mobile-tabbar" aria-label="Mobile primary navigation">
         {navItems.map((item) => (
           <Link
-            key={item.href}
-            className={`nav-link ${isActive(pathname, item.href) ? 'is-active' : ''}`}
+            key={`mobile-${item.href}`}
+            className={`mobile-tab ${isActive(pathname, item.href) ? 'is-active' : ''}`}
             href={item.href}
           >
             {item.label}
           </Link>
         ))}
       </nav>
-    </header>
+    </>
   )
 }

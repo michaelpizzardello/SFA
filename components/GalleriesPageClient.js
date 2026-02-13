@@ -25,6 +25,28 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
     () => getGalleryDirectoryData(filteredGalleries, exhibitions),
     [exhibitions, filteredGalleries]
   )
+
+  const activeFilters = useMemo(() => {
+    const filters = []
+
+    if (search.trim()) {
+      filters.push(`Search: ${search.trim()}`)
+    }
+
+    if (precinct !== 'all') {
+      filters.push(`Precinct: ${precinct}`)
+    }
+
+    if (sort !== 'alphabetical') {
+      filters.push('Sort: By precinct')
+    }
+
+    if (!filters.length) {
+      filters.push('All galleries')
+    }
+
+    return filters
+  }, [precinct, search, sort])
   const mapParams = new URLSearchParams(
     precinct !== 'all' || search.trim()
       ? {
@@ -103,6 +125,14 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
             <option value="precinct">By precinct</option>
           </select>
         </label>
+      </div>
+
+      <div className="active-filters" aria-label="Applied filters">
+        {activeFilters.map((filter) => (
+          <span key={filter} className="filter-pill">
+            {filter}
+          </span>
+        ))}
       </div>
 
       <p className="results-meta">

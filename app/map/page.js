@@ -23,6 +23,7 @@ export default async function MapPage({ searchParams }) {
     precinct: normalizeQueryString(params.precinct, 'all') || 'all',
     areaEnabled: normalizeQueryString(params.area) === '1' && Boolean(parsedBounds),
     viewportBounds: parsedBounds,
+    selectedSlug: normalizeQueryString(params.selected),
     mapView: parsedMapView || {
       lat: SYDNEY_CENTER.lat,
       lng: SYDNEY_CENTER.lng,

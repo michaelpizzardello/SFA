@@ -45,6 +45,9 @@ function ExhibitionList({ exhibitions }) {
 }
 
 export default function GalleryProfilePage({ gallery, groupedExhibitions }) {
+  const mapsQuery = encodeURIComponent(gallery.address || gallery.name)
+  const directionsHref = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`
+
   return (
     <>
       <section className="profile-hero">
@@ -52,16 +55,14 @@ export default function GalleryProfilePage({ gallery, groupedExhibitions }) {
         <h1>{gallery.name}</h1>
         <p className="item-kicker">{gallery.precinct}</p>
         <p className="item-meta">{gallery.address}</p>
+        <a className="button button-secondary" href={directionsHref} target="_blank" rel="noreferrer">
+          Get directions
+        </a>
         <p className="item-meta">Current exhibitions: {groupedExhibitions.current.length}</p>
       </section>
 
       <section className="page-block">
         <div className="profile-columns">
-          <article>
-            <h2>About</h2>
-            <p className="section-copy">{gallery.about || 'Gallery details coming soon.'}</p>
-          </article>
-
           <article>
             <h2>Visit</h2>
             <ul className="detail-list">
@@ -98,6 +99,11 @@ export default function GalleryProfilePage({ gallery, groupedExhibitions }) {
                 ? gallery.openingHours.map((entry) => <li key={entry}>{entry}</li>)
                 : <li>Hours not listed</li>}
             </ul>
+          </article>
+
+          <article>
+            <h2>About</h2>
+            <p className="section-copy">{gallery.about || 'Gallery details coming soon.'}</p>
           </article>
         </div>
       </section>

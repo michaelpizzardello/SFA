@@ -15,11 +15,12 @@ Tagline:
 - Do not mix multiple workflows into one crowded page.
 - Do not use heavy decorative backgrounds, excessive gradients, or nested bordered cards.
 - Do not add controls without clear purpose in user flow.
+- Do not leave filters/details fully expanded by default when they can be progressively disclosed.
 
 ## Required Product Architecture (Screens)
 Use distinct screens with clear jobs.
 
-### 1) Home (`#/`)
+### 1) Home (`/`)
 Purpose: orientation and quick entry points only.
 Must include:
 - Brand + tagline
@@ -31,7 +32,7 @@ Must NOT include:
 - Long checklists
 - Dense map/list combos
 
-### 2) What's On (`#/whats-on`)
+### 2) What's On (`/whats-on`)
 Purpose: browse exhibitions happening now and soon.
 Must include:
 - Default view focused on Current + Upcoming
@@ -41,7 +42,7 @@ Must NOT include:
 - Overloaded filter walls
 - Complex UI controls above the fold
 
-### 3) Galleries (`#/galleries`)
+### 3) Galleries (`/galleries`)
 Purpose: clean directory browsing.
 Must include:
 - Search
@@ -51,7 +52,7 @@ Must include:
 Must NOT include:
 - Map embedded with all directory controls in same visual block
 
-### 4) Map (`#/map`)
+### 4) Map (`/map`)
 Purpose: spatial discovery workflow.
 Must include:
 - Map-first layout
@@ -62,7 +63,7 @@ Must NOT include:
 - Unrelated exhibition controls
 - Cluttered multi-panel nesting
 
-### 5) Gallery Profile (`#/gallery/:slug`)
+### 5) Gallery Profile (`/gallery/:slug`)
 Purpose: a focused content profile.
 Must include:
 - Name, precinct, address, contact, opening hours, links
@@ -115,11 +116,11 @@ Current map is MVP only. Upgrade path required:
 ## Data and Architecture Guidance
 
 ### Short-term
-- Vite is acceptable while refining UI and workflows.
+- Next.js App Router is the active architecture in this repository.
+- Keep route/page work inside the current Next.js structure unless explicitly approved otherwise.
 
 ### Production target
-- Move to SEO-capable routing architecture (e.g. Next.js).
-- Replace hash routes with real URL paths.
+- Keep real URL paths and SEO-capable routing (already in place with Next.js).
 - Ensure gallery/exhibition pages are indexable.
 - Move sheet ingestion to normalized backend pipeline before launch.
 
@@ -138,6 +139,17 @@ Before claiming a UI task done, verify:
 4. Improve map UX and coordinate validity handling.
 5. Keep current functionality while simplifying interaction model.
 
+## Live Monitoring Corrections (2026-02-13)
+These corrections are based on observed in-progress implementation and are mandatory.
+1. Map screen control density is still too high above the map. Consolidate to one compact map control rail and remove duplicate pre-map control blocks.
+2. `Search this area` must remain the primary map action after movement. Avoid competing primary actions in the same toolbar state.
+3. Map results rows must use proper interactive semantics (`button`/`a`), not `li` with `role="button"`.
+4. Desktop top nav must stay on one line with no wrap or overflow at supported widths.
+5. Reduce repeated separator lines that make the layout look segmented/noisy.
+6. Provide before/after screenshots (390px and 1280px) with each map/header iteration.
+7. Sitewide progressive disclosure is mandatory: filters behind a `Filters` entry point, concise lists by default, details through overlays/sheets/routes.
+8. On map, marker interaction must open local preview (sheet/popup), never force-scroll the user down the page.
+
 
 ## Additional Mandatory Reference
 - Follow `DESIGN_LOCK.md` for all UI/layout decisions.
@@ -150,3 +162,7 @@ Before claiming a UI task done, verify:
 - If there is conflict: `DESIGN_GUIDE.md` + `STYLE_GUIDE.md` take precedence for implementation details.
 - Agent must reference these files in every UI handoff and state which criteria were satisfied.
 - `MAP_MINIMAL_SPEC.md` defines required map visual + functional behavior. Follow it exactly for map work.
+- `AIRBNB_MAP_INTERACTION_GUIDE.md` defines mandatory Airbnb-style mobile map interaction behavior (flow, state, map/list sync).
+- `UX_RESEARCH_IMPLEMENTATION_BRIEF.md` is the research-backed execution spec for header/layout usability fixes. Follow it exactly for structure, measurements, and acceptance gates.
+- `MONITORING_CORRECTIONS.md` contains latest course-correction notes from live review. Implement those changes before adding new features.
+- `PROGRESSIVE_DISCLOSURE_UX_GUIDE.md` defines mandatory step-by-step interaction behavior (filters/sheets/popups/detail routes) and prohibits all-in-one long-page UI patterns.

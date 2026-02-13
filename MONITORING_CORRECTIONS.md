@@ -1,0 +1,84 @@
+# Sydney Art Finder - Monitoring Corrections (2026-02-13)
+
+These notes were produced from live monitoring of current implementation progress.
+They are mandatory correction tasks for the next iteration.
+
+## Scope Reviewed
+- `components/SiteNav.js`
+- `app/globals.css`
+- `components/MapPageClient.js`
+- `components/WhatsOnPageClient.js`
+
+## Priority Fixes
+
+1. P0 - Reduce map pre-content density
+- Current state: map route has page title/subtitle, full filter bar, active filter pills, and a separate map toolbar before/around the map.
+- Why this is wrong: violates the minimal map interaction model and increases cognitive load before first useful interaction.
+- Required change:
+  - Use one compact map control rail only (search + precinct + one contextual action).
+  - Move non-critical status text below map or into compact inline metadata.
+  - Keep the map as the first dominant interactive surface.
+
+2. P0 - Fix map results row semantics
+- Current state: map result rows are interactive `li` elements with `role="button"` and keyboard handlers.
+- Why this is wrong: weaker semantics/accessibility than native interactive elements.
+- Required change:
+  - Use `<button>` inside each list item for row selection interaction, or convert each row to an `<a>` when navigation is primary.
+  - Keep focus styles visible and consistent.
+
+3. P1 - Enforce single primary map action
+- Current state: map toolbar can show multiple actionable buttons near the primary search-area action.
+- Why this is wrong: weakens the “Search this area” affordance from the Airbnb-style flow.
+- Required change:
+  - When map has moved and viewport is not applied, show only one primary action: `Search this area` (or `Update this area` if already area-scoped).
+  - Secondary actions (`Clear area`, `Reset map`) must be visually subordinate.
+
+4. P1 - Prevent desktop nav wrap and maintain header compactness
+- Current state: better than before, but nav wrap/overflow protection is not explicit enough.
+- Why this is wrong: wrapping nav breaks perceived polish and can reintroduce header height instability.
+- Required change:
+  - Enforce no-wrap for desktop nav and labels.
+  - Keep mobile header at compact height with no secondary text.
+
+5. P2 - Reduce separator noise
+- Current state: frequent top borders across multiple stacked sections create a segmented look.
+- Why this is wrong: conflicts with restrained editorial look and “clean app” requirement.
+- Required change:
+  - Limit separators to meaningful transitions.
+  - Avoid repeating border-heavy section starts on every block.
+
+## Validation Required in Next Handoff
+Implementation handoff must include:
+1. Updated routes/components touched.
+2. Which correction IDs (P0/P1/P2) were resolved.
+3. Before/after screenshots at 390px and 1280px.
+4. Confirmation that map flow still passes:
+- pan/zoom -> `Search this area` -> synced markers + list -> open gallery -> back restores state.
+
+## Follow-up Monitoring Update (2026-02-13, 17:26)
+Status after latest implementation pass:
+- Improved:
+  - Map results now use native interactive elements (`button`) instead of `li` role emulation.
+  - Header/nav compactness and no-wrap behavior improved.
+  - Map control rail is more consolidated than previous version.
+- Still required:
+  1. P0 - Remove duplicate map actions.
+  - Current issue: when `areaEnabled` and map is idle, both a primary `Clear area` button and a `Clear area filter` text action are shown.
+  - Current issue: when map is idle without area mode, both `Reset map` primary button and `Reset map view` text action are shown.
+  - Required: one clear primary action only when context demands it (`Search this area` / `Update this area`); keep reset/clear as secondary and non-duplicated.
+
+  2. P1 - Keep map action hierarchy strict.
+  - `Search this area` should be the only prominent primary action after map movement.
+  - Do not display equally weighted competing primary controls.
+
+  3. P1 - Verify mobile tab readability at 320-375px.
+  - Ensure labels do not clip or collide at narrow widths.
+  - If needed, shorten labels or add icons while preserving clarity.
+
+  4. P0 - Enforce progressive disclosure sitewide.
+  - Current issue pattern: too many controls/details are still visible inline by default.
+  - Required:
+    - Filters open from a dedicated `Filters` trigger (sheet/modal/drawer), not always-expanded inline blocks.
+    - Index lists show only critical summary fields by default.
+    - Extra details appear only after explicit user action (preview sheet/popup or detail route).
+    - Map marker clicks must open local preview state (popup/sheet), never force long-page scroll jumps.
