@@ -892,6 +892,8 @@ export default function MapPageClient({ galleries, initialFilters }) {
 
     if (dragState.startDetent === 'collapsed') {
       nextDetent = dragDistance > 8 ? 'half' : 'collapsed'
+    } else if (dragState.startDetent === 'full' && dragDistance < -8) {
+      nextDetent = 'collapsed'
     } else if (dragState.startDetent === 'half' && dragDistance < -8) {
       nextDetent = 'collapsed'
     } else {
