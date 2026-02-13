@@ -11,8 +11,8 @@ const LIST_SCROLL_STORAGE_KEY = 'saf_map_list_scroll'
 const DETENT_ORDER = ['collapsed', 'half', 'full']
 const MOBILE_COLLAPSED_HEIGHT = 72
 const MOBILE_HALF_HEIGHT_RATIO = 0.52
-const MOBILE_FULL_HEIGHT_RATIO = 0.84
 const DRAG_SNAP_VELOCITY = 0.45
+const TOP_OVERLAY_FALLBACK_BOTTOM = 72
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value))
@@ -93,9 +93,18 @@ function getViewportHeight() {
   return window.visualViewport?.height || window.innerHeight || 844
 }
 
-function createDetentHeights(viewportHeight) {
+function createDetentHeights(viewportHeight, topOverlayBottom = TOP_OVERLAY_FALLBACK_BOTTOM) {
   const collapsed = MOBILE_COLLAPSED_HEIGHT
-  const full = Math.max(collapsed + 280, Math.round(viewportHeight * MOBILE_FULL_HEIGHT_RATIO))
+  const overlayBottom = clamp(
+    Math.round(topOverlayBottom),
+    0,
+    Math.max(0, Math.round(viewportHeight - 40))
+  )
+  const full = clamp(
+    Math.round(viewportHeight - overlayBottom + 1),
+    collapsed + 280,
+    Math.round(viewportHeight)
+  )
   const rawHalf = Math.round(viewportHeight * MOBILE_HALF_HEIGHT_RATIO)
   const half = clamp(rawHalf, collapsed + 140, full - 120)
 
@@ -139,6 +148,7 @@ export default function MapPageClient({ galleries, initialFilters }) {
   const markerBySlugRef = useRef(new Map())
   const userLocationMarkerRef = useRef(null)
   const leafletRef = useRef(null)
+  const topOverlayRef = useRef(null)
   const resultsScrollRef = useRef(null)
   const moveDebounceRef = useRef(null)
   const initialMoveHandledRef = useRef(false)
@@ -312,7 +322,9 @@ export default function MapPageClient({ galleries, initialFilters }) {
 
   useEffect(() => {
     function handleViewportResize() {
-      const nextHeights = createDetentHeights(getViewportHeight())
+      const overlayBottom =
+        topOverlayRef.current?.getBoundingClientRect().bottom ?? TOP_OVERLAY_FALLBACK_BOTTOM
+      const nextHeights = createDetentHeights(getViewportHeight(), overlayBottom)
       setDetentHeights(nextHeights)
       setSheetDragHeight((currentHeight) =>
         currentHeight === null ? null : clamp(currentHeight, nextHeights.collapsed, nextHeights.full)
@@ -1108,7 +1120,7 @@ export default function MapPageClient({ galleries, initialFilters }) {
 
   return (
     <section className="map-page map-fullscreen" aria-label="Sydney gallery map">
-      <div className="map-top-overlay">
+      <div className="map-top-overlay" ref={topOverlayRef}>
         <BackLinkButton fallbackHref="/galleries" label="Back" />
         <label className="field map-search-field">
           <span className="visually-hidden">Search map</span>
