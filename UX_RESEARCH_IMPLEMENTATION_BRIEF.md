@@ -129,7 +129,7 @@ Requirement: one clear content column, concise metadata, lightweight filter cont
 ### Map (`/map`)
 - Map runs in full-screen mode on mobile.
 - Persistent compact top overlay must include:
-  - back button (left)
+  - back icon button (left, chevron style)
   - search field (center)
   - `Filters` trigger (right)
 - Use `Search this area` flow after pan/zoom.
@@ -140,6 +140,7 @@ Requirement: one clear content column, concise metadata, lightweight filter cont
   - half: list scroll while map remains visible in upper half
   - full: list-focused state
 - Preserve map state on back navigation.
+- Back control styling rule: in compact headers/top bars, use icon-first back affordance (chevron), with `aria-label="Back"` and optional visually-hidden text.
 
 ### Gallery Profile (`/gallery/[slug]`)
 - Above fold:

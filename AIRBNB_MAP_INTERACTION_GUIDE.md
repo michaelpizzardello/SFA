@@ -26,7 +26,7 @@ If implementation conflicts with this guide, this guide wins.
 ## 3) Layout Contract (Mobile)
 - Map route runs in full-screen map mode.
 - Top overlay is persistent and compact:
-  - left: back button
+  - left: chevron-style back icon button
   - center: search field
   - right: `Filters` button
 - No bottom tab bar while on `/map`.
@@ -46,7 +46,7 @@ Hard constraints:
 
 ## 4) Controls Contract
 Allowed controls on map screen:
-- Back button
+- Back icon button (chevron)
 - Search field (location/gallery text)
 - `Filters` button that opens filter sheet/modal
 - `Search this area` button
@@ -58,6 +58,7 @@ Control behavior:
 - `Filters` opens secondary panel/sheet; filters are not always visible.
 - Filter changes can auto-refresh results or require explicit apply, but behavior must be consistent.
 - Active filters must always be visible and removable.
+- Back icon accessibility: icon control must expose `aria-label="Back"` and preserve 44px minimum touch target.
 
 ## 5) Marker and List Sync (Mandatory)
 - Marker tap highlights matching list row.

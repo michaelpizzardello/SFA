@@ -1,4 +1,3 @@
-import DataBadge from '../../components/DataBadge'
 import MapPageClient from '../../components/MapPageClient'
 import { loadSiteData } from '../../lib/data/loadData'
 import {
@@ -33,9 +32,6 @@ export default async function MapPage({ searchParams }) {
   }
 
   return (
-    <>
-      <DataBadge source={data.source} />
-      <MapPageClient galleries={data.galleries} initialFilters={initialFilters} />
-    </>
+    <MapPageClient galleries={data.galleries} initialFilters={initialFilters} />
   )
 }

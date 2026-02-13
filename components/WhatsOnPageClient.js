@@ -73,32 +73,46 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
   const activeFilters = useMemo(() => {
     const filters = []
 
-    if (viewMode === 'current-upcoming') {
-      filters.push('Date window: Current + upcoming')
-    }
-
     if (viewMode === 'all') {
-      filters.push('Date window: All dates')
+      filters.push({
+        key: 'viewMode',
+        label: 'Date: All dates'
+      })
     }
 
     if (viewMode === 'opening-tonight') {
-      filters.push('Date window: Opening tonight')
+      filters.push({
+        key: 'viewMode',
+        label: 'Date: Opening tonight'
+      })
     }
 
     if (viewMode === 'opening-week') {
-      filters.push('Date window: Opening this week')
+      filters.push({
+        key: 'viewMode',
+        label: 'Date: Opening this week'
+      })
     }
 
     if (precinct !== 'all') {
-      filters.push(`Precinct: ${precinct}`)
+      filters.push({
+        key: 'precinct',
+        label: `Precinct: ${precinct}`
+      })
     }
 
     if (search.trim()) {
-      filters.push(`Search: ${search.trim()}`)
+      filters.push({
+        key: 'search',
+        label: `Search: ${search.trim()}`
+      })
     }
 
     if (selectedGalleries.size > 0) {
-      filters.push(`Galleries: ${selectedGalleries.size}`)
+      filters.push({
+        key: 'galleries',
+        label: `Galleries: ${selectedGalleries.size}`
+      })
     }
 
     return filters
@@ -186,6 +200,36 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
     setSelectedGalleries(new Set())
   }
 
+  function clearAllFilters() {
+    setSearch('')
+    setPrecinct('all')
+    setStatusFilter('current-upcoming')
+    setOpeningFilter('any')
+    setSelectedGalleries(new Set())
+  }
+
+  function clearAppliedFilter(filterKey) {
+    if (filterKey === 'search') {
+      setSearch('')
+      return
+    }
+
+    if (filterKey === 'precinct') {
+      setPrecinct('all')
+      return
+    }
+
+    if (filterKey === 'viewMode') {
+      setStatusFilter('current-upcoming')
+      setOpeningFilter('any')
+      return
+    }
+
+    if (filterKey === 'galleries') {
+      setSelectedGalleries(new Set())
+    }
+  }
+
   return (
     <section className="page-block">
       <div className="section-head">
@@ -193,9 +237,53 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
       </div>
       <p className="section-copy">Current and upcoming exhibitions across Sydney galleries.</p>
 
-      <div className="section-tools">
-        <button type="button" className="button button-secondary" onClick={() => setFiltersOpen(true)}>
+      <div className="whats-on-control-row">
+        <label className="field">
+          <span className="visually-hidden">Search exhibitions</span>
+          <input
+            type="search"
+            placeholder="Search exhibitions"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
+        </label>
+        <button
+          type="button"
+          className="button button-secondary button-utility"
+          onClick={() => setFiltersOpen(true)}
+        >
           Filters
+        </button>
+      </div>
+
+      <div className="segmented-control" role="group" aria-label="Date window quick filters">
+        <button
+          type="button"
+          className={viewMode === 'current-upcoming' ? 'is-active' : ''}
+          onClick={() => handleViewModeChange('current-upcoming')}
+        >
+          Current + upcoming
+        </button>
+        <button
+          type="button"
+          className={viewMode === 'all' ? 'is-active' : ''}
+          onClick={() => handleViewModeChange('all')}
+        >
+          All dates
+        </button>
+        <button
+          type="button"
+          className={viewMode === 'opening-tonight' ? 'is-active' : ''}
+          onClick={() => handleViewModeChange('opening-tonight')}
+        >
+          Tonight
+        </button>
+        <button
+          type="button"
+          className={viewMode === 'opening-week' ? 'is-active' : ''}
+          onClick={() => handleViewModeChange('opening-week')}
+        >
+          This week
         </button>
       </div>
 
@@ -300,25 +388,38 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
                   </button>
                 </div>
               </details>
+
+              <button type="button" className="button button-secondary" onClick={clearAllFilters}>
+                Clear all filters
+              </button>
             </div>
           </section>
         </div>
       ) : null}
 
-      <div className="active-filters" aria-label="Applied filters">
-        {activeFilters.map((filter) => (
-          <span key={filter} className="filter-pill">
-            {filter}
-          </span>
-        ))}
+      <div className="results-status-block">
+        {activeFilters.length ? (
+          <div className="active-filters" aria-label="Applied filters">
+            {activeFilters.map((filter) => (
+              <button
+                key={filter.key}
+                type="button"
+                className="filter-pill is-removable"
+                onClick={() => clearAppliedFilter(filter.key)}
+              >
+                {filter.label} ×
+              </button>
+            ))}
+          </div>
+        ) : null}
+
+        <p className="results-meta">
+          {filteredExhibitions.length} {filteredExhibitions.length === 1 ? 'exhibition' : 'exhibitions'}
+        </p>
       </div>
 
-      <p className="results-meta">
-        {filteredExhibitions.length} {filteredExhibitions.length === 1 ? 'exhibition' : 'exhibitions'} shown
-      </p>
-
       {filteredExhibitions.length ? (
-        <ul className="exhibition-list">
+        <ul className="exhibition-list exhibition-list-compact">
           {filteredExhibitions.map((exhibition) => {
             const gallery = getGalleryBySlug(galleries, exhibition.gallerySlug)
             const status = getExhibitionStatus(exhibition)

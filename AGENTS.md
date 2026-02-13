@@ -168,6 +168,7 @@ These corrections are based on observed in-progress implementation and are manda
 13. Hide bottom menu/tab bar while on map full-screen route.
 14. Map results must use draggable bottom sheet detents (collapsed count, half, full) instead of a long fixed list under the map.
 15. `/whats-on` must follow a clean app-grade filter/list pattern: collapsed filters, compact control hierarchy, concise result rows, and minimal dead space above first item.
+16. In compact fixed headers/top bars, use chevron-style back icon controls (not text-only `Back`) with proper accessibility labeling.
 
 
 ## Additional Mandatory Reference

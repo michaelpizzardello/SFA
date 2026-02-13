@@ -47,7 +47,7 @@ Primary user outcome:
 ### Mobile
 - Map is full-screen by default on `/map`.
 - Persistent compact top bar overlays map:
-  - left: back button
+  - left: chevron-style back icon button
   - center: search field
   - right: `Filters` button
 - Results are in a draggable bottom sheet, not a fixed list below map.
@@ -93,13 +93,18 @@ Primary user outcome:
 
 ## 5) Controls (Allowed Set)
 Allowed:
-- Back button
+- Back icon button (chevron, icon-first)
 - Search input (gallery/suburb/precinct).
 - `Filters` button (opens panel/sheet).
 - `Search this area` button.
 - Zoom +/- controls.
 - Optional `Reset view`.
 - Optional `Use my location` (only if implemented cleanly and with permission handling).
+
+Back icon requirements:
+- Touch target >= 44px.
+- Provide accessible name via `aria-label=\"Back\"`.
+- Avoid text-only `Back` in compact map/header contexts.
 
 Not allowed by default:
 - Extra map widgets unrelated to discovery.

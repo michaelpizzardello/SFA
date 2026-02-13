@@ -122,3 +122,22 @@ Status after latest implementation pass:
     - Reduce dead space before first list item.
     - Keep date-window control integrated (segmented control or concise active chip pattern).
     - Keep rows concise and hierarchy-driven (no default long detail blocks).
+
+  10. P0 - Screenshot-specific `/whats-on` fixes (current mobile view).
+  - Observed issues:
+    - `Filters` button appears visually oversized relative to surrounding controls.
+    - `Date window: All dates` appears as a detached chip instead of part of a cohesive control system.
+    - Too much vertical gap between controls and first result item.
+    - Count text and filter state are not grouped tightly enough as one status block.
+  - Required:
+    - Convert top controls to one compact control row: search + filter trigger.
+    - Represent date window via compact segmented control or integrated active chip row (not standalone oversized pill).
+    - Place active filter chips and results count in one tight block immediately above the list.
+    - Ensure first exhibition item appears quickly with minimal dead space.
+
+  11. P1 - Use icon-first back controls in compact headers.
+  - Current requirement: avoid text-only `Back` controls in fixed compact top bars.
+  - Required:
+    - Use chevron-style back icon button on map/detail compact headers.
+    - Keep minimum 44px touch target.
+    - Provide `aria-label="Back"` for accessibility.

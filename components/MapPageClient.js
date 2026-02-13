@@ -88,6 +88,7 @@ export default function MapPageClient({ galleries, initialFilters }) {
   const moveDebounceRef = useRef(null)
   const initialMoveHandledRef = useRef(false)
   const sheetDragStartRef = useRef(null)
+  const sheetDragMovedRef = useRef(false)
   const listTouchStartRef = useRef(null)
 
   const precinctOptions = useMemo(() => getPrecinctOptions(galleries), [galleries])
@@ -159,9 +160,9 @@ export default function MapPageClient({ galleries, initialFilters }) {
     return filters
   }, [areaEnabled, precinct, search])
 
-  const resultsLabel = `${resultGalleries.length} ${resultGalleries.length === 1 ? 'gallery' : 'galleries'} ${
-    areaEnabled ? 'in this area' : 'matching filters'
-  }`
+  const resultsLabel = `${resultGalleries.length} ${
+    resultGalleries.length === 1 ? 'gallery' : 'galleries'
+  } in this area`
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString())
@@ -253,7 +254,7 @@ export default function MapPageClient({ galleries, initialFilters }) {
         leafletRef.current = L
 
         const map = L.map(mapContainerRef.current, {
-          zoomControl: true,
+          zoomControl: window.matchMedia('(min-width: 768px)').matches,
           scrollWheelZoom: false
         }).setView([mapView.lat, mapView.lng], mapView.zoom)
 
@@ -447,8 +448,27 @@ export default function MapPageClient({ galleries, initialFilters }) {
     setSheetDetent((currentDetent) => getNextDetent(currentDetent, direction))
   }
 
+  function applySheetDragDelta(delta) {
+    if (Math.abs(delta) < 40) {
+      return false
+    }
+
+    const direction = delta < 0 ? 1 : -1
+    const steps = Math.min(2, Math.max(1, Math.floor(Math.abs(delta) / 140)))
+
+    setSheetDetent((currentDetent) => {
+      const currentIndex = DETENT_ORDER.indexOf(currentDetent)
+      const nextIndex = Math.max(0, Math.min(DETENT_ORDER.length - 1, currentIndex + direction * steps))
+      return DETENT_ORDER[nextIndex]
+    })
+
+    return true
+  }
+
   function handleSheetPointerDown(event) {
+    event.currentTarget.setPointerCapture(event.pointerId)
     sheetDragStartRef.current = event.clientY
+    sheetDragMovedRef.current = false
   }
 
   function handleSheetPointerUp(event) {
@@ -457,20 +477,14 @@ export default function MapPageClient({ galleries, initialFilters }) {
     }
 
     const delta = event.clientY - sheetDragStartRef.current
-
-    if (delta < -40) {
-      nudgeSheetDetent(1)
-    }
-
-    if (delta > 40) {
-      nudgeSheetDetent(-1)
-    }
+    sheetDragMovedRef.current = applySheetDragDelta(delta)
 
     sheetDragStartRef.current = null
   }
 
   function handleSheetPointerCancel() {
     sheetDragStartRef.current = null
+    sheetDragMovedRef.current = false
   }
 
   function handleListTouchStart(event) {
@@ -486,11 +500,13 @@ export default function MapPageClient({ galleries, initialFilters }) {
     const nextY = event.touches[0]?.clientY ?? listTouchStartRef.current
     const delta = nextY - listTouchStartRef.current
 
-    if (delta > 48 && scrollNode.scrollTop === 0) {
-      if (sheetDetent === 'full') {
-        setSheetDetent('half')
-      } else if (sheetDetent === 'half') {
-        setSheetDetent('collapsed')
+    if (scrollNode.scrollTop === 0 && Math.abs(delta) > 48) {
+      if (delta < 0 && sheetDetent !== 'full') {
+        nudgeSheetDetent(1)
+      }
+
+      if (delta > 0 && sheetDetent !== 'collapsed') {
+        nudgeSheetDetent(-1)
       }
 
       listTouchStartRef.current = nextY
@@ -604,6 +620,11 @@ export default function MapPageClient({ galleries, initialFilters }) {
           onPointerUp={handleSheetPointerUp}
           onPointerCancel={handleSheetPointerCancel}
           onClick={() => {
+            if (sheetDragMovedRef.current) {
+              sheetDragMovedRef.current = false
+              return
+            }
+
             if (sheetDetent === 'collapsed') {
               setSheetDetent('half')
               return
