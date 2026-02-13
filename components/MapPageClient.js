@@ -1140,7 +1140,10 @@ export default function MapPageClient({ galleries, initialFilters }) {
           onClick={() => setFiltersOpen(true)}
         >
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M3 6h18l-7 8v5l-4-2v-3L3 6z" fill="currentColor" />
+            <path
+              d="M3 6v2h10V6H3zm0 10v2h6v-2H3zm10 0v2h8v-2h-8zm-4-5v2h12v-2H9zm8-5v2h4V6h-4z"
+              fill="currentColor"
+            />
           </svg>
           <span className="visually-hidden">Filters</span>
         </button>
