@@ -9,7 +9,7 @@ import { serializeBounds, SYDNEY_CENTER, SYDNEY_DEFAULT_ZOOM } from '../lib/util
 
 const LIST_SCROLL_STORAGE_KEY = 'saf_map_list_scroll'
 const DETENT_ORDER = ['collapsed', 'half', 'full']
-const MOBILE_COLLAPSED_HEIGHT = 88
+const MOBILE_COLLAPSED_HEIGHT = 72
 const MOBILE_HALF_HEIGHT_RATIO = 0.52
 const MOBILE_FULL_HEIGHT_RATIO = 0.84
 const DRAG_SNAP_VELOCITY = 0.45
@@ -50,14 +50,24 @@ function createPopupContent(gallery) {
   return root
 }
 
-function createMarkerIcon(L, selected = false) {
+function escapeHtml(value = '') {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+function createMarkerIcon(L, galleryName = '', selected = false) {
   const size = selected ? 12 : 10
 
   return L.divIcon({
     className: `map-dot-marker${selected ? ' is-selected' : ''}`,
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
-    popupAnchor: [0, -8]
+    html: `<span class="map-dot-label">${escapeHtml(galleryName)}</span><span class="map-dot-node" style="--dot-size:${size}px"></span>`,
+    iconSize: [128, 28],
+    iconAnchor: [64, 28],
+    popupAnchor: [0, -16]
   })
 }
 
@@ -92,6 +102,14 @@ function createDetentHeights(viewportHeight) {
   return { collapsed, half, full }
 }
 
+function canStartSelectionDrag(target) {
+  if (!(target instanceof Element)) {
+    return true
+  }
+
+  return !target.closest('a, button, input, select, textarea')
+}
+
 export default function MapPageClient({ galleries, initialFilters }) {
   const [search, setSearch] = useState(initialFilters.search)
   const [precinct, setPrecinct] = useState(initialFilters.precinct)
@@ -106,6 +124,8 @@ export default function MapPageClient({ galleries, initialFilters }) {
   const [detentHeights, setDetentHeights] = useState(() => createDetentHeights(844))
   const [sheetDragHeight, setSheetDragHeight] = useState(null)
   const [sheetIsDragging, setSheetIsDragging] = useState(false)
+  const [selectionDragOffset, setSelectionDragOffset] = useState(0)
+  const [selectionIsDragging, setSelectionIsDragging] = useState(false)
 
   const pathname = usePathname()
   const router = useRouter()
@@ -123,6 +143,8 @@ export default function MapPageClient({ galleries, initialFilters }) {
   const sheetDragMovedRef = useRef(false)
   const listTouchStateRef = useRef(null)
   const handleTouchDragActiveRef = useRef(false)
+  const selectionDragStateRef = useRef(null)
+  const selectionTouchDragActiveRef = useRef(false)
 
   const precinctOptions = useMemo(() => getPrecinctOptions(galleries), [galleries])
 
@@ -203,6 +225,12 @@ export default function MapPageClient({ galleries, initialFilters }) {
       height: `${activeSheetHeight}px`
     }),
     [activeSheetHeight]
+  )
+  const selectionInlineStyle = useMemo(
+    () => ({
+      transform: `translateY(${Math.max(0, selectionDragOffset)}px)`
+    }),
+    [selectionDragOffset]
   )
 
   useEffect(() => {
@@ -388,8 +416,9 @@ export default function MapPageClient({ galleries, initialFilters }) {
 
     resultGalleries.forEach((gallery) => {
       const marker = L.marker([gallery.latitude, gallery.longitude], {
-        icon: createMarkerIcon(L, gallery.slug === selectedSlug)
+        icon: createMarkerIcon(L, gallery.name, gallery.slug === selectedSlug)
       })
+      marker.options.galleryName = gallery.name
 
       marker.on('click', () => {
         setSelectedSlug(gallery.slug)
@@ -412,9 +441,20 @@ export default function MapPageClient({ galleries, initialFilters }) {
     }
 
     markerBySlugRef.current.forEach((marker, slug) => {
-      marker.setIcon(createMarkerIcon(L, slug === selectedSlug))
+      marker.setIcon(createMarkerIcon(L, marker.options.galleryName, slug === selectedSlug))
     })
   }, [selectedSlug])
+
+  useEffect(() => {
+    if (selectedGallery) {
+      return
+    }
+
+    setSelectionDragOffset(0)
+    setSelectionIsDragging(false)
+    selectionDragStateRef.current = null
+    selectionTouchDragActiveRef.current = false
+  }, [selectedGallery])
 
   useEffect(() => {
     return () => {
@@ -503,6 +543,184 @@ export default function MapPageClient({ galleries, initialFilters }) {
     const latLng = marker.getLatLng()
     mapRef.current.setView(latLng, Math.max(mapRef.current.getZoom(), 13), { animate: true })
     marker.openPopup()
+  }
+
+  function clearSelectedGallery() {
+    setSelectedSlug(null)
+    setSelectionDragOffset(0)
+    setSelectionIsDragging(false)
+    selectionDragStateRef.current = null
+    selectionTouchDragActiveRef.current = false
+
+    if (mapRef.current) {
+      mapRef.current.closePopup()
+    }
+  }
+
+  function beginSelectionDrag(startY, pointerId) {
+    if (!selectedGallery || isDesktopMapLayout()) {
+      return false
+    }
+
+    selectionDragStateRef.current = {
+      pointerId,
+      startY,
+      lastY: startY,
+      lastTime: performance.now(),
+      velocityY: 0,
+      moved: false
+    }
+
+    setSelectionIsDragging(true)
+    return true
+  }
+
+  function updateSelectionDrag(nextY) {
+    const dragState = selectionDragStateRef.current
+    if (!dragState) {
+      return false
+    }
+
+    const now = performance.now()
+    const deltaTime = Math.max(1, now - dragState.lastTime)
+    const deltaY = nextY - dragState.lastY
+
+    dragState.velocityY = deltaY / deltaTime
+    dragState.lastY = nextY
+    dragState.lastTime = now
+
+    const offset = Math.max(0, nextY - dragState.startY)
+    dragState.moved = offset > 4
+    setSelectionDragOffset(offset)
+    return true
+  }
+
+  function endSelectionDrag() {
+    const dragState = selectionDragStateRef.current
+    if (!dragState) {
+      return
+    }
+
+    const shouldDismiss = selectionDragOffset > 84 || dragState.velocityY > 0.45
+
+    if (shouldDismiss) {
+      clearSelectedGallery()
+      return
+    }
+
+    setSelectionDragOffset(0)
+    setSelectionIsDragging(false)
+    selectionDragStateRef.current = null
+    selectionTouchDragActiveRef.current = false
+  }
+
+  function handleSelectionPointerDown(event) {
+    if (event.button !== undefined && event.button !== 0) {
+      return
+    }
+
+    if (!canStartSelectionDrag(event.target)) {
+      return
+    }
+
+    if (!beginSelectionDrag(event.clientY, event.pointerId)) {
+      return
+    }
+
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  function handleSelectionPointerMove(event) {
+    const dragState = selectionDragStateRef.current
+    if (!dragState || dragState.pointerId !== event.pointerId) {
+      return
+    }
+
+    updateSelectionDrag(event.clientY)
+  }
+
+  function handleSelectionPointerUp(event) {
+    const dragState = selectionDragStateRef.current
+    if (!dragState || dragState.pointerId !== event.pointerId) {
+      return
+    }
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+
+    updateSelectionDrag(event.clientY)
+    endSelectionDrag()
+  }
+
+  function handleSelectionPointerCancel(event) {
+    if (
+      event?.currentTarget &&
+      event.pointerId !== undefined &&
+      event.currentTarget.hasPointerCapture(event.pointerId)
+    ) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+
+    if (!selectionDragStateRef.current) {
+      return
+    }
+
+    setSelectionDragOffset(0)
+    setSelectionIsDragging(false)
+    selectionDragStateRef.current = null
+    selectionTouchDragActiveRef.current = false
+  }
+
+  function handleSelectionTouchStart(event) {
+    const touch = event.touches[0]
+    if (!touch) {
+      return
+    }
+
+    if (!canStartSelectionDrag(event.target)) {
+      return
+    }
+
+    if (!beginSelectionDrag(touch.clientY, null)) {
+      return
+    }
+
+    selectionTouchDragActiveRef.current = true
+  }
+
+  function handleSelectionTouchMove(event) {
+    if (!selectionTouchDragActiveRef.current) {
+      return
+    }
+
+    const touch = event.touches[0]
+    if (!touch) {
+      return
+    }
+
+    if (updateSelectionDrag(touch.clientY)) {
+      event.preventDefault()
+    }
+  }
+
+  function handleSelectionTouchEnd() {
+    if (!selectionTouchDragActiveRef.current) {
+      return
+    }
+
+    endSelectionDrag()
+  }
+
+  function handleSelectionTouchCancel() {
+    if (!selectionTouchDragActiveRef.current) {
+      return
+    }
+
+    setSelectionDragOffset(0)
+    setSelectionIsDragging(false)
+    selectionDragStateRef.current = null
+    selectionTouchDragActiveRef.current = false
   }
 
   function getNearestDetentFromHeight(height, velocityY = 0) {
@@ -864,7 +1082,30 @@ export default function MapPageClient({ galleries, initialFilters }) {
       ) : null}
 
       {selectedGallery ? (
-        <article className="map-selection-card map-selection-floating" aria-live="polite">
+        <article
+          className={`map-selection-card map-selection-floating${selectionIsDragging ? ' is-dragging' : ''}`}
+          style={selectionInlineStyle}
+          aria-live="polite"
+          onPointerDown={handleSelectionPointerDown}
+          onPointerMove={handleSelectionPointerMove}
+          onPointerUp={handleSelectionPointerUp}
+          onPointerCancel={handleSelectionPointerCancel}
+          onTouchStart={handleSelectionTouchStart}
+          onTouchMove={handleSelectionTouchMove}
+          onTouchEnd={handleSelectionTouchEnd}
+          onTouchCancel={handleSelectionTouchCancel}
+        >
+          <div className="map-selection-grab-zone">
+            <span className="map-selection-grab" aria-hidden="true" />
+            <button
+              type="button"
+              className="map-selection-close"
+              aria-label="Close gallery preview"
+              onClick={clearSelectedGallery}
+            >
+              ×
+            </button>
+          </div>
           <h2 className="item-title">{selectedGallery.name}</h2>
           <p className="item-meta">
             {selectedGallery.precinct}
