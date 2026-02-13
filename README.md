@@ -1,18 +1,21 @@
 # Sydney Art Finder
 
-Mobile-first web app for indexing Sydney galleries and exhibitions.
+Next.js web app for indexing Sydney galleries and exhibitions.
+
+## Routes
+
+- `/` Home (orientation + quick highlights)
+- `/whats-on` Exhibition index (search + date window + precinct)
+- `/galleries` Gallery directory (search + precinct + sort)
+- `/map` Map-first gallery discovery with synced list
+- `/gallery/[slug]` Gallery profile pages
 
 ## Features
 
-- Gallery directory with search, A-Z and precinct sorting
-- Interactive map of galleries (Leaflet + OpenStreetMap)
-- Gallery profile pages with contact info and current/upcoming/past exhibitions
-- "What's On" index with filters for:
-  - current/upcoming/past
-  - opening tonight
-  - opening this week
-  - precinct
-  - specific galleries (tick on/off)
+- Mobile-first editorial layout with restrained UI
+- Dedicated map workflow (not mixed into directory page)
+- Map clustering + "search this area" + persisted viewport/filter query state
+- Gallery profile pages with practical details and grouped exhibitions
 - Google Sheets CSV integration with sample data fallback
 
 ## Development
@@ -22,27 +25,33 @@ npm install
 npm run dev
 ```
 
-Production build:
+## Quality Checks
 
 ```bash
+npm test
 npm run build
-npm run preview
+```
+
+Production server:
+
+```bash
+npm run start
 ```
 
 ## Connect Google Sheets Data
 
 1. Publish your Sheets tabs as CSV links.
-2. Create `.env` from `.env.example`.
+2. Create `.env.local` from `.env.example`.
 3. Paste both CSV URLs.
 4. Restart `npm run dev`.
 
 If loading fails, the app automatically falls back to sample data.
 
-### `.env`
+### `.env.local`
 
 ```bash
-VITE_GALLERIES_SHEET_URL="https://docs.google.com/spreadsheets/d/.../pub?output=csv"
-VITE_EXHIBITIONS_SHEET_URL="https://docs.google.com/spreadsheets/d/.../pub?output=csv"
+NEXT_PUBLIC_GALLERIES_SHEET_URL="https://docs.google.com/spreadsheets/d/.../pub?output=csv"
+NEXT_PUBLIC_EXHIBITIONS_SHEET_URL="https://docs.google.com/spreadsheets/d/.../pub?output=csv"
 ```
 
 ## Expected Columns
@@ -83,3 +92,7 @@ Recommended:
 - `opening_date` (`YYYY-MM-DD`)
 - `opening_time`
 - `cost`
+
+## Migration Notes
+
+See `docs/ARCHITECTURE_MIGRATION_PATH.md` for completed migration steps and production roadmap.
