@@ -44,6 +44,10 @@ function isDefaultStatusSelection(values) {
   return values.length === defaultStatusFilters.length && defaultStatusFilters.every((value) => values.includes(value))
 }
 
+function isInteractiveElement(target) {
+  return target instanceof Element && Boolean(target.closest('a, button, input, select, textarea, summary, label'))
+}
+
 export default function WhatsOnPageClient({ galleries, exhibitions, initialFilters }) {
   const [search, setSearch] = useState(initialFilters.search)
   const [precinct, setPrecinct] = useState(initialFilters.precinct)
@@ -184,6 +188,23 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
     setSelectedOpeningWindows(new Set())
   }
 
+  function handleExhibitionCardClick(slug, event) {
+    if (isInteractiveElement(event.target)) {
+      return
+    }
+
+    router.push(`/exhibition/${encodeURIComponent(slug)}`)
+  }
+
+  function handleExhibitionCardKeyDown(slug, event) {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return
+    }
+
+    event.preventDefault()
+    router.push(`/exhibition/${encodeURIComponent(slug)}`)
+  }
+
   return (
     <section className="page-block">
       <div className="section-head">
@@ -315,9 +336,18 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
           {filteredExhibitions.map((exhibition) => {
             const gallery = getGalleryBySlug(galleries, exhibition.gallerySlug)
             const status = getExhibitionStatus(exhibition)
+            const exhibitionSlug = getExhibitionSlug(exhibition)
 
             return (
-              <li key={exhibition.id} className="exhibition-item">
+              <li
+                key={exhibition.id}
+                className="exhibition-item clickable-card"
+                tabIndex={0}
+                role="link"
+                aria-label={`Open exhibition details for ${exhibition.title}`}
+                onClick={(event) => handleExhibitionCardClick(exhibitionSlug, event)}
+                onKeyDown={(event) => handleExhibitionCardKeyDown(exhibitionSlug, event)}
+              >
                 <div className="item-head">
                   <h2 className="item-title">{exhibition.title}</h2>
                   <span className={`status-tag status-${status}`}>{statusLabels[status]}</span>
@@ -340,8 +370,8 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
                     </Link>
                   ) : null}
                   <Link
-                    className="text-link"
-                    href={`/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`}
+                    className="button button-subtle button-card-cta"
+                    href={`/exhibition/${encodeURIComponent(exhibitionSlug)}`}
                   >
                     View details
                   </Link>

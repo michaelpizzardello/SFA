@@ -54,7 +54,6 @@ export default function HomePage({ galleries, exhibitions }) {
   return (
     <>
       <section className="hero">
-        <p className="eyebrow">Sydney Art Finder</p>
         <h1>Your guide to the Sydney art scene</h1>
         <p className="hero-copy">
           Browse gallery profiles and track exhibition openings across Sydney in a clean, mobile-first guide.

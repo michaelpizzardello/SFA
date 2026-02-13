@@ -6,6 +6,10 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { filterGalleries, getGalleryDirectoryData, getPrecinctOptions } from '../lib/utils/filters'
 import FilterSlidersIcon from './icons/FilterSlidersIcon'
 
+function isInteractiveElement(target) {
+  return target instanceof Element && Boolean(target.closest('a, button, input, select, textarea, summary, label'))
+}
+
 export default function GalleriesPageClient({ galleries, exhibitions, initialFilters }) {
   const [search, setSearch] = useState(initialFilters.search)
   const [precinct, setPrecinct] = useState(initialFilters.precinct)
@@ -65,6 +69,23 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
       router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, { scroll: false })
     }
   }, [pathname, precinct, router, search, searchParams, sort])
+
+  function handleGalleryCardClick(gallerySlug, event) {
+    if (isInteractiveElement(event.target)) {
+      return
+    }
+
+    router.push(`/gallery/${encodeURIComponent(gallerySlug)}`)
+  }
+
+  function handleGalleryCardKeyDown(gallerySlug, event) {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return
+    }
+
+    event.preventDefault()
+    router.push(`/gallery/${encodeURIComponent(gallerySlug)}`)
+  }
 
   return (
     <section className="page-block">
@@ -142,7 +163,15 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
       {directoryRows.length ? (
         <ul className="directory-list">
           {directoryRows.map(({ gallery, summary }) => (
-            <li key={gallery.id} className="directory-item">
+            <li
+              key={gallery.id}
+              className="directory-item clickable-card"
+              tabIndex={0}
+              role="link"
+              aria-label={`Open gallery profile for ${gallery.name}`}
+              onClick={(event) => handleGalleryCardClick(gallery.slug, event)}
+              onKeyDown={(event) => handleGalleryCardKeyDown(gallery.slug, event)}
+            >
               <div>
                 <p className="item-kicker">{gallery.precinct}</p>
                 <h2 className="item-title">{gallery.name}</h2>
@@ -151,7 +180,7 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
                   {summary.current} current | {summary.upcoming} upcoming
                 </p>
               </div>
-              <Link className="text-link" href={`/gallery/${encodeURIComponent(gallery.slug)}`}>
+              <Link className="button button-subtle button-card-cta" href={`/gallery/${encodeURIComponent(gallery.slug)}`}>
                 View profile
               </Link>
             </li>
