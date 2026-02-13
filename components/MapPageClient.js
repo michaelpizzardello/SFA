@@ -76,6 +76,15 @@ function createMarkerIcon(L, galleryName = '', selected = false) {
   })
 }
 
+function createUserLocationIcon(L) {
+  return L.divIcon({
+    className: 'user-location-marker',
+    html: '<span class="user-location-dot" aria-hidden="true"></span>',
+    iconSize: [18, 18],
+    iconAnchor: [9, 9]
+  })
+}
+
 function getNextDetent(currentDetent, direction) {
   const currentIndex = DETENT_ORDER.indexOf(currentDetent)
   if (currentIndex < 0) {
@@ -633,13 +642,10 @@ export default function MapPageClient({ galleries, initialFilters }) {
           userLocationMarkerRef.current.setLatLng([latitude, longitude])
           userLocationMarkerRef.current.bringToFront()
         } else {
-          userLocationMarkerRef.current = L.circleMarker([latitude, longitude], {
+          userLocationMarkerRef.current = L.marker([latitude, longitude], {
             pane: 'user-location-pane',
-            radius: 8,
-            color: '#ffffff',
-            weight: 3,
-            fillColor: '#1e88ff',
-            fillOpacity: 1
+            icon: createUserLocationIcon(L),
+            zIndexOffset: 2000
           }).addTo(map)
           userLocationMarkerRef.current.bringToFront()
         }

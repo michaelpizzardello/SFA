@@ -1120,6 +1120,21 @@ summary:focus-visible {
   transform: scale(1.2);
 }
 
+.user-location-marker {
+  background: transparent !important;
+  border: 0 !important;
+}
+
+.user-location-dot {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #1e88ff;
+  border: 3px solid #ffffff;
+  box-shadow: 0 0 0 2px rgba(30, 136, 255, 0.35);
+}
+
 .marker-cluster,
 .marker-cluster-small,
 .marker-cluster-medium,

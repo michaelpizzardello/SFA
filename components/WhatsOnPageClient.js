@@ -327,7 +327,6 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
                   <span className={`status-tag status-${status}`}>{statusLabels[status]}</span>
                 </div>
                 <p className="item-artist">{exhibition.artist}</p>
-                <p className="item-meta">{gallery?.precinct || 'Unspecified precinct'}</p>
                 <p className="item-meta">{formatDateRange(exhibition.startDate, exhibition.endDate)}</p>
                 {exhibition.openingDate ? (
                   <p className="item-meta">
