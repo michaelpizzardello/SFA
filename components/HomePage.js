@@ -36,7 +36,7 @@ export default function HomePage({ galleries, exhibitions }) {
   const today = todayISOInSydney()
   const weekEnd = addDaysISO(today, 7)
 
-  const tonightOpenings = exhibitions
+  const todayOpenings = exhibitions
     .filter((exhibition) => exhibition.openingDate && compareISO(exhibition.openingDate, today) === 0)
     .slice(0, 4)
 
@@ -71,20 +71,14 @@ export default function HomePage({ galleries, exhibitions }) {
       <section className="highlights-grid" aria-label="Opening highlights">
         <article className="highlight-block">
           <div className="section-head">
-            <h2>Opening Tonight</h2>
-            <Link className="text-link" href="/whats-on?opening=tonight">
-              View all
-            </Link>
+            <h2>Opening Today</h2>
           </div>
-          <OpeningRows items={tonightOpenings} galleries={galleries} />
+          <OpeningRows items={todayOpenings} galleries={galleries} />
         </article>
 
         <article className="highlight-block">
           <div className="section-head">
             <h2>Opening This Week</h2>
-            <Link className="text-link" href="/whats-on?opening=week">
-              View all
-            </Link>
           </div>
           <OpeningRows items={weekOpenings} galleries={galleries} />
         </article>

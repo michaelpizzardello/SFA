@@ -30,13 +30,9 @@ export default function SiteNav() {
   const pathname = usePathname()
   const isMapRoute = pathname.startsWith('/map')
 
-  if (isMapRoute) {
-    return null
-  }
-
   return (
     <>
-      <header className="site-header">
+      <header className={`site-header ${isMapRoute ? 'is-map-route' : ''}`}>
         <div className="brand-wrap">
           <Link className="brand" href="/">
             Sydney Art Finder
@@ -56,17 +52,19 @@ export default function SiteNav() {
         </nav>
       </header>
 
-      <nav className="mobile-tabbar" aria-label="Mobile primary navigation">
-        {navItems.map((item) => (
-          <Link
-            key={`mobile-${item.href}`}
-            className={`mobile-tab ${isActive(pathname, item.href) ? 'is-active' : ''}`}
-            href={item.href}
-          >
-            {item.label}
-          </Link>
-        ))}
-      </nav>
+      {!isMapRoute ? (
+        <nav className="mobile-tabbar" aria-label="Mobile primary navigation">
+          {navItems.map((item) => (
+            <Link
+              key={`mobile-${item.href}`}
+              className={`mobile-tab ${isActive(pathname, item.href) ? 'is-active' : ''}`}
+              href={item.href}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+      ) : null}
     </>
   )
 }

@@ -20,7 +20,7 @@ const statusFilterOptions = [
 ]
 
 const openingFilterOptions = [
-  { value: 'tonight', label: 'Opening tonight' },
+  { value: 'tonight', label: 'Opening today' },
   { value: 'week', label: 'Opening this week' }
 ]
 
@@ -327,9 +327,7 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
                   <span className={`status-tag status-${status}`}>{statusLabels[status]}</span>
                 </div>
                 <p className="item-artist">{exhibition.artist}</p>
-                <p className="item-meta">
-                  {gallery?.name || 'Unknown gallery'} | {gallery?.precinct || 'Unspecified precinct'}
-                </p>
+                <p className="item-meta">{gallery?.precinct || 'Unspecified precinct'}</p>
                 <p className="item-meta">{formatDateRange(exhibition.startDate, exhibition.endDate)}</p>
                 {exhibition.openingDate ? (
                   <p className="item-meta">
@@ -337,13 +335,19 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
                     {exhibition.openingTime ? ` | ${exhibition.openingTime}` : ''}
                   </p>
                 ) : null}
-                <div className="item-actions">
+                <div className="item-actions item-actions-split">
                   <Link
                     className="text-link"
                     href={`/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`}
                   >
                     View details
                   </Link>
+                  {gallery ? (
+                    <Link className="item-gallery-link" href={`/gallery/${encodeURIComponent(gallery.slug)}`}>
+                      {gallery.name}
+                      {gallery.suburb ? ` | ${gallery.suburb}` : ''}
+                    </Link>
+                  ) : null}
                 </div>
               </li>
             )

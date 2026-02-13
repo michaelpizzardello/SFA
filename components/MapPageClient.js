@@ -34,16 +34,20 @@ function toBoundsObject(bounds) {
 
 function createPopupContent(gallery) {
   const root = document.createElement('div')
+  root.className = 'map-popup-callout'
 
-  const title = document.createElement('strong')
+  const title = document.createElement('p')
+  title.className = 'map-popup-title'
   title.textContent = gallery.name
   root.append(title)
 
-  root.append(document.createElement('br'))
-  root.append(document.createTextNode(gallery.precinct || 'Unspecified precinct'))
-  root.append(document.createElement('br'))
+  const meta = document.createElement('p')
+  meta.className = 'map-popup-meta'
+  meta.textContent = gallery.precinct || 'Unspecified precinct'
+  root.append(meta)
 
   const link = document.createElement('a')
+  link.className = 'map-popup-link'
   link.href = `/gallery/${encodeURIComponent(gallery.slug)}`
   link.textContent = 'View gallery'
   root.append(link)
@@ -66,9 +70,9 @@ function createMarkerIcon(L, galleryName = '', selected = false) {
   return L.divIcon({
     className: `map-dot-marker${selected ? ' is-selected' : ''}`,
     html: `<span class="map-dot-label">${escapeHtml(galleryName)}</span><span class="map-dot-node" style="--dot-size:${size}px"></span>`,
-    iconSize: [128, 28],
-    iconAnchor: [64, 28],
-    popupAnchor: [0, -16]
+    iconSize: [152, 62],
+    iconAnchor: [76, 62],
+    popupAnchor: [0, -42]
   })
 }
 
@@ -152,6 +156,7 @@ export default function MapPageClient({ galleries, initialFilters }) {
   const topOverlayRef = useRef(null)
   const resultsScrollRef = useRef(null)
   const moveDebounceRef = useRef(null)
+  const suppressNextMoveendRef = useRef(false)
   const initialMoveHandledRef = useRef(false)
   const sheetDragStateRef = useRef(null)
   const sheetDragMovedRef = useRef(false)
@@ -178,13 +183,13 @@ export default function MapPageClient({ galleries, initialFilters }) {
       filterMapGalleries(galleries, {
         search,
         precinct,
-        areaEnabled,
+        areaEnabled: true,
         viewportBounds
       }),
-    [areaEnabled, galleries, precinct, search, viewportBounds]
+    [galleries, precinct, search, viewportBounds]
   )
 
-  const resultGalleries = areaEnabled ? filteredGalleriesInViewport : baseFilteredGalleries
+  const resultGalleries = viewportBounds ? filteredGalleriesInViewport : baseFilteredGalleries
 
   const selectedGallery = useMemo(
     () => resultGalleries.find((gallery) => gallery.slug === selectedSlug) || null,
@@ -391,9 +396,15 @@ export default function MapPageClient({ galleries, initialFilters }) {
             const zoom = map.getZoom()
 
             setMapView({ lat: center.lat, lng: center.lng, zoom })
+            setViewportBounds(toBoundsObject(map.getBounds()))
 
             if (!initialMoveHandledRef.current) {
               initialMoveHandledRef.current = true
+              return
+            }
+
+            if (suppressNextMoveendRef.current) {
+              suppressNextMoveendRef.current = false
               return
             }
 
@@ -545,6 +556,7 @@ export default function MapPageClient({ galleries, initialFilters }) {
       return
     }
 
+    suppressNextMoveendRef.current = true
     mapRef.current.setView([SYDNEY_CENTER.lat, SYDNEY_CENTER.lng], SYDNEY_DEFAULT_ZOOM)
     setMapView({ lat: SYDNEY_CENTER.lat, lng: SYDNEY_CENTER.lng, zoom: SYDNEY_DEFAULT_ZOOM })
     setAreaEnabled(false)
@@ -603,6 +615,7 @@ export default function MapPageClient({ galleries, initialFilters }) {
           return
         }
 
+        suppressNextMoveendRef.current = true
         map.setView([latitude, longitude], Math.max(map.getZoom(), 13), { animate: true })
 
         if (userLocationMarkerRef.current) {
@@ -617,7 +630,6 @@ export default function MapPageClient({ galleries, initialFilters }) {
           }).addTo(map)
         }
 
-        setMapMoved(true)
         setFiltersOpen(false)
         setIsLocatingUser(false)
       },

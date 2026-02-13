@@ -102,12 +102,12 @@ describe('gallery and exhibition filtering', () => {
     ).toEqual(['beta'])
   })
 
-  it('defaults whats-on to current + upcoming when requested', () => {
+  it('filters to current and upcoming via status multiselect', () => {
     expect(
       filterExhibitions(galleries, exhibitions, {
         search: '',
         precinct: 'all',
-        openingWindow: 'current-upcoming',
+        statuses: ['current', 'upcoming'],
         today: '2026-02-13'
       }).map((exhibition) => exhibition.id)
     ).toEqual(['e1', 'e2'])
@@ -120,6 +120,18 @@ describe('gallery and exhibition filtering', () => {
         precinct: 'all',
         openingWindow: 'tonight',
         today: '2026-03-10'
+      }).map((exhibition) => exhibition.id)
+    ).toEqual(['e2'])
+  })
+
+  it('supports multiselect status and opening filters', () => {
+    expect(
+      filterExhibitions(galleries, exhibitions, {
+        search: '',
+        precinct: 'all',
+        statuses: ['upcoming'],
+        openingWindows: ['week'],
+        today: '2026-03-08'
       }).map((exhibition) => exhibition.id)
     ).toEqual(['e2'])
   })

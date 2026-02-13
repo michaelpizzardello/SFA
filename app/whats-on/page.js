@@ -28,11 +28,11 @@ function parseStatusSelections(rawStatus, legacyOpeningWindow) {
     return [...new Set(parsedStatuses)]
   }
 
-  if (entries.includes('current-upcoming') || entries.includes('all')) {
+  if (entries.includes('all')) {
     return [...defaultStatuses]
   }
 
-  if (legacyOpeningWindow === 'all' || legacyOpeningWindow === 'current-upcoming') {
+  if (legacyOpeningWindow === 'all') {
     return [...defaultStatuses]
   }
 
