@@ -9,6 +9,14 @@ import { serializeBounds, SYDNEY_CENTER, SYDNEY_DEFAULT_ZOOM } from '../lib/util
 
 const LIST_SCROLL_STORAGE_KEY = 'saf_map_list_scroll'
 const DETENT_ORDER = ['collapsed', 'half', 'full']
+const MOBILE_COLLAPSED_HEIGHT = 88
+const MOBILE_HALF_HEIGHT_RATIO = 0.52
+const MOBILE_FULL_HEIGHT_RATIO = 0.84
+const DRAG_SNAP_VELOCITY = 0.45
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value))
+}
 
 function normalizeDetent(value) {
   return DETENT_ORDER.includes(value) ? value : 'collapsed'
@@ -63,6 +71,27 @@ function getNextDetent(currentDetent, direction) {
   return DETENT_ORDER[nextIndex]
 }
 
+function isDesktopMapLayout() {
+  return typeof window !== 'undefined' && window.matchMedia('(min-width: 1024px)').matches
+}
+
+function getViewportHeight() {
+  if (typeof window === 'undefined') {
+    return 844
+  }
+
+  return window.visualViewport?.height || window.innerHeight || 844
+}
+
+function createDetentHeights(viewportHeight) {
+  const collapsed = MOBILE_COLLAPSED_HEIGHT
+  const full = Math.max(collapsed + 280, Math.round(viewportHeight * MOBILE_FULL_HEIGHT_RATIO))
+  const rawHalf = Math.round(viewportHeight * MOBILE_HALF_HEIGHT_RATIO)
+  const half = clamp(rawHalf, collapsed + 140, full - 120)
+
+  return { collapsed, half, full }
+}
+
 export default function MapPageClient({ galleries, initialFilters }) {
   const [search, setSearch] = useState(initialFilters.search)
   const [precinct, setPrecinct] = useState(initialFilters.precinct)
@@ -74,6 +103,9 @@ export default function MapPageClient({ galleries, initialFilters }) {
   const [mapError, setMapError] = useState(false)
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [sheetDetent, setSheetDetent] = useState(normalizeDetent(initialFilters.sheetDetent))
+  const [detentHeights, setDetentHeights] = useState(() => createDetentHeights(844))
+  const [sheetDragHeight, setSheetDragHeight] = useState(null)
+  const [sheetIsDragging, setSheetIsDragging] = useState(false)
 
   const pathname = usePathname()
   const router = useRouter()
@@ -87,9 +119,10 @@ export default function MapPageClient({ galleries, initialFilters }) {
   const resultsScrollRef = useRef(null)
   const moveDebounceRef = useRef(null)
   const initialMoveHandledRef = useRef(false)
-  const sheetDragStartRef = useRef(null)
+  const sheetDragStateRef = useRef(null)
   const sheetDragMovedRef = useRef(false)
-  const listTouchStartRef = useRef(null)
+  const listTouchStateRef = useRef(null)
+  const handleTouchDragActiveRef = useRef(false)
 
   const precinctOptions = useMemo(() => getPrecinctOptions(galleries), [galleries])
 
@@ -163,6 +196,14 @@ export default function MapPageClient({ galleries, initialFilters }) {
   const resultsLabel = `${resultGalleries.length} ${
     resultGalleries.length === 1 ? 'gallery' : 'galleries'
   } in this area`
+  const activeSheetHeight = Math.round(sheetDragHeight ?? detentHeights[sheetDetent] ?? detentHeights.collapsed)
+  const sheetIsPeeking = sheetDetent === 'collapsed' && activeSheetHeight > detentHeights.collapsed + 14
+  const sheetInlineStyle = useMemo(
+    () => ({
+      height: `${activeSheetHeight}px`
+    }),
+    [activeSheetHeight]
+  )
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString())
@@ -235,6 +276,26 @@ export default function MapPageClient({ galleries, initialFilters }) {
       }
     } catch (error) {
       console.error('Unable to restore map results scroll state.', error)
+    }
+  }, [])
+
+  useEffect(() => {
+    function handleViewportResize() {
+      const nextHeights = createDetentHeights(getViewportHeight())
+      setDetentHeights(nextHeights)
+      setSheetDragHeight((currentHeight) =>
+        currentHeight === null ? null : clamp(currentHeight, nextHeights.collapsed, nextHeights.full)
+      )
+    }
+
+    handleViewportResize()
+
+    window.addEventListener('resize', handleViewportResize)
+    window.visualViewport?.addEventListener('resize', handleViewportResize)
+
+    return () => {
+      window.removeEventListener('resize', handleViewportResize)
+      window.visualViewport?.removeEventListener('resize', handleViewportResize)
     }
   }, [])
 
@@ -444,77 +505,273 @@ export default function MapPageClient({ galleries, initialFilters }) {
     marker.openPopup()
   }
 
-  function nudgeSheetDetent(direction) {
-    setSheetDetent((currentDetent) => getNextDetent(currentDetent, direction))
+  function getNearestDetentFromHeight(height, velocityY = 0) {
+    const projectedHeight = height - velocityY * 180
+    let nearestDetent = 'collapsed'
+    let nearestDelta = Infinity
+
+    DETENT_ORDER.forEach((detentKey) => {
+      const delta = Math.abs(detentHeights[detentKey] - projectedHeight)
+      if (delta < nearestDelta) {
+        nearestDelta = delta
+        nearestDetent = detentKey
+      }
+    })
+
+    return nearestDetent
   }
 
-  function applySheetDragDelta(delta) {
-    if (Math.abs(delta) < 40) {
+  function beginSheetDrag(startY, pointerId, source = 'handle') {
+    if (isDesktopMapLayout()) {
       return false
     }
 
-    const direction = delta < 0 ? 1 : -1
-    const steps = Math.min(2, Math.max(1, Math.floor(Math.abs(delta) / 140)))
+    const startingHeight = sheetDragHeight ?? detentHeights[sheetDetent] ?? detentHeights.collapsed
 
-    setSheetDetent((currentDetent) => {
-      const currentIndex = DETENT_ORDER.indexOf(currentDetent)
-      const nextIndex = Math.max(0, Math.min(DETENT_ORDER.length - 1, currentIndex + direction * steps))
-      return DETENT_ORDER[nextIndex]
-    })
+    sheetDragStateRef.current = {
+      pointerId,
+      source,
+      startY,
+      lastY: startY,
+      lastTime: performance.now(),
+      velocityY: 0,
+      startHeight: startingHeight,
+      moved: false
+    }
 
+    sheetDragMovedRef.current = false
+    setSheetIsDragging(true)
+    setSheetDragHeight(startingHeight)
     return true
   }
 
-  function handleSheetPointerDown(event) {
-    event.currentTarget.setPointerCapture(event.pointerId)
-    sheetDragStartRef.current = event.clientY
-    sheetDragMovedRef.current = false
+  function updateSheetDrag(nextY) {
+    const dragState = sheetDragStateRef.current
+    if (!dragState) {
+      return false
+    }
+
+    const now = performance.now()
+    const deltaTime = Math.max(1, now - dragState.lastTime)
+    const deltaY = nextY - dragState.lastY
+
+    dragState.velocityY = deltaY / deltaTime
+    dragState.lastY = nextY
+    dragState.lastTime = now
+
+    const dragDelta = dragState.startY - nextY
+    const nextHeight = clamp(
+      dragState.startHeight + dragDelta,
+      detentHeights.collapsed,
+      detentHeights.full
+    )
+
+    if (Math.abs(dragDelta) > 4) {
+      dragState.moved = true
+      sheetDragMovedRef.current = true
+    }
+
+    setSheetDragHeight(nextHeight)
+    return true
   }
 
-  function handleSheetPointerUp(event) {
-    if (sheetDragStartRef.current === null) {
+  function endSheetDrag() {
+    const dragState = sheetDragStateRef.current
+    if (!dragState) {
+      return false
+    }
+
+    const finalHeight = clamp(
+      dragState.startHeight + (dragState.startY - dragState.lastY),
+      detentHeights.collapsed,
+      detentHeights.full
+    )
+
+    let nextDetent = getNearestDetentFromHeight(finalHeight, dragState.velocityY)
+
+    if (Math.abs(dragState.velocityY) >= DRAG_SNAP_VELOCITY) {
+      const direction = dragState.velocityY < 0 ? 1 : -1
+      nextDetent = getNextDetent(nextDetent, direction)
+    }
+
+    setSheetDetent(nextDetent)
+    setSheetDragHeight(null)
+    setSheetIsDragging(false)
+    sheetDragStateRef.current = null
+
+    return dragState.moved
+  }
+
+  function handleSheetPointerDown(event) {
+    if (event.button !== undefined && event.button !== 0) {
       return
     }
 
-    const delta = event.clientY - sheetDragStartRef.current
-    sheetDragMovedRef.current = applySheetDragDelta(delta)
+    const dragStarted = beginSheetDrag(event.clientY, event.pointerId)
+    if (!dragStarted) {
+      return
+    }
 
-    sheetDragStartRef.current = null
+    event.currentTarget.setPointerCapture(event.pointerId)
   }
 
-  function handleSheetPointerCancel() {
-    sheetDragStartRef.current = null
+  function handleSheetTouchStart(event) {
+    const touch = event.touches[0]
+    if (!touch) {
+      return
+    }
+
+    if (sheetDragStateRef.current && sheetDragStateRef.current.source !== 'list') {
+      return
+    }
+
+    const dragStarted = beginSheetDrag(touch.clientY, null, 'handle-touch')
+    if (!dragStarted) {
+      return
+    }
+
+    handleTouchDragActiveRef.current = true
+  }
+
+  function handleSheetTouchMove(event) {
+    if (!handleTouchDragActiveRef.current) {
+      return
+    }
+
+    const touch = event.touches[0]
+    if (!touch) {
+      return
+    }
+
+    if (updateSheetDrag(touch.clientY)) {
+      event.preventDefault()
+    }
+  }
+
+  function handleSheetTouchEnd() {
+    if (!handleTouchDragActiveRef.current) {
+      return
+    }
+
+    sheetDragMovedRef.current = endSheetDrag()
+    handleTouchDragActiveRef.current = false
+  }
+
+  function handleSheetTouchCancel() {
+    if (!handleTouchDragActiveRef.current) {
+      return
+    }
+
+    handleSheetPointerCancel()
+    handleTouchDragActiveRef.current = false
+  }
+
+  function handleSheetPointerMove(event) {
+    const dragState = sheetDragStateRef.current
+    if (!dragState || dragState.pointerId !== event.pointerId) {
+      return
+    }
+
+    updateSheetDrag(event.clientY)
+  }
+
+  function handleSheetPointerUp(event) {
+    const dragState = sheetDragStateRef.current
+    if (!dragState || dragState.pointerId !== event.pointerId) {
+      return
+    }
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+
+    updateSheetDrag(event.clientY)
+    sheetDragMovedRef.current = endSheetDrag()
+  }
+
+  function handleSheetPointerCancel(event) {
+    if (event?.currentTarget && event.pointerId !== undefined && event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+
+    if (!sheetDragStateRef.current) {
+      return
+    }
+
+    setSheetDragHeight(null)
+    setSheetIsDragging(false)
+    sheetDragStateRef.current = null
     sheetDragMovedRef.current = false
+    handleTouchDragActiveRef.current = false
   }
 
   function handleListTouchStart(event) {
-    listTouchStartRef.current = event.touches[0]?.clientY ?? null
+    const touch = event.touches[0]
+    if (!touch) {
+      return
+    }
+
+    listTouchStateRef.current = {
+      startY: touch.clientY,
+      draggingSheet: false
+    }
   }
 
   function handleListTouchMove(event) {
-    if (listTouchStartRef.current === null) {
+    const touch = event.touches[0]
+    if (!touch) {
+      return
+    }
+
+    const listTouchState = listTouchStateRef.current
+    if (!listTouchState) {
       return
     }
 
     const scrollNode = event.currentTarget
-    const nextY = event.touches[0]?.clientY ?? listTouchStartRef.current
-    const delta = nextY - listTouchStartRef.current
+    const delta = touch.clientY - listTouchState.startY
+    const activeDrag = sheetDragStateRef.current
+    const listDrivenDrag = activeDrag && activeDrag.source === 'list'
 
-    if (scrollNode.scrollTop === 0 && Math.abs(delta) > 48) {
-      if (delta < 0 && sheetDetent !== 'full') {
-        nudgeSheetDetent(1)
+    if (!listDrivenDrag) {
+      if (scrollNode.scrollTop > 0) {
+        return
       }
 
-      if (delta > 0 && sheetDetent !== 'collapsed') {
-        nudgeSheetDetent(-1)
+      const draggingDown = delta > 14
+      const draggingUp = delta < -14 && sheetDetent !== 'full'
+
+      if (!draggingDown && !draggingUp) {
+        return
       }
 
-      listTouchStartRef.current = nextY
+      const dragStarted = beginSheetDrag(touch.clientY, null, 'list')
+      if (!dragStarted) {
+        return
+      }
+
+      listTouchState.draggingSheet = true
+    }
+
+    if (updateSheetDrag(touch.clientY)) {
+      event.preventDefault()
     }
   }
 
   function handleListTouchEnd() {
-    listTouchStartRef.current = null
+    if (sheetDragStateRef.current?.source === 'list') {
+      sheetDragMovedRef.current = endSheetDrag()
+    }
+
+    listTouchStateRef.current = null
+  }
+
+  function handleListTouchCancel() {
+    if (sheetDragStateRef.current?.source === 'list') {
+      handleSheetPointerCancel()
+    }
+
+    listTouchStateRef.current = null
   }
 
   if (mapError) {
@@ -620,13 +877,24 @@ export default function MapPageClient({ galleries, initialFilters }) {
         </article>
       ) : null}
 
-      <section className={`map-bottom-sheet detent-${sheetDetent}`} aria-label="Map results">
+      <section
+        className={`map-bottom-sheet detent-${sheetDetent}${sheetIsDragging ? ' is-dragging' : ''}${
+          sheetIsPeeking ? ' is-peeking' : ''
+        }`}
+        style={sheetInlineStyle}
+        aria-label="Map results"
+      >
         <button
           type="button"
           className="map-sheet-handle"
           onPointerDown={handleSheetPointerDown}
+          onPointerMove={handleSheetPointerMove}
           onPointerUp={handleSheetPointerUp}
           onPointerCancel={handleSheetPointerCancel}
+          onTouchStart={handleSheetTouchStart}
+          onTouchMove={handleSheetTouchMove}
+          onTouchEnd={handleSheetTouchEnd}
+          onTouchCancel={handleSheetTouchCancel}
           onClick={() => {
             if (sheetDragMovedRef.current) {
               sheetDragMovedRef.current = false
@@ -657,6 +925,7 @@ export default function MapPageClient({ galleries, initialFilters }) {
           onTouchStart={handleListTouchStart}
           onTouchMove={handleListTouchMove}
           onTouchEnd={handleListTouchEnd}
+          onTouchCancel={handleListTouchCancel}
         >
           <div className="active-filters" aria-label="Applied filters">
             {activeFilters.map((filter) =>
