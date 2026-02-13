@@ -542,8 +542,16 @@ export default function MapPageClient({ galleries, initialFilters }) {
             onChange={(event) => setSearch(event.target.value)}
           />
         </label>
-        <button type="button" className="button button-secondary map-filter-trigger" onClick={() => setFiltersOpen(true)}>
-          Filters
+        <button
+          type="button"
+          className="button button-secondary icon-button filter-icon-button map-filter-trigger"
+          aria-label="Open filters"
+          onClick={() => setFiltersOpen(true)}
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M3 6h18l-7 8v5l-4-2v-3L3 6z" fill="currentColor" />
+          </svg>
+          <span className="visually-hidden">Filters</span>
         </button>
       </div>
 
