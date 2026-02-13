@@ -124,6 +124,8 @@ export default function MapPageClient({ galleries, initialFilters }) {
   const [detentHeights, setDetentHeights] = useState(() => createDetentHeights(844))
   const [sheetDragHeight, setSheetDragHeight] = useState(null)
   const [sheetIsDragging, setSheetIsDragging] = useState(false)
+  const [isLocatingUser, setIsLocatingUser] = useState(false)
+  const [locationError, setLocationError] = useState('')
   const [selectionDragOffset, setSelectionDragOffset] = useState(0)
   const [selectionIsDragging, setSelectionIsDragging] = useState(false)
 
@@ -135,6 +137,7 @@ export default function MapPageClient({ galleries, initialFilters }) {
   const mapRef = useRef(null)
   const clusterRef = useRef(null)
   const markerBySlugRef = useRef(new Map())
+  const userLocationMarkerRef = useRef(null)
   const leafletRef = useRef(null)
   const resultsScrollRef = useRef(null)
   const moveDebounceRef = useRef(null)
@@ -462,6 +465,10 @@ export default function MapPageClient({ galleries, initialFilters }) {
         clearTimeout(moveDebounceRef.current)
       }
 
+      if (userLocationMarkerRef.current && mapRef.current) {
+        mapRef.current.removeLayer(userLocationMarkerRef.current)
+      }
+
       if (mapRef.current) {
         mapRef.current.remove()
       }
@@ -474,6 +481,7 @@ export default function MapPageClient({ galleries, initialFilters }) {
       mapRef.current = null
       clusterRef.current = null
       markerBySlugRef.current.clear()
+      userLocationMarkerRef.current = null
       leafletRef.current = null
       initialMoveHandledRef.current = false
     }
@@ -530,19 +538,7 @@ export default function MapPageClient({ galleries, initialFilters }) {
     setViewportBounds(null)
     setMapMoved(false)
     setSelectedSlug(null)
-  }
-
-  function focusGallery(gallerySlug) {
-    const marker = markerBySlugRef.current.get(gallerySlug)
-    if (!marker || !mapRef.current) {
-      return
-    }
-
-    setSelectedSlug(gallerySlug)
-
-    const latLng = marker.getLatLng()
-    mapRef.current.setView(latLng, Math.max(mapRef.current.getZoom(), 13), { animate: true })
-    marker.openPopup()
+    setLocationError('')
   }
 
   function clearSelectedGallery() {
@@ -555,6 +551,79 @@ export default function MapPageClient({ galleries, initialFilters }) {
     if (mapRef.current) {
       mapRef.current.closePopup()
     }
+  }
+
+  function centerOnUserLocation() {
+    if (isLocatingUser) {
+      return
+    }
+
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      setLocationError('Current location is not available on this device.')
+      return
+    }
+
+    if (!mapRef.current || !leafletRef.current) {
+      setLocationError('Map is still loading. Try again in a moment.')
+      return
+    }
+
+    setIsLocatingUser(true)
+    setLocationError('')
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const latitude = position.coords.latitude
+        const longitude = position.coords.longitude
+
+        if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+          setLocationError('Could not determine your current location.')
+          setIsLocatingUser(false)
+          return
+        }
+
+        const L = leafletRef.current
+        const map = mapRef.current
+        if (!L || !map) {
+          setLocationError('Map is unavailable right now.')
+          setIsLocatingUser(false)
+          return
+        }
+
+        map.setView([latitude, longitude], Math.max(map.getZoom(), 13), { animate: true })
+
+        if (userLocationMarkerRef.current) {
+          userLocationMarkerRef.current.setLatLng([latitude, longitude])
+        } else {
+          userLocationMarkerRef.current = L.circleMarker([latitude, longitude], {
+            radius: 7,
+            color: '#ffffff',
+            weight: 2,
+            fillColor: '#0f4c81',
+            fillOpacity: 1
+          }).addTo(map)
+        }
+
+        setMapMoved(true)
+        setFiltersOpen(false)
+        setIsLocatingUser(false)
+      },
+      (error) => {
+        if (error.code === error.PERMISSION_DENIED) {
+          setLocationError('Location access was denied. Enable it in browser settings.')
+        } else if (error.code === error.TIMEOUT) {
+          setLocationError('Location request timed out. Try again.')
+        } else {
+          setLocationError('Unable to get your current location.')
+        }
+        setIsLocatingUser(false)
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000
+      }
+    )
   }
 
   function beginSelectionDrag(startY, pointerId) {
@@ -754,6 +823,7 @@ export default function MapPageClient({ galleries, initialFilters }) {
       lastTime: performance.now(),
       velocityY: 0,
       startHeight: startingHeight,
+      startDetent: sheetDetent,
       moved: false
     }
 
@@ -799,17 +869,26 @@ export default function MapPageClient({ galleries, initialFilters }) {
       return false
     }
 
+    const dragDistance = dragState.startY - dragState.lastY
     const finalHeight = clamp(
       dragState.startHeight + (dragState.startY - dragState.lastY),
       detentHeights.collapsed,
       detentHeights.full
     )
 
-    let nextDetent = getNearestDetentFromHeight(finalHeight, dragState.velocityY)
+    let nextDetent = dragState.startDetent || sheetDetent
 
-    if (Math.abs(dragState.velocityY) >= DRAG_SNAP_VELOCITY) {
-      const direction = dragState.velocityY < 0 ? 1 : -1
-      nextDetent = getNextDetent(nextDetent, direction)
+    if (dragState.startDetent === 'collapsed') {
+      nextDetent = dragDistance > 8 ? 'half' : 'collapsed'
+    } else if (dragState.startDetent === 'half' && dragDistance < -8) {
+      nextDetent = 'collapsed'
+    } else {
+      nextDetent = getNearestDetentFromHeight(finalHeight, dragState.velocityY)
+
+      if (Math.abs(dragState.velocityY) >= DRAG_SNAP_VELOCITY) {
+        const direction = dragState.velocityY < 0 ? 1 : -1
+        nextDetent = getNextDetent(nextDetent, direction)
+      }
     }
 
     setSheetDetent(nextDetent)
@@ -948,6 +1027,14 @@ export default function MapPageClient({ galleries, initialFilters }) {
 
     const scrollNode = event.currentTarget
     const delta = touch.clientY - listTouchState.startY
+
+    if (sheetDetent === 'half' && delta < -8 && !sheetDragStateRef.current) {
+      setSheetDetent('full')
+      listTouchState.startY = touch.clientY
+      event.preventDefault()
+      return
+    }
+
     const activeDrag = sheetDragStateRef.current
     const listDrivenDrag = activeDrag && activeDrag.source === 'list'
 
@@ -982,6 +1069,21 @@ export default function MapPageClient({ galleries, initialFilters }) {
     }
 
     listTouchStateRef.current = null
+  }
+
+  function handleResultsScroll(event) {
+    const scrollTop = event.currentTarget.scrollTop
+    persistResultsScroll(scrollTop)
+
+    if (sheetDetent === 'half' && scrollTop > 0) {
+      setSheetDetent('full')
+    }
+  }
+
+  function handleResultsWheel(event) {
+    if (sheetDetent === 'half' && event.deltaY > 0 && !sheetIsDragging) {
+      setSheetDetent('full')
+    }
   }
 
   function handleListTouchCancel() {
@@ -1059,6 +1161,14 @@ export default function MapPageClient({ galleries, initialFilters }) {
               </label>
 
               <div className="map-secondary-actions">
+                <button
+                  type="button"
+                  className="text-link text-link-button"
+                  onClick={centerOnUserLocation}
+                  disabled={isLocatingUser}
+                >
+                  {isLocatingUser ? 'Locating…' : 'Use current location'}
+                </button>
                 {areaEnabled ? (
                   <button type="button" className="text-link text-link-button" onClick={clearAreaFilter}>
                     Clear area filter
@@ -1068,6 +1178,7 @@ export default function MapPageClient({ galleries, initialFilters }) {
                   Reset map view
                 </button>
               </div>
+              {locationError ? <p className="results-meta">{locationError}</p> : null}
             </div>
           </section>
         </div>
@@ -1162,7 +1273,8 @@ export default function MapPageClient({ galleries, initialFilters }) {
         <div
           className="map-sheet-content"
           ref={resultsScrollRef}
-          onScroll={(event) => persistResultsScroll(event.currentTarget.scrollTop)}
+          onScroll={handleResultsScroll}
+          onWheel={handleResultsWheel}
           onTouchStart={handleListTouchStart}
           onTouchMove={handleListTouchMove}
           onTouchEnd={handleListTouchEnd}
@@ -1191,13 +1303,16 @@ export default function MapPageClient({ galleries, initialFilters }) {
             <ul className="directory-list map-results-list">
               {resultGalleries.map((gallery) => (
                 <li key={gallery.id} className={`directory-item ${selectedSlug === gallery.slug ? 'is-selected' : ''}`}>
-                  <button type="button" className="map-result-button" onClick={() => focusGallery(gallery.slug)}>
+                  <Link
+                    className="map-result-button"
+                    href={`/gallery/${encodeURIComponent(gallery.slug)}`}
+                  >
                     <div>
                       <p className="item-kicker">{gallery.precinct}</p>
                       <h2 className="item-title">{gallery.name}</h2>
                       <p className="item-meta">{gallery.address}</p>
                     </div>
-                  </button>
+                  </Link>
                 </li>
               ))}
             </ul>
