@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { formatDate, formatDateRange } from '../lib/utils/date'
 import { filterExhibitions, getPrecinctOptions } from '../lib/utils/filters'
-import { getExhibitionSlug, getExhibitionStatus, getGalleryBySlug } from '../lib/utils/exhibitions'
+import { getExhibitionSlug, getGalleryBySlug } from '../lib/utils/exhibitions'
 import FilterSlidersIcon from './icons/FilterSlidersIcon'
 
 const statusLabels = {
@@ -335,7 +335,6 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
         <ul className="exhibition-list exhibition-list-compact">
           {filteredExhibitions.map((exhibition) => {
             const gallery = getGalleryBySlug(galleries, exhibition.gallerySlug)
-            const status = getExhibitionStatus(exhibition)
             const exhibitionSlug = getExhibitionSlug(exhibition)
 
             return (
@@ -350,7 +349,6 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
               >
                 <div className="item-head">
                   <h2 className="item-title">{exhibition.title}</h2>
-                  <span className={`status-tag status-${status}`}>{statusLabels[status]}</span>
                 </div>
                 <p className="item-artist">{exhibition.artist}</p>
                 <p className="item-meta">{formatDateRange(exhibition.startDate, exhibition.endDate)}</p>

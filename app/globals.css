@@ -489,22 +489,23 @@ a {
 .item-actions-split {
   width: 100%;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   padding-right: var(--space-2);
 }
 
 .item-gallery-link {
   display: inline-grid;
   gap: 2px;
-  align-items: end;
-  justify-items: end;
-  min-height: 0;
+  align-content: center;
+  align-items: center;
+  justify-items: start;
+  min-height: 44px;
   padding-right: var(--space-1);
   color: var(--color-text-muted);
   font-size: 0.75rem;
   font-weight: 500;
   text-decoration: none;
-  text-align: right;
+  text-align: left;
   line-height: 1.25;
 }
 

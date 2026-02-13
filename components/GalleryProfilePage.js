@@ -1,13 +1,7 @@
 import BackLinkButton from './BackLinkButton'
 import Link from 'next/link'
 import { formatDate, formatDateRange } from '../lib/utils/date'
-import { getExhibitionSlug, getExhibitionStatus } from '../lib/utils/exhibitions'
-
-const statusLabels = {
-  current: 'Current',
-  upcoming: 'Upcoming',
-  past: 'Past'
-}
+import { getExhibitionSlug } from '../lib/utils/exhibitions'
 
 function sanitizePhone(phoneNumber) {
   return phoneNumber.replace(/[^\d+]/g, '')
@@ -21,13 +15,10 @@ function ExhibitionList({ exhibitions }) {
   return (
     <ul className="exhibition-list">
       {exhibitions.map((exhibition) => {
-        const status = getExhibitionStatus(exhibition)
-
         return (
           <li key={exhibition.id} className="exhibition-item">
             <div className="item-head">
               <h3 className="item-title">{exhibition.title}</h3>
-              <span className={`status-tag status-${status}`}>{statusLabels[status]}</span>
             </div>
             <p className="item-artist">{exhibition.artist}</p>
             <p className="item-meta">{formatDateRange(exhibition.startDate, exhibition.endDate)}</p>
