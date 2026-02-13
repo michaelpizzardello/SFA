@@ -1248,8 +1248,12 @@ export default function MapPageClient({ galleries, initialFilters }) {
       </div>
 
       {mapMoved ? (
-        <button type="button" className="button button-primary map-search-area-cta" onClick={applyCurrentViewport}>
-          {areaEnabled ? 'Update this area' : 'Search this area'}
+        <button
+          type="button"
+          className="button button-secondary map-search-area-button map-search-area-cta"
+          onClick={applyCurrentViewport}
+        >
+          Search this area
         </button>
       ) : null}
 
