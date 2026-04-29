@@ -15,6 +15,12 @@ const MOBILE_HALF_HEIGHT_RATIO = 0.52
 const DRAG_SNAP_VELOCITY = 0.45
 const TOP_OVERLAY_FALLBACK_BOTTOM = 72
 
+function bringLayerToFront(layer) {
+  if (typeof layer?.bringToFront === 'function') {
+    layer.bringToFront()
+  }
+}
+
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value))
 }
@@ -484,9 +490,7 @@ export default function MapPageClient({ galleries, initialFilters }) {
       marker.setIcon(createMarkerIcon(L, marker.options.galleryName, slug === selectedSlug))
     })
 
-    if (userLocationMarkerRef.current) {
-      userLocationMarkerRef.current.bringToFront()
-    }
+    bringLayerToFront(userLocationMarkerRef.current)
   }, [selectedSlug])
 
   useEffect(() => {
@@ -638,14 +642,14 @@ export default function MapPageClient({ galleries, initialFilters }) {
 
         if (userLocationMarkerRef.current) {
           userLocationMarkerRef.current.setLatLng([latitude, longitude])
-          userLocationMarkerRef.current.bringToFront()
+          bringLayerToFront(userLocationMarkerRef.current)
         } else {
           userLocationMarkerRef.current = L.marker([latitude, longitude], {
             pane: 'user-location-pane',
             icon: createUserLocationIcon(L),
             zIndexOffset: 2000
           }).addTo(map)
-          userLocationMarkerRef.current.bringToFront()
+          bringLayerToFront(userLocationMarkerRef.current)
         }
 
         setHasUserLocation(true)

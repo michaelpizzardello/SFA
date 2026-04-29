@@ -1,6 +1,9 @@
+'use client'
+
 import Link from 'next/link'
 import { addDaysISO, compareISO, formatDate, todayISOInSydney } from '../lib/utils/date'
 import { getExhibitionSlug, getGalleryBySlug } from '../lib/utils/exhibitions'
+import MasonryList from './MasonryList'
 
 function OpeningRows({ items, galleries }) {
   if (!items.length) {
@@ -8,28 +11,47 @@ function OpeningRows({ items, galleries }) {
   }
 
   return (
-    <ul className="simple-list">
-      {items.map((exhibition) => {
+    <MasonryList
+      items={items}
+      className="simple-list home-opening-list masonry-grid"
+      columnClassName="masonry-column"
+      renderItem={(exhibition) => {
         const gallery = getGalleryBySlug(galleries, exhibition.gallerySlug)
+        const galleryName = gallery?.name || exhibition.galleryName || 'Unknown gallery'
+        const galleryLocation = exhibition.location || gallery?.suburb || gallery?.precinct || 'Unspecified precinct'
+        const exhibitionHref = `/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`
 
         return (
-          <li key={exhibition.id} className="simple-row">
-            <div>
-              <p className="row-title">
-                <Link className="text-link" href={`/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`}>
-                  {exhibition.title}
+          <li key={exhibition.id} className={`simple-row home-opening-card${exhibition.imageUrl ? ' has-image' : ''}`}>
+            <div className="simple-row-main">
+              {exhibition.imageUrl ? (
+                <Link
+                  className="row-thumbnail"
+                  href={exhibitionHref}
+                  aria-label={`View ${exhibition.title}`}
+                >
+                  <img src={exhibition.imageUrl} alt="" />
                 </Link>
-              </p>
-              <p className="row-meta">
-                <span className="row-gallery-name">{gallery?.name || 'Unknown gallery'}</span>
-                <span className="row-gallery-location">{gallery?.suburb || gallery?.precinct || 'Unspecified precinct'}</span>
-              </p>
+              ) : null}
+              <div>
+                <p className="row-title">
+                  <Link className="text-link" href={exhibitionHref}>
+                    {exhibition.title}
+                  </Link>
+                </p>
+                <p className="row-meta">
+                  <span className="row-gallery-name">{galleryName}</span>
+                  <span className="row-gallery-location">{galleryLocation}</span>
+                </p>
+                <p className="row-date">
+                  {exhibition.openingInformation || formatDate(exhibition.openingDate || exhibition.startDate)}
+                </p>
+              </div>
             </div>
-            <p className="row-date">{formatDate(exhibition.openingDate || exhibition.startDate)}</p>
           </li>
         )
-      })}
-    </ul>
+      }}
+    />
   )
 }
 
@@ -45,7 +67,7 @@ export default function HomePage({ galleries, exhibitions }) {
     .filter(
       (exhibition) =>
         exhibition.openingDate &&
-        compareISO(exhibition.openingDate, today) >= 0 &&
+        compareISO(exhibition.openingDate, today) > 0 &&
         compareISO(exhibition.openingDate, weekEnd) <= 0
     )
     .sort((first, second) => compareISO(first.openingDate, second.openingDate))
@@ -55,9 +77,6 @@ export default function HomePage({ galleries, exhibitions }) {
     <>
       <section className="hero">
         <h1>Your guide to the Sydney art scene</h1>
-        <p className="hero-copy">
-          Browse gallery profiles and track exhibition openings across Sydney in a clean, mobile-first guide.
-        </p>
         <div className="hero-actions">
           <Link className="button button-primary" href="/whats-on">
             Explore What's On

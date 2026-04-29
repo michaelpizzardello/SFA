@@ -19,6 +19,9 @@ out
 !.vscode/extensions.json
 .idea
 .DS_Store
+Icon?
+tmp-*.png
+supabase/.temp/
 *.suo
 *.ntvs*
 *.njsproj

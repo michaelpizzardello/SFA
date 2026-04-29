@@ -7,6 +7,7 @@ import { formatDate, formatDateRange } from '../lib/utils/date'
 import { filterExhibitions, getPrecinctOptions } from '../lib/utils/filters'
 import { getExhibitionSlug, getGalleryBySlug } from '../lib/utils/exhibitions'
 import FilterSlidersIcon from './icons/FilterSlidersIcon'
+import MasonryList from './MasonryList'
 
 const statusLabels = {
   current: 'Current',
@@ -210,7 +211,6 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
       <div className="section-head">
         <h1>What's On</h1>
       </div>
-      <p className="section-copy">Current and upcoming exhibitions across Sydney galleries.</p>
 
       <div className="compact-control-row">
         <label className="field">
@@ -332,52 +332,59 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
       </div>
 
       {filteredExhibitions.length ? (
-        <ul className="exhibition-list exhibition-list-compact">
-          {filteredExhibitions.map((exhibition) => {
+        <MasonryList
+          items={filteredExhibitions}
+          className="whats-on-grid masonry-grid"
+          columnClassName="masonry-column"
+          renderItem={(exhibition) => {
             const gallery = getGalleryBySlug(galleries, exhibition.gallerySlug)
             const exhibitionSlug = getExhibitionSlug(exhibition)
+            const galleryName = gallery?.name || exhibition.galleryName || 'Unknown gallery'
+            const galleryLocation = exhibition.location || gallery?.suburb || gallery?.precinct || 'Unspecified location'
+            const galleryHref = gallery?.slug || exhibition.gallerySlug
 
             return (
               <li
                 key={exhibition.id}
-                className="exhibition-item clickable-card"
+                className={`whats-on-card clickable-card${exhibition.imageUrl ? ' has-image' : ' no-image'}`}
                 tabIndex={0}
                 role="link"
                 aria-label={`Open exhibition details for ${exhibition.title}`}
                 onClick={(event) => handleExhibitionCardClick(exhibitionSlug, event)}
                 onKeyDown={(event) => handleExhibitionCardKeyDown(exhibitionSlug, event)}
               >
-                <div className="item-head">
-                  <h2 className="item-title">{exhibition.title}</h2>
-                </div>
-                <p className="item-artist">{exhibition.artist}</p>
-                <p className="item-meta">{formatDateRange(exhibition.startDate, exhibition.endDate)}</p>
-                {exhibition.openingDate ? (
-                  <p className="item-meta">
-                    Opening: {formatDate(exhibition.openingDate)}
-                    {exhibition.openingTime ? ` | ${exhibition.openingTime}` : ''}
-                  </p>
+                {exhibition.imageUrl ? (
+                  <div className="whats-on-card-image">
+                    <img src={exhibition.imageUrl} alt={exhibition.title} />
+                  </div>
                 ) : null}
-                <div className="item-actions item-actions-split">
-                  {gallery ? (
-                    <Link className="item-gallery-link" href={`/gallery/${encodeURIComponent(gallery.slug)}`}>
-                      <span className="item-gallery-name">{gallery.name}</span>
-                      <span className="item-gallery-location">
-                        {gallery.suburb || gallery.precinct || 'Unspecified location'}
-                      </span>
-                    </Link>
-                  ) : null}
-                  <Link
-                    className="button button-subtle button-card-cta"
-                    href={`/exhibition/${encodeURIComponent(exhibitionSlug)}`}
-                  >
-                    View details
-                  </Link>
+                <div className="whats-on-card-body">
+                  <div className="whats-on-card-main">
+                    <h2 className="whats-on-card-title">{exhibition.title}</h2>
+                    {exhibition.artist ? <p className="item-artist">{exhibition.artist}</p> : null}
+                    <p className="item-meta">{formatDateRange(exhibition.startDate, exhibition.endDate)}</p>
+                    {exhibition.openingInformation ? (
+                      <p className="item-meta">{exhibition.openingInformation}</p>
+                    ) : exhibition.openingDate ? (
+                      <p className="item-meta">
+                        Opening: {formatDate(exhibition.openingDate)}
+                        {exhibition.openingTime ? ` | ${exhibition.openingTime}` : ''}
+                      </p>
+                    ) : null}
+                  </div>
+                  <div className="item-actions">
+                    {galleryHref ? (
+                      <Link className="item-gallery-link" href={`/gallery/${encodeURIComponent(galleryHref)}`}>
+                        <span className="item-gallery-name">{galleryName}</span>
+                        <span className="item-gallery-location">{galleryLocation}</span>
+                      </Link>
+                    ) : null}
+                  </div>
                 </div>
               </li>
             )
-          })}
-        </ul>
+          }}
+        />
       ) : (
         <p className="empty-copy">No exhibitions match these filters.</p>
       )}

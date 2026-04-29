@@ -1,4 +1,3 @@
-import DataBadge from '../../components/DataBadge'
 import GalleriesPageClient from '../../components/GalleriesPageClient'
 import { loadSiteData } from '../../lib/data/loadData'
 import { normalizeQueryString, normalizeSort } from '../../lib/utils/map'
@@ -16,9 +15,6 @@ export default async function GalleriesPage({ searchParams }) {
   }
 
   return (
-    <>
-      <DataBadge source={data.source} />
-      <GalleriesPageClient galleries={data.galleries} exhibitions={data.exhibitions} initialFilters={initialFilters} />
-    </>
+    <GalleriesPageClient galleries={data.galleries} exhibitions={data.exhibitions} initialFilters={initialFilters} />
   )
 }

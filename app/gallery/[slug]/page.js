@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation'
-import DataBadge from '../../../components/DataBadge'
 import GalleryProfilePage from '../../../components/GalleryProfilePage'
 import { loadSiteData } from '../../../lib/data/loadData'
 import { getExhibitionsByGallery, getExhibitionStatus, getGalleryBySlug } from '../../../lib/utils/exhibitions'
@@ -24,9 +23,6 @@ export default async function GalleryPage({ params }) {
   }
 
   return (
-    <>
-      <DataBadge source={data.source} />
-      <GalleryProfilePage gallery={gallery} groupedExhibitions={groupedExhibitions} />
-    </>
+    <GalleryProfilePage gallery={gallery} groupedExhibitions={groupedExhibitions} />
   )
 }

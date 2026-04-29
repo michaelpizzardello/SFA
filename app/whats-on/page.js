@@ -1,4 +1,3 @@
-import DataBadge from '../../components/DataBadge'
 import WhatsOnPageClient from '../../components/WhatsOnPageClient'
 import { loadSiteData } from '../../lib/data/loadData'
 import { normalizeOpeningWindow, normalizeQueryString } from '../../lib/utils/map'
@@ -72,9 +71,6 @@ export default async function WhatsOnPage({ searchParams }) {
   }
 
   return (
-    <>
-      <DataBadge source={data.source} />
-      <WhatsOnPageClient galleries={data.galleries} exhibitions={data.exhibitions} initialFilters={initialFilters} />
-    </>
+    <WhatsOnPageClient galleries={data.galleries} exhibitions={data.exhibitions} initialFilters={initialFilters} />
   )
 }

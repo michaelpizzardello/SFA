@@ -21,8 +21,8 @@ export default function BackLinkButton({ fallbackHref, label }) {
       aria-label={label}
       onClick={handleClick}
     >
-      <span aria-hidden="true">‹</span>
-      <span className="visually-hidden">{label}</span>
+      <span aria-hidden="true">←</span>
+      <span className="back-link-label">{label}</span>
     </button>
   )
 }

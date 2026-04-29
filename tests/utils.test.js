@@ -81,6 +81,19 @@ describe('exhibition status', () => {
     expect(getExhibitionStatus(exhibitions[1], '2026-02-13')).toBe('upcoming')
     expect(getExhibitionStatus(exhibitions[2], '2026-02-13')).toBe('past')
   })
+
+  it('does not keep old open-ended exhibitions current forever', () => {
+    expect(
+      getExhibitionStatus(
+        {
+          id: 'open-ended',
+          startDate: '2026-02-05',
+          openingDate: '2026-02-05'
+        },
+        '2026-04-29'
+      )
+    ).toBe('past')
+  })
 })
 
 describe('gallery and exhibition filtering', () => {
@@ -111,6 +124,61 @@ describe('gallery and exhibition filtering', () => {
         today: '2026-02-13'
       }).map((exhibition) => exhibition.id)
     ).toEqual(['e1', 'e2'])
+  })
+
+  it('excludes past exhibitions by default', () => {
+    expect(
+      filterExhibitions(galleries, exhibitions, {
+        search: '',
+        precinct: 'all',
+        today: '2026-02-13'
+      }).map((exhibition) => exhibition.id)
+    ).toEqual(['e1', 'e2'])
+  })
+
+  it('orders exhibitions by opening date closest to today', () => {
+    const orderedExhibitions = [
+      {
+        id: 'old-current',
+        gallerySlug: 'alpha',
+        title: 'Old Current',
+        startDate: '2026-04-01',
+        endDate: '2026-05-30',
+        openingDate: '2026-04-01'
+      },
+      {
+        id: 'tomorrow',
+        gallerySlug: 'alpha',
+        title: 'Tomorrow',
+        startDate: '2026-04-30',
+        endDate: '2026-05-30',
+        openingDate: '2026-04-30'
+      },
+      {
+        id: 'today',
+        gallerySlug: 'alpha',
+        title: 'Today',
+        startDate: '2026-04-29',
+        endDate: '2026-05-30',
+        openingDate: '2026-04-29'
+      },
+      {
+        id: 'yesterday',
+        gallerySlug: 'alpha',
+        title: 'Yesterday',
+        startDate: '2026-04-28',
+        endDate: '2026-05-30',
+        openingDate: '2026-04-28'
+      }
+    ]
+
+    expect(
+      filterExhibitions(galleries, orderedExhibitions, {
+        search: '',
+        precinct: 'all',
+        today: '2026-04-29'
+      }).map((exhibition) => exhibition.id)
+    ).toEqual(['today', 'yesterday', 'tomorrow', 'old-current'])
   })
 
   it('filters by opening tonight', () => {

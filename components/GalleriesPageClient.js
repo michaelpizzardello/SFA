@@ -95,7 +95,6 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
           Open map view
         </Link>
       </div>
-      <p className="section-copy">Search and browse the Sydney gallery directory.</p>
 
       <div className="compact-control-row">
         <label className="field">
@@ -162,7 +161,7 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
 
       {directoryRows.length ? (
         <ul className="directory-list">
-          {directoryRows.map(({ gallery, summary }) => (
+          {directoryRows.map(({ gallery }) => (
             <li
               key={gallery.id}
               className="directory-item clickable-card"
@@ -173,16 +172,10 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
               onKeyDown={(event) => handleGalleryCardKeyDown(gallery.slug, event)}
             >
               <div>
-                <p className="item-kicker">{gallery.precinct}</p>
                 <h2 className="item-title">{gallery.name}</h2>
-                <p className="item-meta">{gallery.address}</p>
-                <p className="item-meta">
-                  {summary.current} current | {summary.upcoming} upcoming
-                </p>
+                {gallery.address ? <p className="item-meta">{gallery.address}</p> : null}
+                <p className="item-kicker directory-location">{gallery.precinct}</p>
               </div>
-              <Link className="button button-subtle button-card-cta" href={`/gallery/${encodeURIComponent(gallery.slug)}`}>
-                View profile
-              </Link>
             </li>
           ))}
         </ul>

@@ -14,18 +14,21 @@ export default function ExhibitionProfilePage({ exhibition, gallery }) {
 
   return (
     <>
+      {exhibition.imageUrl ? (
+        <section className="page-block exhibition-image-block">
+          <div className="exhibition-image-frame">
+            <img className="exhibition-image" src={exhibition.imageUrl} alt={exhibition.title} />
+          </div>
+        </section>
+      ) : null}
+
       <section className="profile-hero">
         <BackLinkButton fallbackHref="/whats-on" label="Back" />
         <h1>{exhibition.title}</h1>
-        <p className="item-meta">{exhibition.artist}</p>
+        {exhibition.artist ? <p className="item-meta">{exhibition.artist}</p> : null}
         <span className={`status-tag status-${status}`}>{statusLabels[status]}</span>
         <p className="item-meta">{formatDateRange(exhibition.startDate, exhibition.endDate)}</p>
-        {exhibition.openingDate ? (
-          <p className="item-meta">
-            Opening: {formatDate(exhibition.openingDate)}
-            {exhibition.openingTime ? ` | ${exhibition.openingTime}` : ''}
-          </p>
-        ) : null}
+        {exhibition.openingInformation ? <p className="item-meta">{exhibition.openingInformation}</p> : null}
         {gallery ? (
           <Link className="button button-secondary" href={`/gallery/${encodeURIComponent(gallery.slug)}`}>
             View {gallery.name}
@@ -35,24 +38,27 @@ export default function ExhibitionProfilePage({ exhibition, gallery }) {
 
       <section className="page-block">
         <h2>Visit details</h2>
-        <ul className="detail-list">
-          <li>Date range: {formatDateRange(exhibition.startDate, exhibition.endDate)}</li>
-          {exhibition.openingDate ? (
-            <li>
+        <div className="exhibition-detail-list">
+          <p>{formatDateRange(exhibition.startDate, exhibition.endDate)}</p>
+          {exhibition.openingInformation ? (
+            <p>{exhibition.openingInformation}</p>
+          ) : exhibition.openingDate ? (
+            <p>
               Opening: {formatDate(exhibition.openingDate)}
               {exhibition.openingTime ? ` at ${exhibition.openingTime}` : ''}
-            </li>
+            </p>
           ) : null}
-          <li>Cost: {exhibition.cost || 'Free'}</li>
-          {gallery ? <li>Gallery: {gallery.name}</li> : null}
-          {gallery?.address ? <li>Address: {gallery.address}</li> : null}
-        </ul>
+          {gallery ? <p>{gallery.name}</p> : null}
+          {gallery?.address ? <p>{gallery.address}</p> : null}
+        </div>
       </section>
 
-      <section className="page-block">
-        <h2>About this exhibition</h2>
-        <p className="section-copy">{exhibition.summary || 'Details coming soon.'}</p>
-      </section>
+      {exhibition.summary ? (
+        <section className="page-block">
+          <h2>About this exhibition</h2>
+          <p className="section-copy">{exhibition.summary}</p>
+        </section>
+      ) : null}
     </>
   )
 }

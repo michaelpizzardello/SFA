@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation'
-import DataBadge from '../../../components/DataBadge'
 import ExhibitionProfilePage from '../../../components/ExhibitionProfilePage'
 import { loadSiteData } from '../../../lib/data/loadData'
 import { getExhibitionBySlug, getGalleryBySlug } from '../../../lib/utils/exhibitions'
@@ -19,9 +18,6 @@ export default async function ExhibitionPage({ params }) {
   const gallery = getGalleryBySlug(data.galleries, exhibition.gallerySlug)
 
   return (
-    <>
-      <DataBadge source={data.source} />
-      <ExhibitionProfilePage exhibition={exhibition} gallery={gallery} />
-    </>
+    <ExhibitionProfilePage exhibition={exhibition} gallery={gallery} />
   )
 }
