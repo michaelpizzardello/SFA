@@ -1,14 +1,14 @@
-import { Fraunces, Manrope } from 'next/font/google'
+import { Manrope, Oswald } from 'next/font/google'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import './globals.css'
 import SiteNav from '../components/SiteNav'
 
-const fraunces = Fraunces({
+const oswald = Oswald({
   subsets: ['latin'],
-  variable: '--font-fraunces',
-  weight: ['500', '700']
+  variable: '--font-display',
+  weight: ['600', '700']
 })
 
 const manrope = Manrope({
@@ -26,7 +26,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${fraunces.variable} ${manrope.variable}`}>
+      <body className={`${oswald.variable} ${manrope.variable}`}>
         <div className="site-shell">
           <SiteNav />
           <main className="site-main">{children}</main>
