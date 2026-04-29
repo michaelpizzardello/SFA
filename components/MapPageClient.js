@@ -5,7 +5,9 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import BackLinkButton from './BackLinkButton'
 import FilterSlidersIcon from './icons/FilterSlidersIcon'
-import { filterMapGalleries, getPrecinctOptions } from '../lib/utils/filters'
+import { formatDateRange } from '../lib/utils/date'
+import { filterExhibitions, filterMapGalleries, getPrecinctOptions } from '../lib/utils/filters'
+import { getExhibitionSlug, getGalleryBySlug } from '../lib/utils/exhibitions'
 import { serializeBounds, SYDNEY_CENTER, SYDNEY_DEFAULT_ZOOM } from '../lib/utils/map'
 
 const LIST_SCROLL_STORAGE_KEY = 'saf_map_list_scroll'
@@ -14,6 +16,14 @@ const MOBILE_COLLAPSED_HEIGHT = 72
 const MOBILE_HALF_HEIGHT_RATIO = 0.52
 const DRAG_SNAP_VELOCITY = 0.45
 const TOP_OVERLAY_FALLBACK_BOTTOM = 72
+const statusFilterOptions = [
+  { value: 'current', label: 'Current exhibitions' },
+  { value: 'upcoming', label: 'Upcoming exhibitions' }
+]
+const openingFilterOptions = [
+  { value: 'tonight', label: 'Opening today' },
+  { value: 'week', label: 'Opening this week' }
+]
 
 function bringLayerToFront(layer) {
   if (typeof layer?.bringToFront === 'function') {
@@ -139,9 +149,27 @@ function canStartSelectionDrag(target) {
   return !target.closest('a, button, input, select, textarea')
 }
 
-export default function MapPageClient({ galleries, initialFilters }) {
+function normalizeStatusSelection(values = []) {
+  return statusFilterOptions
+    .map((option) => option.value)
+    .filter((value) => values.includes(value))
+}
+
+function normalizeOpeningSelection(values = []) {
+  return openingFilterOptions
+    .map((option) => option.value)
+    .filter((value) => values.includes(value))
+}
+
+export default function MapPageClient({ galleries, exhibitions, initialFilters }) {
   const [search, setSearch] = useState(initialFilters.search)
   const [precinct, setPrecinct] = useState(initialFilters.precinct)
+  const [selectedStatuses, setSelectedStatuses] = useState(
+    () => new Set(normalizeStatusSelection(initialFilters.statuses))
+  )
+  const [selectedOpeningWindows, setSelectedOpeningWindows] = useState(
+    () => new Set(normalizeOpeningSelection(initialFilters.openingWindows))
+  )
   const [areaEnabled, setAreaEnabled] = useState(initialFilters.areaEnabled)
   const [viewportBounds, setViewportBounds] = useState(initialFilters.viewportBounds)
   const [mapView, setMapView] = useState(initialFilters.mapView)
@@ -182,30 +210,74 @@ export default function MapPageClient({ galleries, initialFilters }) {
   const selectionTouchDragActiveRef = useRef(false)
 
   const precinctOptions = useMemo(() => getPrecinctOptions(galleries), [galleries])
+  const orderedStatuses = useMemo(
+    () => normalizeStatusSelection([...selectedStatuses]),
+    [selectedStatuses]
+  )
+  const orderedOpeningWindows = useMemo(
+    () => normalizeOpeningSelection([...selectedOpeningWindows]),
+    [selectedOpeningWindows]
+  )
+  const exhibitionMode = orderedStatuses.length > 0 || orderedOpeningWindows.length > 0
 
   const baseFilteredGalleries = useMemo(
     () =>
       filterMapGalleries(galleries, {
-        search,
+        search: exhibitionMode ? '' : search,
         precinct,
         areaEnabled: false,
         viewportBounds: null
       }),
-    [galleries, precinct, search]
+    [exhibitionMode, galleries, precinct, search]
   )
 
   const filteredGalleriesInViewport = useMemo(
     () =>
       filterMapGalleries(galleries, {
-        search,
+        search: exhibitionMode ? '' : search,
         precinct,
         areaEnabled: true,
         viewportBounds
       }),
-    [galleries, precinct, search, viewportBounds]
+    [exhibitionMode, galleries, precinct, search, viewportBounds]
   )
 
-  const resultGalleries = viewportBounds ? filteredGalleriesInViewport : baseFilteredGalleries
+  const candidateGalleries = viewportBounds ? filteredGalleriesInViewport : baseFilteredGalleries
+
+  const filteredExhibitions = useMemo(
+    () =>
+      exhibitionMode
+        ? filterExhibitions(galleries, exhibitions, {
+            search,
+            precinct,
+            statuses: orderedStatuses,
+            openingWindows: orderedOpeningWindows
+          })
+        : [],
+    [exhibitionMode, exhibitions, galleries, orderedOpeningWindows, orderedStatuses, precinct, search]
+  )
+
+  const resultGalleries = useMemo(() => {
+    if (!exhibitionMode) {
+      return candidateGalleries
+    }
+
+    const matchingGallerySlugs = new Set(filteredExhibitions.map((exhibition) => exhibition.gallerySlug))
+    return candidateGalleries.filter((gallery) => matchingGallerySlugs.has(gallery.slug))
+  }, [candidateGalleries, exhibitionMode, filteredExhibitions])
+
+  const resultGallerySlugs = useMemo(
+    () => new Set(resultGalleries.map((gallery) => gallery.slug)),
+    [resultGalleries]
+  )
+
+  const resultExhibitions = useMemo(
+    () =>
+      exhibitionMode
+        ? filteredExhibitions.filter((exhibition) => resultGallerySlugs.has(exhibition.gallerySlug))
+        : [],
+    [exhibitionMode, filteredExhibitions, resultGallerySlugs]
+  )
 
   const selectedGallery = useMemo(
     () => resultGalleries.find((gallery) => gallery.slug === selectedSlug) || null,
@@ -239,6 +311,22 @@ export default function MapPageClient({ galleries, initialFilters }) {
       })
     }
 
+    orderedStatuses.forEach((status) => {
+      filters.push({
+        key: `status:${status}`,
+        label: statusFilterOptions.find((option) => option.value === status)?.label || status,
+        removable: true
+      })
+    })
+
+    orderedOpeningWindows.forEach((window) => {
+      filters.push({
+        key: `opening:${window}`,
+        label: openingFilterOptions.find((option) => option.value === window)?.label || window,
+        removable: true
+      })
+    })
+
     if (!filters.length) {
       filters.push({
         key: 'all',
@@ -248,9 +336,9 @@ export default function MapPageClient({ galleries, initialFilters }) {
     }
 
     return filters
-  }, [areaEnabled, precinct, search])
+  }, [areaEnabled, orderedOpeningWindows, orderedStatuses, precinct, search])
 
-  const resultsLabel = 'Results'
+  const resultsLabel = exhibitionMode ? 'Exhibitions' : 'Galleries'
   const activeSheetHeight = Math.round(sheetDragHeight ?? detentHeights[sheetDetent] ?? detentHeights.collapsed)
   const sheetIsPeeking = sheetDetent === 'collapsed' && activeSheetHeight > detentHeights.collapsed + 14
   const sheetInlineStyle = useMemo(
@@ -279,6 +367,18 @@ export default function MapPageClient({ galleries, initialFilters }) {
       params.set('precinct', precinct)
     } else {
       params.delete('precinct')
+    }
+
+    if (orderedStatuses.length) {
+      params.set('status', orderedStatuses.join(','))
+    } else {
+      params.delete('status')
+    }
+
+    if (orderedOpeningWindows.length) {
+      params.set('opening', orderedOpeningWindows.join(','))
+    } else {
+      params.delete('opening')
     }
 
     if (areaEnabled && viewportBounds) {
@@ -314,6 +414,8 @@ export default function MapPageClient({ galleries, initialFilters }) {
   }, [
     areaEnabled,
     mapView,
+    orderedOpeningWindows,
+    orderedStatuses,
     pathname,
     precinct,
     router,
@@ -570,7 +672,55 @@ export default function MapPageClient({ galleries, initialFilters }) {
 
     if (filterKey === 'area') {
       clearAreaFilter()
+      return
     }
+
+    if (filterKey.startsWith('status:')) {
+      const status = filterKey.slice('status:'.length)
+      setSelectedStatuses((current) => {
+        const next = new Set(current)
+        next.delete(status)
+        return next
+      })
+      return
+    }
+
+    if (filterKey.startsWith('opening:')) {
+      const window = filterKey.slice('opening:'.length)
+      setSelectedOpeningWindows((current) => {
+        const next = new Set(current)
+        next.delete(window)
+        return next
+      })
+    }
+  }
+
+  function toggleStatus(status) {
+    setSelectedStatuses((current) => {
+      const next = new Set(current)
+
+      if (next.has(status)) {
+        next.delete(status)
+      } else {
+        next.add(status)
+      }
+
+      return next
+    })
+  }
+
+  function toggleOpeningWindow(window) {
+    setSelectedOpeningWindows((current) => {
+      const next = new Set(current)
+
+      if (next.has(window)) {
+        next.delete(window)
+      } else {
+        next.add(window)
+      }
+
+      return next
+    })
   }
 
   function resetView() {
@@ -586,6 +736,8 @@ export default function MapPageClient({ galleries, initialFilters }) {
     setMapMoved(false)
     setSelectedSlug(null)
     setLocationError('')
+    setSelectedStatuses(new Set())
+    setSelectedOpeningWindows(new Set())
   }
 
   function clearSelectedGallery() {
@@ -1164,7 +1316,7 @@ export default function MapPageClient({ galleries, initialFilters }) {
           <span className="visually-hidden">Search map</span>
           <input
             type="search"
-            placeholder="Search galleries"
+            placeholder={exhibitionMode ? 'Search exhibitions' : 'Search galleries'}
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
@@ -1207,6 +1359,42 @@ export default function MapPageClient({ galleries, initialFilters }) {
                   ))}
                 </select>
               </label>
+
+              <div className="filter-toggle-grid">
+                <div className="field">
+                  <span>Show exhibitions</span>
+                  <div className="toggle-chip-row" role="group" aria-label="Map exhibition status filters">
+                    {statusFilterOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        className={`toggle-chip ${selectedStatuses.has(option.value) ? 'is-active' : ''}`}
+                        onClick={() => toggleStatus(option.value)}
+                        aria-pressed={selectedStatuses.has(option.value)}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="field">
+                  <span>Opening</span>
+                  <div className="toggle-chip-row" role="group" aria-label="Map opening filters">
+                    {openingFilterOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        className={`toggle-chip ${selectedOpeningWindows.has(option.value) ? 'is-active' : ''}`}
+                        onClick={() => toggleOpeningWindow(option.value)}
+                        aria-pressed={selectedOpeningWindows.has(option.value)}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
 
               <div className="map-secondary-actions">
                 <button
@@ -1366,7 +1554,38 @@ export default function MapPageClient({ galleries, initialFilters }) {
             )}
           </div>
 
-          {resultGalleries.length ? (
+          {exhibitionMode && resultExhibitions.length ? (
+            <ul className="map-exhibition-list">
+              {resultExhibitions.map((exhibition) => {
+                const gallery = getGalleryBySlug(galleries, exhibition.gallerySlug)
+                const galleryName = gallery?.name || exhibition.galleryName || 'Unknown gallery'
+                const galleryLocation =
+                  exhibition.location || gallery?.suburb || gallery?.precinct || 'Unspecified precinct'
+                const exhibitionSlug = getExhibitionSlug(exhibition)
+
+                return (
+                  <li key={exhibition.id} className="map-exhibition-item">
+                    <Link
+                      className="map-result-button map-exhibition-button"
+                      href={`/exhibition/${encodeURIComponent(exhibitionSlug)}`}
+                    >
+                      <div>
+                        <h2 className="item-title">{exhibition.title}</h2>
+                        <p className="item-meta">{formatDateRange(exhibition.startDate, exhibition.endDate)}</p>
+                        {exhibition.openingInformation ? (
+                          <p className="item-meta">{exhibition.openingInformation}</p>
+                        ) : null}
+                        <p className="item-meta map-result-gallery">
+                          <span>{galleryName}</span>
+                          <span>{galleryLocation}</span>
+                        </p>
+                      </div>
+                    </Link>
+                  </li>
+                )
+              })}
+            </ul>
+          ) : !exhibitionMode && resultGalleries.length ? (
             <ul className="directory-list map-results-list">
               {resultGalleries.map((gallery) => (
                 <li key={gallery.id} className={`directory-item ${selectedSlug === gallery.slug ? 'is-selected' : ''}`}>
@@ -1385,7 +1604,9 @@ export default function MapPageClient({ galleries, initialFilters }) {
             </ul>
           ) : (
             <div className="map-empty-state">
-              <p className="empty-copy">No galleries in this area.</p>
+              <p className="empty-copy">
+                {exhibitionMode ? 'No exhibitions match these filters.' : 'No galleries in this area.'}
+              </p>
               <p className="results-meta">Try zooming out or clearing filters.</p>
             </div>
           )}
