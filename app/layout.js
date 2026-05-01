@@ -4,6 +4,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import './globals.css'
 import SiteNav from '../components/SiteNav'
+import { Analytics } from '@vercel/analytics/next'
 
 const oswald = Oswald({
   subsets: ['latin'],
@@ -31,6 +32,7 @@ export default function RootLayout({ children }) {
           <SiteNav />
           <main className="site-main">{children}</main>
         </div>
+        <Analytics />
       </body>
     </html>
   )
