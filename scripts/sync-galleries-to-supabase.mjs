@@ -107,13 +107,16 @@ const payload = rows
   })
   .filter((row) => row.name && row.slug)
 
+// INSERT-only: ignore-duplicates so existing galleries (including owner-claimed / owner-edited rows
+// and any moderation/image/auto-import state) are NEVER clobbered by the sheet sync. Only brand-new
+// galleries are added. The payload also intentionally carries no owner/moderation/image columns.
 const response = await fetch(`${supabaseUrl}/rest/v1/galleries?on_conflict=slug`, {
   method: 'POST',
   headers: {
     apikey: serviceRoleKey,
     Authorization: `Bearer ${serviceRoleKey}`,
     'Content-Type': 'application/json',
-    Prefer: 'resolution=merge-duplicates,return=representation'
+    Prefer: 'resolution=ignore-duplicates,return=representation'
   },
   body: JSON.stringify(payload)
 })
