@@ -1,0 +1,48 @@
+'use client'
+
+import { useState } from 'react'
+
+// Uploads to /api/uploads (user-JWT, gallery-scoped) and stores the returned public URL in a hidden
+// input so the parent form submits it. Shows a live preview.
+export default function ImageUploadField({ name, galleryId, initialUrl = '', label, hint }) {
+  const [url, setUrl] = useState(initialUrl)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+
+  async function handleChange(event) {
+    const file = event.target.files && event.target.files[0]
+    if (!file) return
+    setBusy(true)
+    setError('')
+    try {
+      const body = new FormData()
+      body.append('file', file)
+      body.append('galleryId', galleryId)
+      const res = await fetch('/api/uploads', { method: 'POST', body })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Upload failed.')
+      setUrl(data.url)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <div className="field">
+      <span>{label}</span>
+      <input type="hidden" name={name} value={url} />
+      {url ? <img src={url} alt="" className="upload-preview" /> : null}
+      <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" onChange={handleChange} disabled={busy} />
+      {hint ? <p className="form-hint">{hint}</p> : null}
+      {busy ? <p className="form-hint">Uploading…</p> : null}
+      {error ? <p className="admin-error">{error}</p> : null}
+      {url ? (
+        <button type="button" className="text-link text-link-button" onClick={() => setUrl('')}>
+          Remove image
+        </button>
+      ) : null}
+    </div>
+  )
+}
