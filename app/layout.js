@@ -5,6 +5,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import './globals.css'
 import './redesign.css'
 import SiteNav from '../components/SiteNav'
+import { Analytics } from '@vercel/analytics/next'
 
 // Editorial high-contrast serif for display, paired with Manrope for clean UI/body text.
 const fraunces = Fraunces({
@@ -34,6 +35,7 @@ export default function RootLayout({ children }) {
           <SiteNav />
           <main className="site-main">{children}</main>
         </div>
+        <Analytics />
       </body>
     </html>
   )
