@@ -1,14 +1,25 @@
 :root {
-  --color-bg: #ffffff;
+  /* Fresh identity — warm-paper editorial palette with a vermilion accent */
+  --color-bg: #faf8f3;
   --color-surface: #ffffff;
-  --color-surface-muted: #ffffff;
-  --color-text: #141414;
-  --color-text-muted: #5f5f5a;
-  --color-border: #d9d9d2;
-  --color-accent: #0f4c81;
-  --color-accent-hover: #0c3f6b;
-  --color-success: #216e4a;
-  --color-warning: #8a5a16;
+  --color-surface-muted: #f1ece3;
+  --color-text: #1a1613;
+  --color-text-muted: #6c6357;
+  --color-border: #e5dfd3;
+  --color-border-strong: #cdc3b2;
+  --color-accent: #bd3c1c;
+  --color-accent-hover: #97300f;
+  --color-accent-soft: #f6e7df;
+  --color-success: #2f6b4f;
+  --color-warning: #9a6515;
+
+  /* Warm neutral ramp */
+  --ink-900: #1a1613;
+  --ink-700: #3d362d;
+  --ink-500: #6c6357;
+  --ink-300: #a89e8d;
+  --ink-100: #e5dfd3;
+  --paper: #faf8f3;
 
   --space-1: 4px;
   --space-2: 8px;
@@ -18,10 +29,21 @@
   --space-6: 32px;
   --space-7: 40px;
   --space-8: 48px;
+  --space-9: 64px;
+  --space-10: 80px;
 
-  --radius-control: 8px;
-  --radius-block: 12px;
+  --radius-control: 10px;
+  --radius-block: 16px;
+  --radius-pill: 999px;
   --mobile-tabbar-height: 68px;
+
+  /* Elevation + motion */
+  --shadow-sm: 0 1px 2px rgba(26, 22, 19, 0.05);
+  --shadow-md: 0 8px 28px -16px rgba(26, 22, 19, 0.22);
+  --shadow-lg: 0 18px 48px -24px rgba(26, 22, 19, 0.28);
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --dur-fast: 120ms;
+  --dur: 180ms;
 }
 
 * {

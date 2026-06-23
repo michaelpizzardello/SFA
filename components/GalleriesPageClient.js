@@ -10,6 +10,24 @@ function isInteractiveElement(target) {
   return target instanceof Element && Boolean(target.closest('a, button, input, select, textarea, summary, label'))
 }
 
+// Deterministic warm tint for a gallery's fallback tile (cold start — galleries have no images yet).
+const TILE_TINTS = ['#efe6d8', '#e9e0d2', '#f1e3da', '#e6e4d6', '#efe0db', '#e8e2d0', '#f0e7dd']
+
+function tintStyle(name) {
+  let hash = 0
+  for (let i = 0; i < name.length; i += 1) {
+    hash = (hash * 31 + name.charCodeAt(i)) >>> 0
+  }
+  return { backgroundColor: TILE_TINTS[hash % TILE_TINTS.length] }
+}
+
+function monogram(name) {
+  const words = String(name || '').trim().split(/\s+/).filter(Boolean)
+  if (!words.length) return '·'
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase()
+  return (words[0][0] + words[words.length - 1][0]).toUpperCase()
+}
+
 export default function GalleriesPageClient({ galleries, exhibitions, initialFilters }) {
   const [search, setSearch] = useState(initialFilters.search)
   const [precinct, setPrecinct] = useState(initialFilters.precinct)
@@ -160,25 +178,42 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
       ) : null}
 
       {directoryRows.length ? (
-        <ul className="directory-list">
-          {directoryRows.map(({ gallery }) => (
-            <li
-              key={gallery.id}
-              className="directory-item clickable-card"
-              tabIndex={0}
-              role="link"
-              aria-label={`Open gallery profile for ${gallery.name}`}
-              onClick={(event) => handleGalleryCardClick(gallery.slug, event)}
-              onKeyDown={(event) => handleGalleryCardKeyDown(gallery.slug, event)}
-            >
-              <div>
-                <h2 className="item-title">{gallery.name}</h2>
-                {gallery.address ? <p className="item-meta">{gallery.address}</p> : null}
-                <p className="item-kicker directory-location">{gallery.precinct}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <>
+          <p className="results-meta">{directoryRows.length} galleries</p>
+          <ul className="gallery-grid">
+            {directoryRows.map(({ gallery, summary }) => {
+              const image = gallery.coverUrl || gallery.logoUrl
+              const currentCount = summary?.current || 0
+              return (
+                <li
+                  key={gallery.id}
+                  className="gallery-card clickable-card"
+                  tabIndex={0}
+                  role="link"
+                  aria-label={`Open gallery profile for ${gallery.name}`}
+                  onClick={(event) => handleGalleryCardClick(gallery.slug, event)}
+                  onKeyDown={(event) => handleGalleryCardKeyDown(gallery.slug, event)}
+                >
+                  <div className="gallery-card-media" style={tintStyle(gallery.name)}>
+                    {image ? (
+                      <img className="gallery-card-image" src={image} alt="" loading="lazy" />
+                    ) : (
+                      <span className="gallery-card-monogram" aria-hidden="true">
+                        {monogram(gallery.name)}
+                      </span>
+                    )}
+                    {currentCount ? <span className="gallery-card-flag">{currentCount} on now</span> : null}
+                  </div>
+                  <div className="gallery-card-body">
+                    <p className="item-kicker">{gallery.precinct}</p>
+                    <h2 className="gallery-card-title">{gallery.name}</h2>
+                    {gallery.address ? <p className="item-meta">{gallery.address}</p> : null}
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
+        </>
       ) : (
         <p className="empty-copy">No galleries match these filters.</p>
       )}
