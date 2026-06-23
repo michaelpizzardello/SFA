@@ -9,13 +9,24 @@ export async function middleware(request) {
   const { user, supabaseResponse } = await updateSession(request)
   const { pathname } = request.nextUrl
 
-  if (pathname.startsWith('/dashboard') && !user) {
+  function redirectTo(pathnameTarget, withReturn) {
     const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    url.searchParams.set('redirectTo', pathname)
+    url.pathname = pathnameTarget
+    url.search = ''
+    if (withReturn) url.searchParams.set('redirectTo', pathname)
     const redirect = NextResponse.redirect(url)
     supabaseResponse.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie))
     return redirect
+  }
+
+  if (pathname.startsWith('/dashboard') && !user) {
+    return redirectTo('/login', true)
+  }
+
+  if (pathname.startsWith('/console')) {
+    if (!user) return redirectTo('/login', true)
+    const isSuperAdmin = user.app_metadata && user.app_metadata.role === 'super_admin'
+    if (!isSuperAdmin) return redirectTo('/dashboard', false)
   }
 
   return supabaseResponse
