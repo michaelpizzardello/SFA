@@ -207,6 +207,145 @@ textarea:focus {
 }
 
 /* ============================================================
+   Editorial home + image-forward exhibition cards (Ocula/Artsy)
+   ============================================================ */
+.home-hero {
+  padding: var(--space-8) 0 var(--space-6);
+  display: grid;
+  gap: var(--space-3);
+  max-width: 760px;
+}
+.home-hero h1 {
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  line-height: 1.02;
+  font-weight: 500;
+}
+.home-hero-sub {
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  color: var(--color-text-muted);
+  max-width: 46ch;
+}
+.home-hero .hero-actions {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-top: var(--space-2);
+}
+.home-section {
+  margin-top: var(--space-8);
+}
+.home-section .section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+.home-section .section-head h2 {
+  font-size: clamp(1.3rem, 2.4vw, 1.8rem);
+}
+
+.ex-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-5) var(--space-4);
+  margin-top: var(--space-4);
+}
+@media (min-width: 760px) {
+  .ex-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (min-width: 1080px) {
+  .ex-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.ex-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  text-decoration: none;
+  color: inherit;
+}
+.ex-card-media {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-control);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+.ex-card:hover .ex-card-media {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+.ex-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.ex-card-fallback {
+  font-family: var(--font-display), serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(1.05rem, 2.2vw, 1.5rem);
+  line-height: 1.22;
+  text-align: center;
+  padding: var(--space-4);
+  color: color-mix(in srgb, var(--ink-700) 72%, transparent);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.ex-card-status {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--color-text);
+}
+.ex-status-current {
+  background: var(--color-accent);
+  color: #fff;
+}
+.ex-card-body {
+  display: grid;
+  gap: 3px;
+}
+.ex-card-artist {
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.25;
+}
+.ex-card-title {
+  font-family: var(--font-display), serif;
+  font-style: italic;
+  font-size: 1rem;
+  line-height: 1.25;
+  color: var(--color-text);
+}
+.ex-card-gallery {
+  font-size: 0.84rem;
+  color: var(--color-text-muted);
+}
+.ex-card-date {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+/* ============================================================
    Gallery / super-admin dashboard
    ============================================================ */
 .dashboard-shell {

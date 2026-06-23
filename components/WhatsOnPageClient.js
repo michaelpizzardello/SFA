@@ -3,11 +3,11 @@
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { formatDate, formatDateRange } from '../lib/utils/date'
+import { todayISOInSydney } from '../lib/utils/date'
 import { filterExhibitions, getPrecinctOptions } from '../lib/utils/filters'
-import { getExhibitionSlug, getGalleryBySlug } from '../lib/utils/exhibitions'
+import { getExhibitionStatus, getGalleryBySlug } from '../lib/utils/exhibitions'
 import FilterSlidersIcon from './icons/FilterSlidersIcon'
-import MasonryList from './MasonryList'
+import ExhibitionCard from './ExhibitionCard'
 
 const statusLabels = {
   current: 'Current',
@@ -332,59 +332,19 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
       </div>
 
       {filteredExhibitions.length ? (
-        <MasonryList
-          items={filteredExhibitions}
-          className="whats-on-grid masonry-grid"
-          columnClassName="masonry-column"
-          renderItem={(exhibition) => {
-            const gallery = getGalleryBySlug(galleries, exhibition.gallerySlug)
-            const exhibitionSlug = getExhibitionSlug(exhibition)
-            const galleryName = gallery?.name || exhibition.galleryName || 'Unknown gallery'
-            const galleryLocation = exhibition.location || gallery?.suburb || gallery?.precinct || 'Unspecified location'
-            const galleryHref = gallery?.slug || exhibition.gallerySlug
-
-            return (
-              <li
+        <>
+          <p className="results-meta">{filteredExhibitions.length} exhibitions</p>
+          <div className="ex-grid">
+            {filteredExhibitions.map((exhibition) => (
+              <ExhibitionCard
                 key={exhibition.id}
-                className={`whats-on-card clickable-card${exhibition.imageUrl ? ' has-image' : ' no-image'}`}
-                tabIndex={0}
-                role="link"
-                aria-label={`Open exhibition details for ${exhibition.title}`}
-                onClick={(event) => handleExhibitionCardClick(exhibitionSlug, event)}
-                onKeyDown={(event) => handleExhibitionCardKeyDown(exhibitionSlug, event)}
-              >
-                {exhibition.imageUrl ? (
-                  <div className="whats-on-card-image">
-                    <img src={exhibition.imageUrl} alt={exhibition.title} />
-                  </div>
-                ) : null}
-                <div className="whats-on-card-body">
-                  <div className="whats-on-card-main">
-                    <h2 className="whats-on-card-title">{exhibition.title}</h2>
-                    {exhibition.artist ? <p className="item-artist">{exhibition.artist}</p> : null}
-                    <p className="item-meta">{formatDateRange(exhibition.startDate, exhibition.endDate)}</p>
-                    {exhibition.openingInformation ? (
-                      <p className="item-meta">{exhibition.openingInformation}</p>
-                    ) : exhibition.openingDate ? (
-                      <p className="item-meta">
-                        Opening: {formatDate(exhibition.openingDate)}
-                        {exhibition.openingTime ? ` | ${exhibition.openingTime}` : ''}
-                      </p>
-                    ) : null}
-                  </div>
-                  <div className="item-actions">
-                    {galleryHref ? (
-                      <Link className="item-gallery-link" href={`/gallery/${encodeURIComponent(galleryHref)}`}>
-                        <span className="item-gallery-name">{galleryName}</span>
-                        <span className="item-gallery-location">{galleryLocation}</span>
-                      </Link>
-                    ) : null}
-                  </div>
-                </div>
-              </li>
-            )
-          }}
-        />
+                exhibition={exhibition}
+                gallery={getGalleryBySlug(galleries, exhibition.gallerySlug)}
+                status={getExhibitionStatus(exhibition, todayISOInSydney())}
+              />
+            ))}
+          </div>
+        </>
       ) : (
         <p className="empty-copy">No exhibitions match these filters.</p>
       )}

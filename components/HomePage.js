@@ -1,85 +1,51 @@
 'use client'
 
 import Link from 'next/link'
-import { addDaysISO, compareISO, formatDate, todayISOInSydney } from '../lib/utils/date'
-import { getExhibitionSlug, getGalleryBySlug } from '../lib/utils/exhibitions'
-import MasonryList from './MasonryList'
+import { compareISO, todayISOInSydney } from '../lib/utils/date'
+import { getExhibitionStatus, getGalleryBySlug } from '../lib/utils/exhibitions'
+import ExhibitionCard from './ExhibitionCard'
 
-function OpeningRows({ items, galleries }) {
-  if (!items.length) {
-    return <p className="empty-copy">No openings listed.</p>
-  }
-
+function Grid({ rows }) {
   return (
-    <MasonryList
-      items={items}
-      className="simple-list home-opening-list masonry-grid"
-      columnClassName="masonry-column"
-      renderItem={(exhibition) => {
-        const gallery = getGalleryBySlug(galleries, exhibition.gallerySlug)
-        const galleryName = gallery?.name || exhibition.galleryName || 'Unknown gallery'
-        const galleryLocation = exhibition.location || gallery?.suburb || gallery?.precinct || 'Unspecified precinct'
-        const exhibitionHref = `/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`
-
-        return (
-          <li key={exhibition.id} className={`simple-row home-opening-card${exhibition.imageUrl ? ' has-image' : ''}`}>
-            <div className="simple-row-main">
-              {exhibition.imageUrl ? (
-                <Link
-                  className="row-thumbnail"
-                  href={exhibitionHref}
-                  aria-label={`View ${exhibition.title}`}
-                >
-                  <img src={exhibition.imageUrl} alt="" />
-                </Link>
-              ) : null}
-              <div>
-                <p className="row-title">
-                  <Link className="text-link" href={exhibitionHref}>
-                    {exhibition.title}
-                  </Link>
-                </p>
-                <p className="row-meta">
-                  <span className="row-gallery-name">{galleryName}</span>
-                  <span className="row-gallery-location">{galleryLocation}</span>
-                </p>
-                <p className="row-date">
-                  {exhibition.openingInformation || formatDate(exhibition.openingDate || exhibition.startDate)}
-                </p>
-              </div>
-            </div>
-          </li>
-        )
-      }}
-    />
+    <div className="ex-grid">
+      {rows.map(({ exhibition, gallery, status }) => (
+        <ExhibitionCard key={exhibition.id} exhibition={exhibition} gallery={gallery} status={status} />
+      ))}
+    </div>
   )
 }
 
 export default function HomePage({ galleries, exhibitions }) {
   const today = todayISOInSydney()
-  const weekEnd = addDaysISO(today, 7)
 
-  const todayOpenings = exhibitions
-    .filter((exhibition) => exhibition.openingDate && compareISO(exhibition.openingDate, today) === 0)
-    .slice(0, 4)
+  const withMeta = exhibitions.map((exhibition) => ({
+    exhibition,
+    gallery: getGalleryBySlug(galleries, exhibition.gallerySlug),
+    status: getExhibitionStatus(exhibition, today)
+  }))
 
-  const weekOpenings = exhibitions
-    .filter(
-      (exhibition) =>
-        exhibition.openingDate &&
-        compareISO(exhibition.openingDate, today) > 0 &&
-        compareISO(exhibition.openingDate, weekEnd) <= 0
-    )
-    .sort((first, second) => compareISO(first.openingDate, second.openingDate))
-    .slice(0, 6)
+  const current = withMeta
+    .filter((row) => row.status === 'current')
+    .sort((a, b) => compareISO(b.exhibition.startDate, a.exhibition.startDate))
+  const upcoming = withMeta
+    .filter((row) => row.status === 'upcoming')
+    .sort((a, b) => compareISO(a.exhibition.startDate, b.exhibition.startDate))
+
+  const galleryCount = galleries.length
 
   return (
     <>
-      <section className="hero">
+      <section className="home-hero">
+        <p className="eyebrow">Sydney Art Finder</p>
         <h1>Your guide to the Sydney art scene</h1>
+        <p className="home-hero-sub">
+          {current.length
+            ? `${current.length} exhibitions on now across ${galleryCount} galleries.`
+            : `Discover exhibitions across ${galleryCount} Sydney galleries.`}
+        </p>
         <div className="hero-actions">
           <Link className="button button-primary" href="/whats-on">
-            Explore What's On
+            Explore What&apos;s On
           </Link>
           <Link className="button button-secondary" href="/galleries">
             Browse Galleries
@@ -87,21 +53,29 @@ export default function HomePage({ galleries, exhibitions }) {
         </div>
       </section>
 
-      <section className="highlights-grid" aria-label="Opening highlights">
-        <article className="highlight-block">
+      {current.length ? (
+        <section className="home-section">
           <div className="section-head">
-            <h2>Opening Today</h2>
+            <h2>On now</h2>
+            <Link className="text-link" href="/whats-on">
+              See all
+            </Link>
           </div>
-          <OpeningRows items={todayOpenings} galleries={galleries} />
-        </article>
+          <Grid rows={current.slice(0, 8)} />
+        </section>
+      ) : null}
 
-        <article className="highlight-block">
+      {upcoming.length ? (
+        <section className="home-section">
           <div className="section-head">
-            <h2>Opening This Week</h2>
+            <h2>Opening soon</h2>
+            <Link className="text-link" href="/whats-on?status=upcoming">
+              See all
+            </Link>
           </div>
-          <OpeningRows items={weekOpenings} galleries={galleries} />
-        </article>
-      </section>
+          <Grid rows={upcoming.slice(0, 8)} />
+        </section>
+      ) : null}
     </>
   )
 }
