@@ -5,6 +5,7 @@ import { compareISO, formatDate, todayISOInSydney } from '../lib/utils/date'
 import { getExhibitionSlug, getExhibitionStatus, getGalleryBySlug } from '../lib/utils/exhibitions'
 import ExhibitionCard from './ExhibitionCard'
 import GalleryCard from './GalleryCard'
+import HeroBanner from './HeroBanner'
 
 const imageFirst = (a, b) => Number(Boolean(b.exhibition.imageUrl)) - Number(Boolean(a.exhibition.imageUrl))
 
@@ -24,28 +25,44 @@ export default function HomePage({ galleries, exhibitions }) {
     .filter((r) => r.status === 'upcoming')
     .sort((a, b) => compareISO(a.exhibition.startDate, b.exhibition.startDate))
 
+  const featured = current.filter((r) => r.exhibition.imageUrl).slice(0, 6)
+
   const currentBySlug = new Set(current.map((r) => r.exhibition.gallerySlug))
   const galleryCards = [...galleries]
     .sort((a, b) => Number(currentBySlug.has(b.slug)) - Number(currentBySlug.has(a.slug)))
     .slice(0, 8)
 
   return (
-    <div className="container">
-      <section className="hero">
-        <p className="eyebrow">On in Sydney</p>
-        <h1 className="hero__statement">Every exhibition on in Sydney.</h1>
-        <p className="meta hero__count">
-          {galleries.length} galleries · {exhibitions.length} exhibitions
-        </p>
-        <div className="hero__actions">
-          <Link className="link-arrow" href="/whats-on">
-            Browse what&apos;s on →
-          </Link>
-          <Link className="link-arrow" href="/galleries">
-            All galleries →
-          </Link>
-        </div>
-      </section>
+    <>
+      {featured.length ? <HeroBanner slides={featured} /> : null}
+      <div className="container">
+        {featured.length ? (
+          <section className="home-intro">
+            <p className="eyebrow">On in Sydney</p>
+            <p className="meta hero__count">
+              {galleries.length} galleries · {exhibitions.length} exhibitions ·{' '}
+              <Link className="text-link" href="/whats-on">
+                Browse all →
+              </Link>
+            </p>
+          </section>
+        ) : (
+          <section className="hero">
+            <p className="eyebrow">On in Sydney</p>
+            <h1 className="hero__statement">Every exhibition on in Sydney.</h1>
+            <p className="meta hero__count">
+              {galleries.length} galleries · {exhibitions.length} exhibitions
+            </p>
+            <div className="hero__actions">
+              <Link className="link-arrow" href="/whats-on">
+                Browse what&apos;s on →
+              </Link>
+              <Link className="link-arrow" href="/galleries">
+                All galleries →
+              </Link>
+            </div>
+          </section>
+        )}
 
       {current.length ? (
         <section className="section">
@@ -110,6 +127,7 @@ export default function HomePage({ galleries, exhibitions }) {
           ))}
         </div>
       </section>
-    </div>
+      </div>
+    </>
   )
 }
