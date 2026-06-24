@@ -4,6 +4,7 @@
   top: 60px;
   z-index: 20;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-3) 0;
@@ -12,7 +13,12 @@
   border-bottom: 1px solid var(--hairline);
 }
 @media (max-width: 899px) { .index-toolbar { top: 0; } }
-.index-toolbar .field { flex: 1; }
+.index-toolbar .field { flex: 1 1 240px; min-width: 0; }
+.index-toolbar .chip-row { flex: 0 1 auto; }
+@media (max-width: 599px) {
+  .index-toolbar .field { flex-basis: 100%; }
+  .index-toolbar .chip-row { flex: 1 1 auto; }
+}
 .index-toolbar-spacer { flex: 1; }
 
 /* list / grid view toggle */

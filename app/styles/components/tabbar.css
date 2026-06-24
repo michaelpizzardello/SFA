@@ -14,10 +14,17 @@
   display: grid;
   place-items: center;
   gap: 3px;
+  min-width: 0;
   min-height: 44px;
-  font: 600 0.625rem var(--font-text), sans-serif;
+  padding: 0 2px;
+  text-align: center;
+  font: 600 0.5rem var(--font-text), sans-serif;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  line-height: 1.1;
   color: var(--ink-500);
 }
 .tabbar a[aria-current='page'] { color: var(--accent); }

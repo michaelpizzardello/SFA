@@ -1,5 +1,15 @@
-/* Fields / inputs */
-.field {
+/* Fields / inputs.
+   Two supported shapes:
+   (a) bare control:  <input class="field"> / <select class="field"> / <textarea class="field">
+   (b) label wrapper: <label class="field"><span>Label</span><input/></label>   (auth + dashboard) */
+
+/* shared box styling for any actual control */
+input.field,
+select.field,
+textarea.field,
+.field > input,
+.field > select,
+.field > textarea {
   width: 100%;
   min-height: 44px;
   padding: 0 14px;
@@ -9,18 +19,43 @@
   border: 1px solid var(--hairline-strong);
   border-radius: var(--radius-control);
 }
-textarea.field { padding: 10px 14px; min-height: 120px; line-height: 1.5; resize: vertical; }
-.field::placeholder { color: var(--ink-400); }
-.field:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+textarea.field,
+.field > textarea { padding: 10px 14px; min-height: 120px; line-height: 1.5; resize: vertical; }
 
-/* editorial underline variant (auth, newsletter) */
-.field--line {
+input.field::placeholder,
+.field > input::placeholder { color: var(--ink-400); }
+
+input.field:focus-visible,
+select.field:focus-visible,
+textarea.field:focus-visible,
+.field > input:focus-visible,
+.field > select:focus-visible,
+.field > textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+
+/* label-wrapper variant */
+label.field { display: grid; gap: 6px; }
+label.field > span {
+  font: 500 var(--t-meta) var(--font-mono), monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-500);
+}
+
+/* editorial underline variant (inputs only) */
+.field--line,
+.field--line > input {
   border: 0; border-bottom: 1px solid var(--hairline-strong);
   border-radius: 0; padding-inline: 0; background: transparent;
 }
-.field--line:focus-visible { outline: none; border-bottom-color: var(--accent); }
+.field--line:focus-visible,
+.field--line > input:focus-visible { outline: none; border-bottom-color: var(--accent); }
 
-.field--invalid { border-color: var(--danger); }
+.field--invalid,
+.field--invalid > input { border-color: var(--danger); }
 
 .field-label {
   display: block;
