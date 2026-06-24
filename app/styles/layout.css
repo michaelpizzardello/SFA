@@ -50,7 +50,7 @@
 @media (min-width: 1440px) { .card-grid { grid-template-columns: repeat(4, 1fr); } }
 
 .results-meta {
-  font: 400 var(--t-meta) / var(--lh-meta) var(--font-text), sans-serif;
+  font: 400 var(--t-meta) / var(--lh-meta) var(--font-mono), monospace;
   color: var(--ink-500);
 }
 

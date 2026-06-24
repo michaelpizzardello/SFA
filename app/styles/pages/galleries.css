@@ -18,5 +18,5 @@
   text-decoration: none;
 }
 .gal-row__name { font: 500 1.0625rem / 1.3 var(--font-text), sans-serif; color: var(--ink-900); }
-.gal-row__meta { font: 400 var(--t-meta) / var(--lh-meta) var(--font-text), sans-serif; color: var(--ink-500); }
+.gal-row__meta { font: 400 var(--t-meta) / var(--lh-meta) var(--font-mono), monospace; color: var(--ink-500); }
 .gal-row:hover .gal-row__name { text-decoration: underline; text-underline-offset: 3px; }

@@ -24,8 +24,9 @@ h3 {
   letter-spacing: 0.12em;
   color: var(--ink-500);
 }
+/* fact captions (dates, locations) = monospace — the Ocula caption signature */
 .meta {
-  font: 400 var(--t-meta) / var(--lh-meta) var(--font-text), sans-serif;
+  font: 400 var(--t-meta) / var(--lh-meta) var(--font-mono), monospace;
   color: var(--ink-500);
   font-variant-numeric: tabular-nums;
 }

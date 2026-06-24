@@ -651,7 +651,7 @@
   color: var(--ink-900);
 }
 .map-selection-show__meta {
-  font: 400 var(--t-meta) var(--font-text), sans-serif;
+  font: 400 var(--t-meta) var(--font-mono), monospace;
   color: var(--ink-500);
 }
 .map-selection-show:hover .map-selection-show__title { text-decoration: underline; text-underline-offset: 2px; }

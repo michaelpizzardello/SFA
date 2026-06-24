@@ -28,7 +28,7 @@
 }
 .gal:hover .gal__name { text-decoration: underline; text-underline-offset: 3px; }
 .gal__meta {
-  font: 400 var(--t-meta) / var(--lh-meta) var(--font-text), sans-serif;
+  font: 400 var(--t-meta) / var(--lh-meta) var(--font-mono), monospace;
   color: var(--ink-500);
   margin: 0;
 }
