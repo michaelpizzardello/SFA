@@ -522,11 +522,14 @@
     z-index: auto;
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(360px, 0.75fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
     grid-template-areas:
       'top top'
       'map sheet'
       'cta sheet';
     gap: var(--space-4);
+    height: 100dvh;
+    padding: var(--space-5) var(--gutter);
   }
 
   .map-top-overlay {
@@ -557,8 +560,8 @@
     grid-area: map;
     position: static;
     inset: auto;
-    height: calc(100vh - 240px);
-    min-height: 560px;
+    height: 100%;
+    min-height: 0;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-control);
   }
@@ -613,7 +616,10 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-block);
     max-height: none;
-    height: auto !important;
+    height: 100% !important;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
     transition: none;
   }
 
@@ -625,7 +631,9 @@
     display: block !important;
     opacity: 1 !important;
     pointer-events: auto !important;
-    max-height: calc(100vh - 280px);
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
     overflow: auto;
     padding: var(--space-3);
   }

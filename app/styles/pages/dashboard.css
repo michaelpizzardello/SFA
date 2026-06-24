@@ -70,6 +70,26 @@
 .dashboard-form-back { font: 500 var(--t-eyebrow) var(--font-mono), monospace; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-500); text-decoration: none; width: fit-content; }
 .dashboard-form-back:hover { color: var(--ink-900); }
 .dashboard-form-actions { display: flex; align-items: center; gap: var(--space-5); flex-wrap: wrap; margin-top: var(--space-2); }
+
+/* Sectioned settings form (Studio360-style: a head column + a fields column per group) */
+.dashboard-form--settings { max-width: 900px; gap: var(--space-2); }
+.form-section { display: grid; gap: var(--space-4); padding: var(--space-7) 0; border-top: 1px solid var(--hairline); }
+.form-section:first-of-type { border-top: 0; padding-top: var(--space-4); }
+@media (min-width: 860px) {
+  .form-section { grid-template-columns: 220px minmax(0, 1fr); gap: var(--space-7); }
+}
+.form-section__head { display: grid; gap: 4px; align-content: start; }
+.form-section__head h2 { font: 600 1rem var(--font-text), sans-serif; letter-spacing: -0.01em; color: var(--ink-900); margin: 0; }
+.form-section__hint { font: 400 var(--t-small) / 1.5 var(--font-text), sans-serif; color: var(--ink-500); max-width: 38ch; margin: 0; }
+.form-section__fields { display: grid; gap: var(--space-4); align-content: start; }
+.dashboard-form-actions--bar {
+  position: sticky;
+  bottom: 0;
+  margin-top: var(--space-3);
+  padding: var(--space-4) 0;
+  background: var(--paper);
+  border-top: 1px solid var(--hairline);
+}
 .dashboard-form-grid { display: grid; gap: var(--space-4); }
 @media (min-width: 600px) { .dashboard-form-grid { grid-template-columns: 1fr 1fr; } }
 .checkbox-field { display: flex; align-items: center; gap: var(--space-2); font-weight: 500; }

@@ -64,7 +64,7 @@
   --gutter: clamp(16px, 5vw, 40px);
   --grid-col-gap: 24px;
   --grid-row-gap: 56px;
-  --mobile-tabbar-height: 64px;
+  --mobile-tabbar-height: 54px;
 
   /* ---- Radius (sharp = blue-chip; pills for chips/status) ---- */
   --radius-control: 6px;
