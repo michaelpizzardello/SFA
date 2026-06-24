@@ -33,7 +33,7 @@
 }
 
 .header__right { margin-left: auto; display: flex; align-items: center; gap: var(--space-4); }
-.header__search-btn {
+.header__icon-btn {
   display: grid;
   place-items: center;
   width: 40px;
@@ -43,7 +43,8 @@
   color: var(--ink-700);
   cursor: pointer;
 }
-.header__search-btn:hover { color: var(--ink-900); }
+.header__icon-btn:hover { color: var(--ink-900); }
+.header__icon-btn[aria-current='page'] { color: var(--ink-900); }
 
 /* Search overlay (Ocula-style): full-width band under the header + page scrim */
 .search-overlay__scrim {

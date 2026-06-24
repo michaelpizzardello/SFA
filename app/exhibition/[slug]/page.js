@@ -18,6 +18,11 @@ export default async function ExhibitionPage({ params }) {
   const gallery = getGalleryBySlug(data.galleries, exhibition.gallerySlug)
 
   return (
-    <ExhibitionProfilePage exhibition={exhibition} gallery={gallery} />
+    <ExhibitionProfilePage
+      exhibition={exhibition}
+      gallery={gallery}
+      allExhibitions={data.exhibitions}
+      allGalleries={data.galleries}
+    />
   )
 }

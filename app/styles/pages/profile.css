@@ -57,15 +57,13 @@
 .exhibition-detail__top { display: grid; gap: var(--space-6); }
 @media (min-width: 900px) {
   .exhibition-detail__top:not(.exhibition-detail__top--noimg) {
-    grid-template-columns: minmax(0, 1.7fr) minmax(280px, 1fr);
+    grid-template-columns: minmax(0, 1.6fr) minmax(320px, 1fr);
     gap: var(--space-8);
     align-items: start;
   }
-  .exhibition-detail__top:not(.exhibition-detail__top--noimg) .profile-hero {
-    position: sticky;
-    top: var(--space-7);
-  }
 }
+.profile-hero__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-2); }
+.profile-opening { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: baseline; }
 .exhibition-image {
   display: flex;
   justify-content: center;
@@ -76,7 +74,7 @@
 .exhibition-image img {
   width: auto;
   max-width: 100%;
-  max-height: 76vh;
+  max-height: 70vh;
   height: auto;
   object-fit: contain;
   display: block;

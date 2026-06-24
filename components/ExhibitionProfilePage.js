@@ -1,12 +1,54 @@
 import Link from 'next/link'
-import { formatDate, formatDateRange } from '../lib/utils/date'
-import { getExhibitionStatus } from '../lib/utils/exhibitions'
+import { addDaysISO, compareISO, formatDate, formatDateRange, todayISOInSydney } from '../lib/utils/date'
+import { getExhibitionSlug, getExhibitionStatus, getGalleryBySlug } from '../lib/utils/exhibitions'
+import ExhibitionCard from './ExhibitionCard'
+import ShareButton from './ShareButton'
 
 const STATUS_LABEL = { current: 'On now', upcoming: 'Opening soon', past: 'Past' }
 
-export default function ExhibitionProfilePage({ exhibition, gallery }) {
+function RelatedGrid({ items, galleries, today }) {
+  return (
+    <div className="card-grid">
+      {items.map((e) => (
+        <ExhibitionCard
+          key={e.id}
+          exhibition={e}
+          gallery={getGalleryBySlug(galleries, e.gallerySlug)}
+          status={getExhibitionStatus(e, today)}
+        />
+      ))}
+    </div>
+  )
+}
+
+export default function ExhibitionProfilePage({ exhibition, gallery, allExhibitions = [], allGalleries = [] }) {
   const status = getExhibitionStatus(exhibition)
   const precinct = gallery?.precinct || exhibition.location || ''
+  const currentSlug = getExhibitionSlug(exhibition)
+  const mapsHref = gallery?.address
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(gallery.address)}`
+    : null
+  const openingNight =
+    exhibition.openingInformation ||
+    (exhibition.openingDate
+      ? `${formatDate(exhibition.openingDate)}${exhibition.openingTime ? ` · ${exhibition.openingTime}` : ''}`
+      : '')
+
+  const today = todayISOInSydney()
+  const soonCutoff = addDaysISO(today, 21)
+  const moreAtGallery = allExhibitions
+    .filter((e) => e.gallerySlug === exhibition.gallerySlug && getExhibitionSlug(e) !== currentSlug)
+    .slice(0, 3)
+  const closingSoon = allExhibitions
+    .filter(
+      (e) =>
+        getExhibitionSlug(e) !== currentSlug &&
+        getExhibitionStatus(e, today) === 'current' &&
+        e.endDate &&
+        compareISO(e.endDate, soonCutoff) <= 0
+    )
+    .sort((a, b) => compareISO(a.endDate, b.endDate))
+    .slice(0, 3)
 
   return (
     <div className="container profile">
@@ -35,6 +77,20 @@ export default function ExhibitionProfilePage({ exhibition, gallery }) {
               <span className="meta">{exhibition.galleryName}</span>
             )}
           </div>
+          {openingNight ? (
+            <p className="profile-opening">
+              <span className="eyebrow">Opening night</span>
+              <span className="meta">{openingNight}</span>
+            </p>
+          ) : null}
+          <div className="profile-hero__actions">
+            {mapsHref ? (
+              <a className="btn btn--ghost" href={mapsHref} target="_blank" rel="noreferrer">
+                Get directions
+              </a>
+            ) : null}
+            <ShareButton title={exhibition.title} />
+          </div>
         </section>
       </div>
 
@@ -47,22 +103,10 @@ export default function ExhibitionProfilePage({ exhibition, gallery }) {
       <section className="profile-section">
         <p className="eyebrow">Details</p>
         <dl className="def-list">
-          <div>
-            <dt>Dates</dt>
-            <dd>{formatDateRange(exhibition.startDate, exhibition.endDate)}</dd>
-          </div>
-          {exhibition.openingInformation ? (
+          {openingNight ? (
             <div>
               <dt>Opening</dt>
-              <dd>{exhibition.openingInformation}</dd>
-            </div>
-          ) : exhibition.openingDate ? (
-            <div>
-              <dt>Opening</dt>
-              <dd>
-                {formatDate(exhibition.openingDate)}
-                {exhibition.openingTime ? ` · ${exhibition.openingTime}` : ''}
-              </dd>
+              <dd>{openingNight}</dd>
             </div>
           ) : null}
           {gallery ? (
@@ -92,6 +136,20 @@ export default function ExhibitionProfilePage({ exhibition, gallery }) {
           ) : null}
         </dl>
       </section>
+
+      {moreAtGallery.length ? (
+        <section className="profile-section">
+          <p className="eyebrow">More at {gallery?.name || 'this gallery'}</p>
+          <RelatedGrid items={moreAtGallery} galleries={allGalleries} today={today} />
+        </section>
+      ) : null}
+
+      {closingSoon.length ? (
+        <section className="profile-section">
+          <p className="eyebrow">Closing soon across Sydney</p>
+          <RelatedGrid items={closingSoon} galleries={allGalleries} today={today} />
+        </section>
+      ) : null}
     </div>
   )
 }

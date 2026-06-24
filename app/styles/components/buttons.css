@@ -29,6 +29,27 @@
 
 .btn--block { width: 100%; }
 
+/* save/favourite toggle, absolutely placed over a card image */
+.card-save {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  z-index: 2;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink-700);
+  box-shadow: 0 1px 4px rgba(20, 16, 12, 0.16);
+  transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.card-save:hover { color: var(--ink-900); background: #fff; }
+.card-save.is-saved { color: var(--accent); }
+
 /* compact icon button (filter triggers etc.) */
 .icon-btn {
   width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;

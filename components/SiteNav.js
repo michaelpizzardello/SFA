@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import SearchField from './SearchField'
 import SearchIcon from './icons/SearchIcon'
+import StarIcon from './icons/StarIcon'
 
 const NAV = [
   { href: '/whats-on', label: "What's On", match: (p) => p === '/whats-on' || p.startsWith('/exhibition/') },
@@ -71,13 +72,21 @@ export default function SiteNav() {
         <div className="header__right">
           <button
             type="button"
-            className="header__search-btn"
+            className="header__icon-btn"
             aria-label="Search"
             aria-expanded={searchOpen}
             onClick={() => setSearchOpen((v) => !v)}
           >
             <SearchIcon />
           </button>
+          <Link
+            className="header__icon-btn"
+            href="/saved"
+            aria-label="Saved"
+            aria-current={pathname === '/saved' ? 'page' : undefined}
+          >
+            <StarIcon />
+          </Link>
         </div>
       </header>
 

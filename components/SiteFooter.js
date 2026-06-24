@@ -29,6 +29,7 @@ export default function SiteFooter({ signedIn = false }) {
           <Link href="/whats-on">What&apos;s On</Link>
           <Link href="/galleries">Galleries</Link>
           <Link href="/map">Map</Link>
+          <Link href="/saved">Saved</Link>
         </nav>
 
         <nav className="site-footer__col" aria-label="For galleries">

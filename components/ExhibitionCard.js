@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { formatDateRange, todayISOInSydney } from '../lib/utils/date'
 import { getExhibitionSlug } from '../lib/utils/exhibitions'
 import CardImage from './CardImage'
+import SaveButton from './SaveButton'
 
 function daysUntil(iso, today) {
   const a = Date.parse(`${iso}T00:00:00Z`)
@@ -31,28 +32,31 @@ export default function ExhibitionCard({ exhibition, gallery, status }) {
   const tag = status ? resolveTag(exhibition, status) : null
 
   return (
-    <Link href={href} className="ex" aria-label={`${exhibition.title}${galleryName ? ` — ${galleryName}` : ''}`}>
-      <div className="ex__media">
-        {exhibition.imageUrl ? (
-          <CardImage className="ex__img" src={exhibition.imageUrl} />
-        ) : precinct ? (
-          <span className="ex__placeholder-label" aria-hidden="true">
-            {precinct}
-          </span>
-        ) : null}
-      </div>
-      <div className="ex__body">
-        {tag ? <span className={`tag tag--${tag.cls} ex__tag`}>{tag.label}</span> : null}
-        <h3 className="ex__title title-work">{exhibition.title}</h3>
-        {exhibition.artist ? <p className="ex__artist">{exhibition.artist}</p> : null}
-        {galleryName ? (
-          <p className="ex__gallery">
-            {galleryName}
-            {precinct ? `, ${precinct}` : ''}
-          </p>
-        ) : null}
-        <p className="ex__meta meta">{range}</p>
-      </div>
-    </Link>
+    <div className="ex">
+      <Link href={href} className="ex__link" aria-label={`${exhibition.title}${galleryName ? ` — ${galleryName}` : ''}`}>
+        <div className="ex__media">
+          {exhibition.imageUrl ? (
+            <CardImage className="ex__img" src={exhibition.imageUrl} />
+          ) : precinct ? (
+            <span className="ex__placeholder-label" aria-hidden="true">
+              {precinct}
+            </span>
+          ) : null}
+        </div>
+        <div className="ex__body">
+          {tag ? <span className={`tag tag--${tag.cls} ex__tag`}>{tag.label}</span> : null}
+          <h3 className="ex__title title-work">{exhibition.title}</h3>
+          {exhibition.artist ? <p className="ex__artist">{exhibition.artist}</p> : null}
+          {galleryName ? (
+            <p className="ex__gallery">
+              {galleryName}
+              {precinct ? `, ${precinct}` : ''}
+            </p>
+          ) : null}
+          <p className="ex__meta meta">{range}</p>
+        </div>
+      </Link>
+      <SaveButton kind="exhibition" slug={getExhibitionSlug(exhibition)} label={exhibition.title} />
+    </div>
   )
 }

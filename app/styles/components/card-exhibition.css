@@ -1,6 +1,7 @@
 /* ExhibitionCard — one markup serves grid-card AND list-row.
    Title-first (locked guide + real schema). Single --placeholder tile; no per-entity tints. */
-.ex {
+.ex { position: relative; }
+.ex__link {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
@@ -45,11 +46,12 @@
 .index-list { list-style: none; margin: 0; padding: 0; }
 .index-list > li { margin: 0; }
 .index-list .ex {
-  gap: 4px;
   padding: var(--space-5) 0;
   border-bottom: 1px solid var(--hairline);
 }
+.index-list .ex__link { gap: 4px; }
 .index-list .ex__media { display: none; }
+.index-list .card-save { display: none; }
 @media (min-width: 900px) {
   .index-list .ex__body {
     display: grid;

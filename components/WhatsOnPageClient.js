@@ -169,7 +169,7 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
       </div>
 
       <div className="applied-row">
-        {applied.length ? <span className="results-meta">{filteredExhibitions.length} exhibitions</span> : null}
+        <span className="results-meta">{filteredExhibitions.length} exhibitions</span>
         {applied.map((f) => (
           <span key={f.key} className="chip chip--applied">
             <span className="chip__label">{f.label}</span>

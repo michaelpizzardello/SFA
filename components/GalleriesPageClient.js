@@ -83,7 +83,7 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
       </div>
 
       <div className="applied-row">
-        {applied.length ? <span className="results-meta">{rows.length} galleries</span> : null}
+        <span className="results-meta">{rows.length} galleries</span>
         {applied.map((f) => (
           <span key={f.key} className="chip chip--applied">
             <span className="chip__label">{f.label}</span>
@@ -101,17 +101,20 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
       {rows.length ? (
         view === 'grid' ? (
           <div className="card-grid">
-            {rows.map(({ gallery }) => (
-              <GalleryCard key={gallery.id} gallery={gallery} />
+            {rows.map(({ gallery, summary }) => (
+              <GalleryCard key={gallery.id} gallery={gallery} summary={summary} />
             ))}
           </div>
         ) : (
           <ul className="gal-list">
-            {rows.map(({ gallery }) => (
+            {rows.map(({ gallery, summary }) => (
               <li key={gallery.id}>
                 <Link className="gal-row" href={`/gallery/${encodeURIComponent(gallery.slug)}`}>
                   <span className="gal-row__name">{gallery.name}</span>
-                  <span className="gal-row__meta">{[gallery.precinct, gallery.suburb].filter(Boolean).join(' · ')}</span>
+                  <span className="gal-row__meta">
+                    {[gallery.precinct, gallery.suburb].filter(Boolean).join(' · ')}
+                    {summary?.current ? ` · ${summary.current} on now` : ''}
+                  </span>
                 </Link>
               </li>
             ))}
