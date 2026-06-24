@@ -1,7 +1,7 @@
 /* Dashboard + console: classes referenced by JSX but otherwise undefined */
 .dashboard-main { display: block; }
 .dashboard-row-main { display: grid; gap: 2px; min-width: 0; }
-.item-title { font: italic 500 var(--t-card-title) var(--font-display), serif; color: var(--ink-900); margin: 0; }
+.item-title { font: 500 var(--t-card-title) var(--font-text), sans-serif; color: var(--ink-900); margin: 0; }
 
 /* ============================================================
    Legacy class compat for auth + dashboard + console
