@@ -27,6 +27,14 @@
   .index-toolbar .view-toggle { display: none; }
 }
 
+/* quiet text controls in the toolbar (Map, Filters) — not bordered buttons */
+.toolbar-control {
+  border: 0; background: none; cursor: pointer; min-height: 44px;
+  font: 500 0.9375rem var(--font-text), sans-serif; color: var(--ink-700);
+  display: inline-flex; align-items: center;
+}
+.toolbar-control:hover { color: var(--ink-900); }
+
 /* list / grid view toggle — quiet, de-boxed (active = ink, inactive = faint) */
 .view-toggle { display: inline-flex; gap: 2px; }
 .view-toggle button {

@@ -12,7 +12,7 @@ export default function SiteFooter({ signedIn = false }) {
   const isMapRoute = pathname.startsWith('/map')
   if (isAppRoute || isMapRoute) return null
 
-  const year = 2026
+  const year = new Date().getFullYear()
 
   return (
     <footer className="site-footer">

@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useActionState } from 'react'
 import { saveExhibitionAction } from '@/lib/actions/exhibitions'
 import ImageUploadField from './ImageUploadField'
@@ -14,9 +15,10 @@ export default function ExhibitionForm({ gallery, exhibition }) {
       <input type="hidden" name="gallerySlug" value={gallery.slug} />
       {exhibition ? <input type="hidden" name="id" value={exhibition.id} /> : null}
 
-      <div className="section-head">
-        <h1>{exhibition ? 'Edit exhibition' : 'New exhibition'}</h1>
-      </div>
+      <Link className="dashboard-form-back" href="/dashboard/exhibitions">
+        ← Exhibitions
+      </Link>
+      <h1>{exhibition ? 'Edit exhibition' : 'New exhibition'}</h1>
 
       <label className="field">
         <span>Title</span>
@@ -59,18 +61,31 @@ export default function ExhibitionForm({ gallery, exhibition }) {
         <textarea name="summary" rows={5} defaultValue={e.summary || ''} />
       </label>
 
-      <ImageUploadField name="image_url" galleryId={gallery.id} initialUrl={e.image_url || ''} label="Exhibition image" />
+      <ImageUploadField
+        name="image_url"
+        galleryId={gallery.id}
+        initialUrl={e.image_url || ''}
+        label="Exhibition image"
+        hint="Landscape works best (3:2). JPG, PNG or WebP."
+      />
 
       <label className="checkbox-field">
         <input type="checkbox" name="published" defaultChecked={exhibition ? Boolean(e.published) : true} />
         <span>Published (visible on the public site)</span>
       </label>
 
-      {state?.error ? <p className="admin-error">{state.error}</p> : null}
+      <div role="status" aria-live="polite">
+        {state?.error ? <p className="admin-error">{state.error}</p> : null}
+      </div>
 
-      <button className="button button-primary" type="submit" disabled={pending}>
-        {pending ? 'Saving…' : 'Save exhibition'}
-      </button>
+      <div className="dashboard-form-actions">
+        <button className="button button-primary" type="submit" disabled={pending}>
+          {pending ? 'Saving…' : 'Save exhibition'}
+        </button>
+        <Link className="text-link" href="/dashboard/exhibitions">
+          Cancel
+        </Link>
+      </div>
     </form>
   )
 }

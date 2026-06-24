@@ -20,13 +20,18 @@ export default async function DashboardOverview() {
 
   const gallery = galleries[0]
   const exhibitions = await getGalleryExhibitions(gallery.id)
-  const publishedCount = exhibitions.filter((e) => e.published).length
 
   const checklist = []
-  if (!gallery.about) checklist.push('Add an About description for your gallery')
-  if (!gallery.cover_url && !gallery.logo_url) checklist.push('Upload a logo or cover image')
-  if (gallery.latitude == null || gallery.longitude == null) checklist.push('Set your map location')
-  if (!exhibitions.length) checklist.push('Add your first exhibition')
+  if (!gallery.about) checklist.push({ label: 'Add an About description', href: '/dashboard/profile' })
+  if (!gallery.cover_url && !gallery.logo_url) checklist.push({ label: 'Upload a logo or cover image', href: '/dashboard/profile' })
+  if (gallery.latitude == null || gallery.longitude == null) checklist.push({ label: 'Set your map location', href: '/dashboard/profile' })
+  if (!exhibitions.length) checklist.push({ label: 'Add your first exhibition', href: '/dashboard/exhibitions/new' })
+
+  // Single clear primary action, driven by setup state (Artsy partner-dashboard pattern).
+  const profileIncomplete = !gallery.about || (!gallery.cover_url && !gallery.logo_url) || gallery.latitude == null || gallery.longitude == null
+  const primary = profileIncomplete
+    ? { href: '/dashboard/profile', label: 'Complete your profile' }
+    : { href: '/dashboard/exhibitions/new', label: 'Add exhibition' }
 
   return (
     <section className="dashboard-panel">
@@ -38,16 +43,14 @@ export default async function DashboardOverview() {
         </p>
       ) : null}
 
-      <p className="row-meta">
-        {exhibitions.length} exhibition{exhibitions.length === 1 ? '' : 's'} · {publishedCount} published
-      </p>
-
       {checklist.length ? (
         <div className="dashboard-checklist">
           <h2>Finish setting up</h2>
           <ul>
             {checklist.map((item) => (
-              <li key={item}>{item}</li>
+              <li key={item.label}>
+                <Link href={item.href}>{item.label}</Link>
+              </li>
             ))}
           </ul>
         </div>
@@ -56,13 +59,16 @@ export default async function DashboardOverview() {
       )}
 
       <div className="dashboard-quick-actions">
-        <Link className="button button-primary" href="/dashboard/exhibitions/new">
-          Add exhibition
+        <Link className="button button-primary" href={primary.href}>
+          {primary.label}
+        </Link>
+        <Link className="button button-secondary" href="/dashboard/exhibitions">
+          Exhibitions
         </Link>
         <Link className="button button-secondary" href="/dashboard/profile">
           Edit profile
         </Link>
-        <Link className="button button-secondary" href={`/gallery/${gallery.slug}`}>
+        <Link className="text-link" href={`/gallery/${gallery.slug}`}>
           View public page
         </Link>
       </div>

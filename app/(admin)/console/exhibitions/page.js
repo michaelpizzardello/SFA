@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { getAllExhibitions } from '@/lib/data/adminConsole'
 import { setExhibitionHiddenAction } from '@/lib/actions/admin'
 import { formatDate } from '@/lib/utils/date'
@@ -29,12 +30,17 @@ export default async function ConsoleExhibitionsPage() {
                   e.hidden_by_admin ? 'status-past' : e.published ? 'status-current' : 'status-upcoming'
                 }`}
               >
-                {e.hidden_by_admin ? 'Hidden' : e.published ? 'Live' : 'Draft'}
+                {e.hidden_by_admin ? 'Hidden' : e.published ? 'Published' : 'Draft'}
               </span>
+              {e.slug ? (
+                <Link className="text-link" href={`/exhibition/${e.slug}`}>
+                  View
+                </Link>
+              ) : null}
               <form action={setExhibitionHiddenAction}>
                 <input type="hidden" name="id" value={e.id} />
                 <input type="hidden" name="hidden" value={(!e.hidden_by_admin).toString()} />
-                <button className="text-link text-link-button" type="submit">
+                <button className={`text-link-button ${e.hidden_by_admin ? '' : 'text-link-danger'}`} type="submit">
                   {e.hidden_by_admin ? 'Unhide' : 'Hide'}
                 </button>
               </form>

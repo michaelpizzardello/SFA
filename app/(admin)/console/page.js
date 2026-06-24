@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import InviteGalleryForm from '@/components/admin/InviteGalleryForm'
 import { getAllGalleries, getAllExhibitions } from '@/lib/data/adminConsole'
 
@@ -12,7 +11,9 @@ export default async function ConsoleOverview() {
 
   return (
     <section className="dashboard-panel">
-      <h1>Console</h1>
+      <div className="section-head">
+        <h1>Overview</h1>
+      </div>
 
       <div className="dashboard-stats">
         <div className="dashboard-stat">
@@ -34,15 +35,6 @@ export default async function ConsoleOverview() {
       </div>
 
       <InviteGalleryForm galleries={galleries} />
-
-      <div className="dashboard-quick-actions">
-        <Link className="button button-secondary" href="/console/galleries">
-          Manage galleries
-        </Link>
-        <Link className="button button-secondary" href="/console/exhibitions">
-          Manage exhibitions
-        </Link>
-      </div>
     </section>
   )
 }

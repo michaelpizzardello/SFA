@@ -27,11 +27,16 @@ export default function InviteGalleryForm({ galleries }) {
         <span>Owner email</span>
         <input name="email" type="email" required placeholder="owner@gallery.com" />
       </label>
-      {state?.error ? <p className="admin-error">{state.error}</p> : null}
-      {state?.ok ? <p className="form-success">{state.message}</p> : null}
+      <p className="form-hint">
+        Emails an invitation link. The recipient can claim this gallery and manage its profile and exhibitions.
+      </p>
       <button className="button button-primary" type="submit" disabled={pending}>
         {pending ? 'Sending…' : 'Send invite'}
       </button>
+      <div role="status" aria-live="polite">
+        {state?.error ? <p className="admin-error">{state.error}</p> : null}
+        {state?.ok ? <p className="form-success">{state.message}</p> : null}
+      </div>
     </form>
   )
 }

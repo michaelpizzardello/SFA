@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useActionState } from 'react'
 import { updateGalleryAction } from '@/lib/actions/galleries'
 import ImageUploadField from './ImageUploadField'
@@ -11,9 +12,10 @@ export default function ProfileEditor({ gallery }) {
   return (
     <form action={formAction} className="dashboard-form">
       <input type="hidden" name="galleryId" value={gallery.id} />
-      <div className="section-head">
-        <h1>Edit profile</h1>
-      </div>
+      <Link className="dashboard-form-back" href="/dashboard">
+        ← Dashboard
+      </Link>
+      <h1>Edit profile</h1>
 
       <div className="dashboard-form-grid">
         <label className="field">
@@ -83,22 +85,36 @@ export default function ProfileEditor({ gallery }) {
       </label>
 
       <div className="dashboard-form-grid">
-        <ImageUploadField name="logo_url" galleryId={gallery.id} initialUrl={gallery.logo_url || ''} label="Logo" />
+        <ImageUploadField
+          name="logo_url"
+          galleryId={gallery.id}
+          initialUrl={gallery.logo_url || ''}
+          label="Logo"
+          variant="logo"
+          hint="Used as a fallback on your index card when no cover is set."
+        />
         <ImageUploadField
           name="cover_url"
           galleryId={gallery.id}
           initialUrl={gallery.cover_url || ''}
           label="Cover image"
-          hint="Shown on your card in the galleries index."
+          hint="Shown on your card in the galleries index. Landscape (3:2) works best."
         />
       </div>
 
-      {state?.error ? <p className="admin-error">{state.error}</p> : null}
-      {state?.ok ? <p className="form-success">{state.message}</p> : null}
+      <div role="status" aria-live="polite">
+        {state?.error ? <p className="admin-error">{state.error}</p> : null}
+        {state?.ok ? <p className="form-success">{state.message}</p> : null}
+      </div>
 
-      <button className="button button-primary" type="submit" disabled={pending}>
-        {pending ? 'Saving…' : 'Save profile'}
-      </button>
+      <div className="dashboard-form-actions">
+        <button className="button button-primary" type="submit" disabled={pending}>
+          {pending ? 'Saving…' : 'Save profile'}
+        </button>
+        <Link className="text-link" href={`/gallery/${gallery.slug}`}>
+          View public page
+        </Link>
+      </div>
     </form>
   )
 }

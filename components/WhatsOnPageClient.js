@@ -156,15 +156,15 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
             </button>
           ))}
         </div>
-        <button type="button" className="btn btn--ghost" onClick={() => setFiltersOpen(true)}>
+        <button type="button" className="toolbar-control" onClick={() => setFiltersOpen(true)}>
           Filters
         </button>
         <div className="view-toggle" role="group" aria-label="View">
-          <button type="button" aria-pressed={view === 'list'} aria-label="List view" onClick={() => setView('list')}>
-            <IconList />
-          </button>
           <button type="button" aria-pressed={view === 'grid'} aria-label="Grid view" onClick={() => setView('grid')}>
             <IconGrid />
+          </button>
+          <button type="button" aria-pressed={view === 'list'} aria-label="List view" onClick={() => setView('list')}>
+            <IconList />
           </button>
         </div>
       </div>

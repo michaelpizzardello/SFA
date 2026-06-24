@@ -37,8 +37,8 @@
 .status-upcoming { color: var(--ink-500); }
 .status-past { color: var(--ink-400); }
 .empty-copy { color: var(--ink-500); font: italic var(--fw-lead) var(--t-lead) var(--font-display), serif; padding: var(--space-7) 0; }
-.item-kicker { font: 500 var(--t-eyebrow) var(--font-mono), monospace; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); }
-.row-meta { font: 400 var(--t-meta) var(--font-mono), monospace; color: var(--ink-500); }
+.item-kicker { font: 500 var(--t-eyebrow) var(--font-mono), monospace; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-500); }
+.row-meta { font: 400 var(--t-meta) var(--font-text), sans-serif; color: var(--ink-500); }
 
 .dashboard-shell { width: min(980px, 100%); margin-inline: auto; padding: 0 var(--gutter) var(--space-10); }
 .dashboard-nav {
@@ -58,11 +58,18 @@
 .dashboard-stat-num { font: 500 2rem / 1 var(--font-display), serif; }
 .dashboard-stat-label { font: 400 var(--t-meta) var(--font-mono), monospace; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-500); }
 .dashboard-checklist { background: none; padding: 0; }
-.dashboard-checklist h2 { font-size: 1.05rem; margin-bottom: var(--space-2); }
+.dashboard-checklist h2 { font: 500 var(--t-eyebrow) var(--font-mono), monospace; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-500); margin-bottom: var(--space-2); }
 .dashboard-checklist ul { list-style: none; margin: 0; padding: 0; }
-.dashboard-checklist li { padding: var(--space-3) 0; border-bottom: 1px solid var(--hairline); color: var(--ink-700); }
-.dashboard-quick-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+.dashboard-checklist li { border-bottom: 1px solid var(--hairline); }
+.dashboard-checklist li a { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-3) 0; color: var(--ink-700); text-decoration: none; }
+.dashboard-checklist li a:hover { color: var(--ink-900); }
+.dashboard-checklist li a::after { content: '›'; color: var(--ink-400); }
+.dashboard-quick-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
 .dashboard-form { display: grid; gap: var(--space-4); max-width: 680px; }
+.dashboard-form h1 { font: var(--fw-h1) clamp(1.8rem, 4vw, 2.6rem) / 1.06 var(--font-display), serif; }
+.dashboard-form-back { font: 500 var(--t-eyebrow) var(--font-mono), monospace; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-500); text-decoration: none; width: fit-content; }
+.dashboard-form-back:hover { color: var(--ink-900); }
+.dashboard-form-actions { display: flex; align-items: center; gap: var(--space-5); flex-wrap: wrap; margin-top: var(--space-2); }
 .dashboard-form-grid { display: grid; gap: var(--space-4); }
 @media (min-width: 600px) { .dashboard-form-grid { grid-template-columns: 1fr 1fr; } }
 .checkbox-field { display: flex; align-items: center; gap: var(--space-2); font-weight: 500; }
@@ -73,9 +80,20 @@
 .dashboard-row-actions { display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; }
 .dashboard-delete { margin-top: var(--space-6); padding-top: var(--space-4); border-top: 1px solid var(--hairline); }
 .upload-preview { display: block; width: 100%; max-width: 280px; aspect-ratio: 3 / 2; object-fit: cover; background: var(--placeholder); border: 1px solid var(--hairline); margin-bottom: var(--space-2); }
+.upload-preview--logo { aspect-ratio: 1 / 1; max-width: 160px; object-fit: contain; }
+/* style the native file picker so it matches the system */
+.field input[type='file'] { font: 400 var(--t-small) var(--font-text), sans-serif; color: var(--ink-500); }
+.field input[type='file']::file-selector-button {
+  font: 600 0.875rem var(--font-text), sans-serif;
+  min-height: 38px; padding: 0 14px; margin-right: 12px;
+  border: 1px solid var(--hairline-strong); border-radius: var(--radius-control);
+  background: var(--surface); color: var(--ink-900); cursor: pointer;
+}
+.field input[type='file']::file-selector-button:hover { border-color: var(--ink-900); }
 
-/* auth shell (admin-shell / admin-card) */
-.admin-shell { min-height: calc(100dvh - 60px); display: grid; place-items: start center; padding: var(--space-9) var(--gutter); }
+/* auth shell (admin-shell / admin-card) — public header is hidden on auth routes, so brand here */
+.admin-shell { min-height: 100dvh; display: grid; place-items: start center; padding: var(--space-8) var(--gutter) var(--space-9); }
 .admin-card { width: 100%; max-width: 400px; display: grid; gap: var(--space-4); }
-.admin-card h1 { font: var(--fw-h3) 1.5rem / 1.2 var(--font-display), serif; }
+.admin-brand { font: 500 1.2rem var(--font-display), serif; letter-spacing: -0.01em; color: var(--ink-900); text-decoration: none; margin-bottom: var(--space-5); }
+.admin-card h1 { font: 500 1.75rem / 1.15 var(--font-display), serif; }
 .admin-form-stack { display: grid; gap: var(--space-4); }

@@ -25,7 +25,6 @@ import './styles/pages/whats-on.css'
 import './styles/pages/galleries.css'
 import './styles/pages/profile.css'
 import './styles/pages/map.css'
-import './styles/pages/auth.css'
 import './styles/pages/dashboard.css'
 
 import SiteNav from '../components/SiteNav'

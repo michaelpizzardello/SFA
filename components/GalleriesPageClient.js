@@ -66,10 +66,10 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
           onChange={(e) => setSearch(e.target.value)}
           aria-label="Search galleries"
         />
-        <Link className="btn btn--ghost" href={precinct !== 'all' ? `/map?precinct=${encodeURIComponent(precinct)}` : '/map'}>
+        <Link className="toolbar-control" href={precinct !== 'all' ? `/map?precinct=${encodeURIComponent(precinct)}` : '/map'}>
           Map
         </Link>
-        <button type="button" className="btn btn--ghost" onClick={() => setFiltersOpen(true)}>
+        <button type="button" className="toolbar-control" onClick={() => setFiltersOpen(true)}>
           Filters
         </button>
         <div className="view-toggle" role="group" aria-label="View">

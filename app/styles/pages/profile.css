@@ -25,26 +25,6 @@
 }
 .profile-cover img { width: 100%; height: 100%; object-fit: cover; }
 
-/* sub-nav tabs */
-.profile-tabs {
-  display: flex;
-  gap: var(--space-5);
-  border-bottom: 1px solid var(--hairline);
-  margin-bottom: var(--space-6);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.profile-tabs::-webkit-scrollbar { display: none; }
-.profile-tabs a {
-  padding: var(--space-3) 0;
-  font: 600 0.875rem var(--font-text), sans-serif;
-  color: var(--ink-500);
-  border-bottom: 2px solid transparent;
-  white-space: nowrap;
-}
-.profile-tabs a:hover { color: var(--ink-900); }
-.profile-tabs a[aria-current='true'] { color: var(--ink-900); border-bottom-color: var(--accent); }
-
 /* About measure */
 .profile-about { max-width: var(--container-narrow); }
 .profile-about p { font: var(--fw-lead) var(--t-lead) / var(--lh-lead) var(--font-display), serif; color: var(--ink-700); }
