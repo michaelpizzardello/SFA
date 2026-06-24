@@ -31,6 +31,13 @@
 .header__signin { white-space: nowrap; }
 
 @media (max-width: 899px) {
-  .header__nav, .header__search { display: none; }
-  .site-header { justify-content: space-between; }
+  .header__nav { display: none; }
+  .site-header {
+    flex-wrap: wrap;
+    height: auto;
+    padding-block: var(--space-3);
+    row-gap: var(--space-3);
+    justify-content: space-between;
+  }
+  .header__search { order: 3; flex-basis: 100%; max-width: none; }
 }

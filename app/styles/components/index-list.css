@@ -14,6 +14,8 @@
 }
 .index-toolbar .field { flex: 1 1 240px; min-width: 0; }
 .index-toolbar .chip-row { flex: 0 1 auto; }
+/* mobile header height varies (search wraps to a 2nd row), so don't sticky-overlap */
+@media (max-width: 899px) { .index-toolbar { position: static; } }
 
 /* On the touch layout, keep only [search] + [Filters]; chips + view toggle live in the sheet
    and list is the mandated default. */

@@ -37,15 +37,6 @@ export default function HomePage({ galleries, exhibitions }) {
         <p className="meta hero__count">
           {galleries.length} galleries · {exhibitions.length} exhibitions
         </p>
-        <form className="hero__search" action="/whats-on" role="search">
-          <input
-            className="field"
-            type="search"
-            name="search"
-            placeholder="Search exhibitions, galleries, precincts"
-            aria-label="Search exhibitions"
-          />
-        </form>
         <div className="hero__actions">
           <Link className="link-arrow" href="/whats-on">
             Browse what&apos;s on →
