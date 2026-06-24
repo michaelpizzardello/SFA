@@ -1,0 +1,25 @@
+/* Mobile tab bar (hidden on desktop and on the map route) */
+.tabbar {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 60;
+  height: var(--mobile-tabbar-height);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  background: var(--surface);
+  border-top: 1px solid var(--hairline);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.tabbar a {
+  display: grid;
+  place-items: center;
+  gap: 3px;
+  min-height: 44px;
+  font: 600 0.625rem var(--font-text), sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-500);
+}
+.tabbar a[aria-current='page'] { color: var(--accent); }
+.tabbar.is-map-route { display: none; }
+@media (min-width: 900px) { .tabbar { display: none; } }

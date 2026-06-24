@@ -1,0 +1,38 @@
+/* Buttons — filled reserved for forms/CTAs; the bare arrow link is the dominant affordance. */
+.btn {
+  font: 600 0.9375rem / 1 var(--font-text), sans-serif;
+  min-height: 44px;
+  padding: 0 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.btn--primary { background: var(--accent); color: var(--on-accent); }
+.btn--primary:hover { background: var(--accent-hover); }
+.btn--primary:active { background: var(--accent-press); }
+.btn--primary:disabled { background: var(--ink-300); cursor: default; }
+
+.btn--ghost { background: transparent; color: var(--ink-900); border-color: var(--hairline-strong); }
+.btn--ghost:hover { border-color: var(--ink-900); }
+
+.btn--text {
+  min-height: 0; padding: 0; border: 0; background: none;
+  color: var(--accent); font: 600 0.9375rem / 1 var(--font-text), sans-serif; cursor: pointer;
+}
+.btn--text:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+.btn--block { width: 100%; }
+
+/* compact icon button (filter triggers etc.) */
+.icon-btn {
+  width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--hairline-strong); border-radius: var(--radius-control);
+  background: var(--surface); color: var(--ink-900); cursor: pointer;
+}
+.icon-btn:hover { border-color: var(--ink-900); }

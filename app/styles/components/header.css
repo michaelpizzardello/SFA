@@ -1,0 +1,36 @@
+/* Solid header (no blur). Search + nav collapse to tab bar on mobile. */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  padding-inline: var(--gutter);
+  background: var(--paper);
+  border-bottom: 1px solid var(--hairline);
+}
+.site-header.is-map-route { display: none; }
+.site-header__brand {
+  font: 600 1.05rem var(--font-display), serif;
+  letter-spacing: -0.01em;
+  color: var(--ink-900);
+  white-space: nowrap;
+}
+.header__search { flex: 1; max-width: 520px; }
+.header__nav {
+  display: flex;
+  gap: var(--space-5);
+  font: 600 0.875rem var(--font-text), sans-serif;
+  margin-left: auto;
+}
+.header__nav a { color: var(--ink-700); }
+.header__nav a:hover { color: var(--ink-900); }
+.header__nav a[aria-current='page'] { color: var(--accent); }
+.header__signin { white-space: nowrap; }
+
+@media (max-width: 899px) {
+  .header__nav, .header__search { display: none; }
+  .site-header { justify-content: space-between; }
+}

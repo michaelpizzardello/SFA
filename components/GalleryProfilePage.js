@@ -1,144 +1,127 @@
-import BackLinkButton from './BackLinkButton'
 import Link from 'next/link'
-import { formatDate, formatDateRange } from '../lib/utils/date'
-import { getExhibitionSlug } from '../lib/utils/exhibitions'
+import ExhibitionCard from './ExhibitionCard'
 
 function sanitizePhone(phoneNumber) {
   return phoneNumber.replace(/[^\d+]/g, '')
 }
 
-function ExhibitionList({ exhibitions }) {
-  if (!exhibitions.length) {
-    return <p className="empty-copy">No exhibitions listed.</p>
-  }
-
+function ExGrid({ exhibitions, gallery, status }) {
   return (
-    <ul className="exhibition-list">
-      {exhibitions.map((exhibition) => {
-        return (
-          <li key={exhibition.id} className="exhibition-item">
-            {exhibition.imageUrl ? (
-              <div className="item-image-frame">
-                <img className="item-image" src={exhibition.imageUrl} alt={exhibition.title} />
-              </div>
-            ) : null}
-            <div className="item-body">
-              <div className="item-head">
-                <h3 className="item-title">{exhibition.title}</h3>
-              </div>
-              {exhibition.artist ? <p className="item-artist">{exhibition.artist}</p> : null}
-              <p className="item-meta">{formatDateRange(exhibition.startDate, exhibition.endDate)}</p>
-              {exhibition.openingInformation ? (
-                <p className="item-meta">{exhibition.openingInformation}</p>
-              ) : exhibition.openingDate ? (
-                <p className="item-meta">
-                  Opening: {formatDate(exhibition.openingDate)}
-                  {exhibition.openingTime ? ` | ${exhibition.openingTime}` : ''}
-                </p>
-              ) : null}
-              <div className="item-actions">
-                <Link
-                  className="text-link"
-                  href={`/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`}
-                >
-                  Exhibition details
-                </Link>
-              </div>
-            </div>
-          </li>
-        )
-      })}
-    </ul>
+    <div className="card-grid">
+      {exhibitions.map((exhibition) => (
+        <ExhibitionCard key={exhibition.id} exhibition={exhibition} gallery={gallery} status={status} />
+      ))}
+    </div>
   )
 }
 
 export default function GalleryProfilePage({ gallery, groupedExhibitions }) {
   const mapsQuery = encodeURIComponent(gallery.address || gallery.name)
   const directionsHref = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`
-  const visitItems = [
-    gallery.address ? <span>{gallery.address}</span> : null,
-    gallery.phone ? <a href={`tel:${sanitizePhone(gallery.phone)}`}>{gallery.phone}</a> : null,
-    gallery.email ? <a href={`mailto:${gallery.email}`}>{gallery.email}</a> : null,
-    gallery.website ? (
-      <a href={gallery.website} target="_blank" rel="noreferrer">
-        Website
-      </a>
-    ) : null,
-    gallery.instagram ? (
-      <a href={gallery.instagram} target="_blank" rel="noreferrer">
-        Instagram
-      </a>
-    ) : null
+  const sub = [gallery.precinct, gallery.suburb].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i).join(' · ')
+
+  const contact = [
+    gallery.address && { label: 'Address', value: gallery.address },
+    gallery.phone && { label: 'Phone', value: <a href={`tel:${sanitizePhone(gallery.phone)}`}>{gallery.phone}</a> },
+    gallery.email && { label: 'Email', value: <a href={`mailto:${gallery.email}`}>{gallery.email}</a> },
+    gallery.website && {
+      label: 'Website',
+      value: (
+        <a href={gallery.website} target="_blank" rel="noreferrer">
+          {gallery.website.replace(/^https?:\/\//, '')}
+        </a>
+      )
+    },
+    gallery.instagram && {
+      label: 'Instagram',
+      value: (
+        <a href={gallery.instagram} target="_blank" rel="noreferrer">
+          Instagram
+        </a>
+      )
+    }
   ].filter(Boolean)
-  const hasVisitDetails = visitItems.length > 0 || gallery.openingHours?.length > 0
-  const hasCurrentExhibitions = groupedExhibitions.current.length > 0
-  const hasUpcomingExhibitions = groupedExhibitions.upcoming.length > 0
-  const hasPastExhibitions = groupedExhibitions.past.length > 0
+
+  const cover = gallery.coverUrl || gallery.logoUrl
+  const { current, upcoming, past } = groupedExhibitions
 
   return (
-    <>
+    <div className="container profile">
+      <Link className="back-link" href="/galleries">
+        ← Galleries
+      </Link>
+
+      {cover ? (
+        <div className="profile-cover">
+          <img src={cover} alt="" />
+        </div>
+      ) : null}
+
       <section className="profile-hero">
-        <BackLinkButton fallbackHref="/galleries" label="Back" />
+        <p className="eyebrow">{sub}</p>
         <h1>{gallery.name}</h1>
-        <p className="item-kicker">{gallery.precinct}</p>
-        {gallery.address ? <p className="item-meta">{gallery.address}</p> : null}
-        {gallery.address ? (
-          <a className="button button-secondary" href={directionsHref} target="_blank" rel="noreferrer">
-            Get directions
-          </a>
-        ) : null}
-        {hasCurrentExhibitions ? (
-          <p className="item-meta">Current exhibitions: {groupedExhibitions.current.length}</p>
-        ) : null}
-      </section>
-
-      {hasVisitDetails || gallery.about ? <section className="page-block">
-        <div className="profile-columns">
-          {hasVisitDetails ? <article>
-            <h2>Visit</h2>
-            {visitItems.length ? (
-              <ul className="detail-list">
-                {visitItems.map((item, index) => <li key={index}>{item}</li>)}
-              </ul>
-            ) : null}
-
-            {gallery.openingHours?.length ? (
-              <>
-                <h3>Opening hours</h3>
-                <ul className="detail-list">
-                  {gallery.openingHours.map((entry) => <li key={entry}>{entry}</li>)}
-                </ul>
-              </>
-            ) : null}
-          </article> : null}
-
-          {gallery.about ? (
-            <article>
-              <details className="profile-disclosure">
-                <summary>About</summary>
-                <p className="section-copy">{gallery.about}</p>
-              </details>
-            </article>
+        <div className="profile-hero__meta">
+          {gallery.address ? <span className="meta">{gallery.address}</span> : null}
+          {gallery.address ? (
+            <a className="btn btn--ghost" href={directionsHref} target="_blank" rel="noreferrer">
+              Get directions
+            </a>
           ) : null}
         </div>
-      </section> : null}
+      </section>
 
-      {hasCurrentExhibitions ? <section className="page-block">
-        <h2>Current Exhibitions</h2>
-        <ExhibitionList exhibitions={groupedExhibitions.current} />
-      </section> : null}
+      {gallery.about ? (
+        <section className="profile-section profile-about">
+          <p>{gallery.about}</p>
+        </section>
+      ) : null}
 
-      {hasUpcomingExhibitions ? <section className="page-block">
-        <h2>Upcoming Exhibitions</h2>
-        <ExhibitionList exhibitions={groupedExhibitions.upcoming} />
-      </section> : null}
+      <div className="profile-cols">
+        {contact.length || gallery.openingHours?.length ? (
+          <section className="profile-section">
+            <h2>Visit</h2>
+            <dl className="def-list">
+              {contact.map((row) => (
+                <div key={row.label}>
+                  <dt>{row.label}</dt>
+                  <dd>{row.value}</dd>
+                </div>
+              ))}
+              {gallery.openingHours?.length ? (
+                <div>
+                  <dt>Hours</dt>
+                  <dd>
+                    {gallery.openingHours.map((h) => (
+                      <div key={h}>{h}</div>
+                    ))}
+                  </dd>
+                </div>
+              ) : null}
+            </dl>
+          </section>
+        ) : null}
+      </div>
 
-      {hasPastExhibitions ? <section className="page-block">
-        <details className="profile-disclosure">
-          <summary>Past Exhibitions ({groupedExhibitions.past.length})</summary>
-          <ExhibitionList exhibitions={groupedExhibitions.past} />
-        </details>
-      </section> : null}
-    </>
+      {current.length ? (
+        <section className="profile-section">
+          <h2>Current exhibitions</h2>
+          <ExGrid exhibitions={current} gallery={gallery} status="current" />
+        </section>
+      ) : null}
+
+      {upcoming.length ? (
+        <section className="profile-section">
+          <h2>Upcoming</h2>
+          <ExGrid exhibitions={upcoming} gallery={gallery} status="upcoming" />
+        </section>
+      ) : null}
+
+      {past.length ? (
+        <section className="profile-section">
+          <h2>Past</h2>
+          <ExGrid exhibitions={past} gallery={gallery} status="past" />
+        </section>
+      ) : null}
+    </div>
   )
 }

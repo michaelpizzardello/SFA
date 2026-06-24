@@ -1,52 +1,39 @@
 import Link from 'next/link'
-import { formatDate } from '../lib/utils/date'
+import { formatDateRange } from '../lib/utils/date'
 import { getExhibitionSlug } from '../lib/utils/exhibitions'
 
-// Editorial, image-forward exhibition card (Ocula/Artsy style). Always shows a media tile —
-// the image when present, otherwise a typographic fallback on a warm tint, so a catalogue with
-// few photos still reads as a designed grid rather than text rows.
-const TINTS = ['#ece2d2', '#e7ddcd', '#efe1d7', '#e4e2d2', '#efdfd9', '#e6e0cd', '#efe6da']
-
-function tintFor(value) {
-  let hash = 0
-  const s = String(value || 'x')
-  for (let i = 0; i < s.length; i += 1) hash = (hash * 31 + s.charCodeAt(i)) >>> 0
-  return TINTS[hash % TINTS.length]
-}
-
-const STATUS_LABEL = { current: 'On now', upcoming: 'Opening soon', past: 'Past' }
+// One markup for grid-card AND list-row (list view hides .ex__media via CSS).
+// Title-first per the locked hierarchy + the real schema (artist/image are optional upside fields).
+const STATUS_LABEL = { current: 'On now', upcoming: 'Opening soon', past: 'Past', closing: 'Closing soon' }
 
 export default function ExhibitionCard({ exhibition, gallery, status }) {
   const href = `/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`
   const galleryName = gallery?.name || exhibition.galleryName || ''
   const precinct = gallery?.precinct || exhibition.location || ''
-  const range = exhibition.endDate
-    ? `${formatDate(exhibition.startDate)} – ${formatDate(exhibition.endDate)}`
-    : formatDate(exhibition.startDate)
+  const range = formatDateRange(exhibition.startDate, exhibition.endDate)
 
   return (
-    <Link href={href} className="ex-card">
-      <div
-        className="ex-card-media"
-        style={exhibition.imageUrl ? undefined : { backgroundColor: tintFor(exhibition.title || galleryName) }}
-      >
+    <Link href={href} className="ex">
+      <div className="ex__media">
         {exhibition.imageUrl ? (
-          <img className="ex-card-img" src={exhibition.imageUrl} alt="" loading="lazy" />
-        ) : (
-          <span className="ex-card-fallback">{exhibition.artist || exhibition.title}</span>
-        )}
-        {status ? <span className={`ex-card-status ex-status-${status}`}>{STATUS_LABEL[status] || status}</span> : null}
+          <img className="ex__img" src={exhibition.imageUrl} alt="" loading="lazy" />
+        ) : precinct ? (
+          <span className="ex__placeholder-label" aria-hidden="true">
+            {precinct}
+          </span>
+        ) : null}
       </div>
-      <div className="ex-card-body">
-        {exhibition.artist ? <p className="ex-card-artist">{exhibition.artist}</p> : null}
-        <p className="ex-card-title">{exhibition.title}</p>
+      <div className="ex__body">
+        {status ? <span className={`tag tag--${status} ex__tag`}>{STATUS_LABEL[status] || status}</span> : null}
+        <h3 className="ex__title title-work">{exhibition.title}</h3>
+        {exhibition.artist ? <p className="ex__artist">{exhibition.artist}</p> : null}
         {galleryName ? (
-          <p className="ex-card-gallery">
+          <p className="ex__gallery">
             {galleryName}
             {precinct ? `, ${precinct}` : ''}
           </p>
         ) : null}
-        <p className="ex-card-date">{range}</p>
+        <p className="ex__meta meta">{range}</p>
       </div>
     </Link>
   )

@@ -1,0 +1,53 @@
+/* ExhibitionCard — one markup serves grid-card AND list-row.
+   Title-first (locked guide + real schema). Single --placeholder tile; no per-entity tints. */
+.ex {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  color: inherit;
+  text-decoration: none;
+}
+.ex__media {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  background: var(--placeholder);
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  padding: var(--space-3);
+}
+.ex__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ex__placeholder-label {
+  position: relative;
+  font: 400 var(--t-eyebrow) / 1 var(--font-mono), monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-400);
+}
+.ex__body { display: grid; gap: 3px; }
+.ex__tag { margin-bottom: 5px; }
+.ex__title { margin: 0; }
+.ex__artist { font: 500 var(--t-card-name) var(--font-text), sans-serif; color: var(--ink-700); margin: 0; }
+.ex__gallery { font: 400 var(--t-card-name) var(--font-text), sans-serif; color: var(--ink-700); margin: 0; }
+.ex__meta { margin: 0; }
+.ex:hover .ex__title { text-decoration: underline; text-underline-offset: 3px; }
+
+/* LIST VIEW: hide media, pure type; mono date floats right at md+ */
+.index-list { list-style: none; margin: 0; padding: 0; }
+.index-list > li { margin: 0; }
+.index-list .ex {
+  gap: 4px;
+  padding: var(--space-5) 0;
+  border-bottom: 1px solid var(--hairline);
+}
+.index-list .ex__media { display: none; }
+@media (min-width: 900px) {
+  .index-list .ex__body { position: relative; padding-right: 220px; }
+  .index-list .ex__meta { position: absolute; top: 2px; right: 0; text-align: right; white-space: nowrap; }
+}

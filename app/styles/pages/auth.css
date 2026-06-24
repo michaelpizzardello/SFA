@@ -1,0 +1,16 @@
+/* Auth — centered single column on paper, editorial line inputs */
+.auth {
+  min-height: calc(100dvh - 60px);
+  display: grid;
+  place-items: start center;
+  padding: var(--space-9) var(--gutter);
+}
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  display: grid;
+  gap: var(--space-5);
+}
+.auth-brand { font: 600 1.05rem var(--font-display), serif; letter-spacing: -0.01em; }
+.auth-card h1 { font: var(--fw-h3) 1.5rem / 1.2 var(--font-display), serif; }
+.auth-card .section-copy { color: var(--ink-500); }

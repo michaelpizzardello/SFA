@@ -1,0 +1,41 @@
+/* Fields / inputs */
+.field {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  font: 400 var(--t-body) var(--font-text), sans-serif;
+  color: var(--ink-900);
+  background: var(--surface);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-control);
+}
+textarea.field { padding: 10px 14px; min-height: 120px; line-height: 1.5; resize: vertical; }
+.field::placeholder { color: var(--ink-400); }
+.field:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+
+/* editorial underline variant (auth, newsletter) */
+.field--line {
+  border: 0; border-bottom: 1px solid var(--hairline-strong);
+  border-radius: 0; padding-inline: 0; background: transparent;
+}
+.field--line:focus-visible { outline: none; border-bottom-color: var(--accent); }
+
+.field--invalid { border-color: var(--danger); }
+
+.field-label {
+  display: block;
+  margin-bottom: 6px;
+  font: 500 var(--t-meta) var(--font-mono), monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-500);
+}
+.field-group { display: grid; gap: var(--space-2); }
+.field-hint { font: 400 var(--t-small) var(--font-text), sans-serif; color: var(--ink-500); }
+.field-error { font: 400 var(--t-small) var(--font-text), sans-serif; color: var(--danger); }
+.form-stack { display: grid; gap: var(--space-4); }
+.form-grid { display: grid; gap: var(--space-4); }
+@media (min-width: 600px) { .form-grid { grid-template-columns: 1fr 1fr; } }
+
+.checkbox-row { display: flex; align-items: center; gap: var(--space-2); font-weight: 500; }
+.checkbox-row input { width: auto; min-height: 0; }

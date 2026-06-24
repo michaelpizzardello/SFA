@@ -1,0 +1,15 @@
+/* What's On — mostly index-list + toolbar; page-specific spacing only */
+.whats-on-head {
+  padding: var(--space-8) 0 var(--space-5);
+  display: grid;
+  gap: var(--space-3);
+  max-width: 820px;
+}
+.whats-on-head h1 { font: var(--fw-display) var(--t-h1) / var(--lh-h1) var(--font-display), serif; }
+.applied-row {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: var(--space-4);
+}

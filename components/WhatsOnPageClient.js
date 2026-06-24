@@ -1,52 +1,32 @@
 'use client'
 
-import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { todayISOInSydney } from '../lib/utils/date'
 import { filterExhibitions, getPrecinctOptions } from '../lib/utils/filters'
 import { getExhibitionStatus, getGalleryBySlug } from '../lib/utils/exhibitions'
-import FilterSlidersIcon from './icons/FilterSlidersIcon'
 import ExhibitionCard from './ExhibitionCard'
 
-const statusLabels = {
-  current: 'Current',
-  upcoming: 'Upcoming',
-  past: 'Past'
-}
-
+const statusLabels = { current: 'Current', upcoming: 'Upcoming', past: 'Past' }
 const statusFilterOptions = [
-  { value: 'current', label: 'Current' },
+  { value: 'current', label: 'On now' },
   { value: 'upcoming', label: 'Upcoming' }
 ]
-
 const openingFilterOptions = [
   { value: 'tonight', label: 'Opening today' },
   { value: 'week', label: 'Opening this week' }
 ]
-
 const defaultStatusFilters = ['current', 'upcoming']
 
 function normalizeStatusSelection(values) {
-  const normalized = statusFilterOptions
-    .map((option) => option.value)
-    .filter((value) => values.includes(value))
-
-  return normalized.length ? normalized : [...defaultStatusFilters]
+  const n = statusFilterOptions.map((o) => o.value).filter((v) => values.includes(v))
+  return n.length ? n : [...defaultStatusFilters]
 }
-
 function normalizeOpeningSelection(values) {
-  return openingFilterOptions
-    .map((option) => option.value)
-    .filter((value) => values.includes(value))
+  return openingFilterOptions.map((o) => o.value).filter((v) => values.includes(v))
 }
-
 function isDefaultStatusSelection(values) {
-  return values.length === defaultStatusFilters.length && defaultStatusFilters.every((value) => values.includes(value))
-}
-
-function isInteractiveElement(target) {
-  return target instanceof Element && Boolean(target.closest('a, button, input, select, textarea, summary, label'))
+  return values.length === defaultStatusFilters.length && defaultStatusFilters.every((v) => values.includes(v))
 }
 
 export default function WhatsOnPageClient({ galleries, exhibitions, initialFilters }) {
@@ -59,22 +39,16 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
     () => new Set(normalizeOpeningSelection(initialFilters.openingWindows || []))
   )
   const [filtersOpen, setFiltersOpen] = useState(false)
+  const [view, setView] = useState('list')
 
   const pathname = usePathname()
   const router = useRouter()
   const searchParams = useSearchParams()
+  const today = todayISOInSydney()
 
   const precinctOptions = useMemo(() => getPrecinctOptions(galleries), [galleries])
-
-  const orderedStatuses = useMemo(
-    () => normalizeStatusSelection([...selectedStatuses]),
-    [selectedStatuses]
-  )
-
-  const orderedOpeningWindows = useMemo(
-    () => normalizeOpeningSelection([...selectedOpeningWindows]),
-    [selectedOpeningWindows]
-  )
+  const orderedStatuses = useMemo(() => normalizeStatusSelection([...selectedStatuses]), [selectedStatuses])
+  const orderedOpeningWindows = useMemo(() => normalizeOpeningSelection([...selectedOpeningWindows]), [selectedOpeningWindows])
 
   const filteredExhibitions = useMemo(
     () =>
@@ -87,267 +61,219 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
     [exhibitions, galleries, orderedOpeningWindows, orderedStatuses, precinct, search]
   )
 
-  const activeFilters = useMemo(() => {
-    const filters = []
-
+  const applied = useMemo(() => {
+    const list = []
     if (!isDefaultStatusSelection(orderedStatuses)) {
-      filters.push(`Status: ${orderedStatuses.map((status) => statusLabels[status]).join(' + ')}`)
+      list.push({ key: 'status', label: orderedStatuses.map((s) => statusLabels[s]).join(' + ') })
     }
-
-    if (orderedOpeningWindows.length) {
-      filters.push(
-        `Opening: ${orderedOpeningWindows
-          .map((window) => openingFilterOptions.find((option) => option.value === window)?.label || window)
-          .join(' + ')}`
-      )
-    }
-
-    if (precinct !== 'all') {
-      filters.push(`Precinct: ${precinct}`)
-    }
-
-    if (search.trim()) {
-      filters.push(`Search: ${search.trim()}`)
-    }
-
-    return filters
+    orderedOpeningWindows.forEach((w) =>
+      list.push({ key: `opening:${w}`, label: openingFilterOptions.find((o) => o.value === w)?.label || w })
+    )
+    if (precinct !== 'all') list.push({ key: 'precinct', label: precinct })
+    if (search.trim()) list.push({ key: 'search', label: `“${search.trim()}”` })
+    return list
   }, [orderedOpeningWindows, orderedStatuses, precinct, search])
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString())
-
-    if (search.trim()) {
-      params.set('search', search.trim())
-    } else {
-      params.delete('search')
-    }
-
-    if (precinct !== 'all') {
-      params.set('precinct', precinct)
-    } else {
-      params.delete('precinct')
-    }
-
-    if (isDefaultStatusSelection(orderedStatuses)) {
-      params.delete('status')
-    } else {
-      params.set('status', orderedStatuses.join(','))
-    }
-
-    if (orderedOpeningWindows.length) {
-      params.set('opening', orderedOpeningWindows.join(','))
-    } else {
-      params.delete('opening')
-    }
-
+    if (search.trim()) params.set('search', search.trim())
+    else params.delete('search')
+    if (precinct !== 'all') params.set('precinct', precinct)
+    else params.delete('precinct')
+    if (isDefaultStatusSelection(orderedStatuses)) params.delete('status')
+    else params.set('status', orderedStatuses.join(','))
+    if (orderedOpeningWindows.length) params.set('opening', orderedOpeningWindows.join(','))
+    else params.delete('opening')
     params.delete('galleries')
-
-    const nextQuery = params.toString()
-    const currentQuery = searchParams.toString()
-
-    if (nextQuery !== currentQuery) {
-      router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname, { scroll: false })
+    const next = params.toString()
+    if (next !== searchParams.toString()) {
+      router.replace(next ? `${pathname}?${next}` : pathname, { scroll: false })
     }
   }, [orderedOpeningWindows, orderedStatuses, pathname, precinct, router, search, searchParams])
 
   function toggleStatus(status) {
-    setSelectedStatuses((current) => {
-      const next = new Set(current)
-
+    setSelectedStatuses((cur) => {
+      const next = new Set(cur)
       if (next.has(status)) {
-        if (next.size === 1) {
-          return current
-        }
-
+        if (next.size === 1) return cur
         next.delete(status)
-      } else {
-        next.add(status)
-      }
-
+      } else next.add(status)
       return next
     })
   }
-
-  function toggleOpeningWindow(window) {
-    setSelectedOpeningWindows((current) => {
-      const next = new Set(current)
-
-      if (next.has(window)) {
-        next.delete(window)
-      } else {
-        next.add(window)
-      }
-
+  function toggleOpening(w) {
+    setSelectedOpeningWindows((cur) => {
+      const next = new Set(cur)
+      if (next.has(w)) next.delete(w)
+      else next.add(w)
       return next
     })
   }
-
-  function clearAllFilters() {
+  function clearAll() {
     setSearch('')
     setPrecinct('all')
     setSelectedStatuses(new Set(defaultStatusFilters))
     setSelectedOpeningWindows(new Set())
   }
-
-  function handleExhibitionCardClick(slug, event) {
-    if (isInteractiveElement(event.target)) {
-      return
-    }
-
-    router.push(`/exhibition/${encodeURIComponent(slug)}`)
-  }
-
-  function handleExhibitionCardKeyDown(slug, event) {
-    if (event.key !== 'Enter' && event.key !== ' ') {
-      return
-    }
-
-    event.preventDefault()
-    router.push(`/exhibition/${encodeURIComponent(slug)}`)
+  function removeApplied(key) {
+    if (key === 'status') setSelectedStatuses(new Set(defaultStatusFilters))
+    else if (key === 'precinct') setPrecinct('all')
+    else if (key === 'search') setSearch('')
+    else if (key.startsWith('opening:')) toggleOpening(key.split(':')[1])
   }
 
   return (
-    <section className="page-block">
-      <div className="section-head">
-        <h1>What's On</h1>
-      </div>
+    <div className="container">
+      <header className="whats-on-head">
+        <p className="eyebrow">On in Sydney</p>
+        <h1>What&apos;s On</h1>
+      </header>
 
-      <div className="compact-control-row">
-        <label className="field">
-          <span className="visually-hidden">Search exhibitions</span>
-          <input
-            type="search"
-            placeholder="Search exhibitions"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-          />
-        </label>
-        <button
-          type="button"
-          className="button button-secondary button-utility icon-button filter-icon-button"
-          aria-label="Open filters"
-          onClick={() => setFiltersOpen(true)}
-        >
-          <FilterSlidersIcon />
-          <span className="visually-hidden">Filters</span>
-        </button>
-      </div>
-
-      {filtersOpen ? (
-        <div className="filter-sheet-overlay" role="presentation" onClick={() => setFiltersOpen(false)}>
-          <section
-            className="filter-sheet"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Exhibition filters"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="filter-sheet-head">
-              <h2>Filters</h2>
-              <button type="button" className="text-link text-link-button" onClick={() => setFiltersOpen(false)}>
-                Close
-              </button>
-            </div>
-            <div className="filter-sheet-body">
-              <div className="filter-bar filter-bar-two" role="group" aria-label="Exhibition filters">
-                <label className="field">
-                  <span>Search</span>
-                  <input
-                    type="search"
-                    placeholder="Exhibition, artist, gallery"
-                    value={search}
-                    onChange={(event) => setSearch(event.target.value)}
-                  />
-                </label>
-
-                <label className="field">
-                  <span>Precinct</span>
-                  <select value={precinct} onChange={(event) => setPrecinct(event.target.value)}>
-                    <option value="all">All precincts</option>
-                    {precinctOptions.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-
-              <div className="filter-toggle-grid">
-                <div className="field">
-                  <span>Status</span>
-                  <div className="toggle-chip-row" role="group" aria-label="Status filters">
-                    {statusFilterOptions.map((option) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        className={`toggle-chip ${selectedStatuses.has(option.value) ? 'is-active' : ''}`}
-                        onClick={() => toggleStatus(option.value)}
-                        aria-pressed={selectedStatuses.has(option.value)}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="field">
-                  <span>Opening</span>
-                  <div className="toggle-chip-row" role="group" aria-label="Opening filters">
-                    {openingFilterOptions.map((option) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        className={`toggle-chip ${selectedOpeningWindows.has(option.value) ? 'is-active' : ''}`}
-                        onClick={() => toggleOpeningWindow(option.value)}
-                        aria-pressed={selectedOpeningWindows.has(option.value)}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {activeFilters.length ? (
-                <button type="button" className="button button-secondary" onClick={clearAllFilters}>
-                  Clear filters
-                </button>
-              ) : null}
-            </div>
-          </section>
+      <div className="index-toolbar">
+        <input
+          className="field"
+          type="search"
+          placeholder="Search exhibitions, artists, galleries"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          aria-label="Search exhibitions"
+        />
+        <div className="chip-row" role="group" aria-label="Status">
+          {statusFilterOptions.map((o) => (
+            <button
+              key={o.value}
+              type="button"
+              className={`chip${selectedStatuses.has(o.value) ? ' chip--active' : ''}`}
+              aria-pressed={selectedStatuses.has(o.value)}
+              onClick={() => toggleStatus(o.value)}
+            >
+              {o.label}
+            </button>
+          ))}
         </div>
-      ) : null}
+        <button type="button" className="btn btn--ghost" onClick={() => setFiltersOpen(true)}>
+          Filters
+        </button>
+        <div className="view-toggle" role="group" aria-label="View">
+          <button type="button" aria-pressed={view === 'list'} aria-label="List view" onClick={() => setView('list')}>
+            ☰
+          </button>
+          <button type="button" aria-pressed={view === 'grid'} aria-label="Grid view" onClick={() => setView('grid')}>
+            ▦
+          </button>
+        </div>
+      </div>
 
-      <div className="results-status-block">
-        {activeFilters.length ? (
-          <div className="active-filters" aria-label="Applied filters">
-            {activeFilters.map((filter) => (
-              <span key={filter} className="filter-pill">
-                {filter}
-              </span>
-            ))}
-          </div>
-        ) : null}
+      <div className="applied-row">
+        <span className="results-meta">{filteredExhibitions.length} exhibitions</span>
+        {applied.map((f) => (
+          <span key={f.key} className="chip chip--applied">
+            {f.label}
+            <button type="button" aria-label={`Remove ${f.label}`} onClick={() => removeApplied(f.key)}>
+              ×
+            </button>
+          </span>
+        ))}
       </div>
 
       {filteredExhibitions.length ? (
-        <>
-          <p className="results-meta">{filteredExhibitions.length} exhibitions</p>
-          <div className="ex-grid">
+        view === 'list' ? (
+          <ul className="index-list">
+            {filteredExhibitions.map((exhibition) => (
+              <li key={exhibition.id}>
+                <ExhibitionCard
+                  exhibition={exhibition}
+                  gallery={getGalleryBySlug(galleries, exhibition.gallerySlug)}
+                  status={getExhibitionStatus(exhibition, today)}
+                />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="card-grid">
             {filteredExhibitions.map((exhibition) => (
               <ExhibitionCard
                 key={exhibition.id}
                 exhibition={exhibition}
                 gallery={getGalleryBySlug(galleries, exhibition.gallerySlug)}
-                status={getExhibitionStatus(exhibition, todayISOInSydney())}
+                status={getExhibitionStatus(exhibition, today)}
               />
             ))}
           </div>
-        </>
+        )
       ) : (
-        <p className="empty-copy">No exhibitions match these filters.</p>
+        <p className="empty-state">No exhibitions match these filters.</p>
       )}
-    </section>
+
+      {filtersOpen ? (
+        <>
+          <div className="scrim" onClick={() => setFiltersOpen(false)} role="presentation" />
+          <section className="sheet" role="dialog" aria-modal="true" aria-label="Filters">
+            <div className="sheet__handle" />
+            <div className="sheet__head">
+              <h2>Filters</h2>
+              <button type="button" className="btn--text" onClick={() => setFiltersOpen(false)}>
+                Close
+              </button>
+            </div>
+            <div className="sheet__body">
+              <div className="field-group">
+                <span className="field-label">Precinct</span>
+                <select className="field" value={precinct} onChange={(e) => setPrecinct(e.target.value)}>
+                  <option value="all">All precincts</option>
+                  {precinctOptions.map((p) => (
+                    <option key={p} value={p}>
+                      {p}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="field-group">
+                <span className="field-label">Opening</span>
+                <div className="chip-row">
+                  {openingFilterOptions.map((o) => (
+                    <button
+                      key={o.value}
+                      type="button"
+                      className={`chip${selectedOpeningWindows.has(o.value) ? ' chip--active' : ''}`}
+                      aria-pressed={selectedOpeningWindows.has(o.value)}
+                      onClick={() => toggleOpening(o.value)}
+                    >
+                      {o.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="field-group">
+                <span className="field-label">Status</span>
+                <div className="chip-row">
+                  {statusFilterOptions.map((o) => (
+                    <button
+                      key={o.value}
+                      type="button"
+                      className={`chip${selectedStatuses.has(o.value) ? ' chip--active' : ''}`}
+                      aria-pressed={selectedStatuses.has(o.value)}
+                      onClick={() => toggleStatus(o.value)}
+                    >
+                      {o.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="sheet__foot">
+              {applied.length ? (
+                <button type="button" className="btn--text" onClick={clearAll} style={{ marginRight: 'auto' }}>
+                  Clear all
+                </button>
+              ) : null}
+              <button type="button" className="btn btn--primary btn--block" onClick={() => setFiltersOpen(false)}>
+                Show {filteredExhibitions.length} results
+              </button>
+            </div>
+          </section>
+        </>
+      ) : null}
+    </div>
   )
 }

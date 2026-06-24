@@ -1,19 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { compareISO, todayISOInSydney } from '../lib/utils/date'
-import { getExhibitionStatus, getGalleryBySlug } from '../lib/utils/exhibitions'
+import { compareISO, formatDate, todayISOInSydney } from '../lib/utils/date'
+import { getExhibitionSlug, getExhibitionStatus, getGalleryBySlug } from '../lib/utils/exhibitions'
 import ExhibitionCard from './ExhibitionCard'
-
-function Grid({ rows }) {
-  return (
-    <div className="ex-grid">
-      {rows.map(({ exhibition, gallery, status }) => (
-        <ExhibitionCard key={exhibition.id} exhibition={exhibition} gallery={gallery} status={status} />
-      ))}
-    </div>
-  )
-}
+import GalleryCard from './GalleryCard'
 
 export default function HomePage({ galleries, exhibitions }) {
   const today = todayISOInSydney()
@@ -25,57 +16,107 @@ export default function HomePage({ galleries, exhibitions }) {
   }))
 
   const current = withMeta
-    .filter((row) => row.status === 'current')
+    .filter((r) => r.status === 'current')
     .sort((a, b) => compareISO(b.exhibition.startDate, a.exhibition.startDate))
   const upcoming = withMeta
-    .filter((row) => row.status === 'upcoming')
+    .filter((r) => r.status === 'upcoming')
     .sort((a, b) => compareISO(a.exhibition.startDate, b.exhibition.startDate))
 
-  const galleryCount = galleries.length
+  // galleries with a current show first
+  const currentBySlug = new Set(current.map((r) => r.exhibition.gallerySlug))
+  const galleryCards = [...galleries]
+    .sort((a, b) => Number(currentBySlug.has(b.slug)) - Number(currentBySlug.has(a.slug)))
+    .slice(0, 8)
 
   return (
-    <>
-      <section className="home-hero">
-        <p className="eyebrow">Sydney Art Finder</p>
-        <h1>Your guide to the Sydney art scene</h1>
-        <p className="home-hero-sub">
-          {current.length
-            ? `${current.length} exhibitions on now across ${galleryCount} galleries.`
-            : `Discover exhibitions across ${galleryCount} Sydney galleries.`}
+    <div className="container">
+      <section className="hero">
+        <p className="eyebrow">On in Sydney</p>
+        <h1 className="hero__statement">Every exhibition worth seeing in Sydney.</h1>
+        <p className="meta hero__count">
+          {galleries.length} galleries · {exhibitions.length} exhibitions
         </p>
-        <div className="hero-actions">
-          <Link className="button button-primary" href="/whats-on">
-            Explore What&apos;s On
+        <div className="hero__actions">
+          <Link className="link-arrow" href="/whats-on">
+            Browse what&apos;s on →
           </Link>
-          <Link className="button button-secondary" href="/galleries">
-            Browse Galleries
+          <Link className="link-arrow" href="/galleries">
+            All galleries →
           </Link>
         </div>
       </section>
 
-      {current.length ? (
-        <section className="home-section">
-          <div className="section-head">
-            <h2>On now</h2>
-            <Link className="text-link" href="/whats-on">
-              See all
+      <div className="home-band">
+        <section>
+          <header className="section-head">
+            <div>
+              <p className="eyebrow">Now</p>
+              <h2>On now</h2>
+            </div>
+            <Link className="link-arrow" href="/whats-on">
+              All →
             </Link>
-          </div>
-          <Grid rows={current.slice(0, 8)} />
+          </header>
+          {current.length ? (
+            <ul className="index-list">
+              {current.slice(0, 7).map(({ exhibition, gallery, status }) => (
+                <li key={exhibition.id}>
+                  <ExhibitionCard exhibition={exhibition} gallery={gallery} status={status} />
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="empty-state">Nothing on right now.</p>
+          )}
         </section>
-      ) : null}
 
-      {upcoming.length ? (
-        <section className="home-section">
-          <div className="section-head">
-            <h2>Opening soon</h2>
-            <Link className="text-link" href="/whats-on?status=upcoming">
-              See all
+        <section>
+          <header className="section-head">
+            <div>
+              <p className="eyebrow">Soon</p>
+              <h2>Opening soon</h2>
+            </div>
+            <Link className="link-arrow" href="/whats-on?status=upcoming">
+              All →
             </Link>
-          </div>
-          <Grid rows={upcoming.slice(0, 8)} />
+          </header>
+          {upcoming.length ? (
+            <ul className="opening-list">
+              {upcoming.slice(0, 8).map(({ exhibition, gallery }) => (
+                <li key={exhibition.id}>
+                  <Link className="opening-row" href={`/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`}>
+                    <span className="opening-row__date">{formatDate(exhibition.startDate)}</span>
+                    <span>
+                      <span className="opening-row__title">{exhibition.title}</span>
+                      <br />
+                      <span className="opening-row__gallery">{gallery?.name || exhibition.galleryName}</span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="empty-state">No openings listed.</p>
+          )}
         </section>
-      ) : null}
-    </>
+      </div>
+
+      <section className="section">
+        <header className="section-head">
+          <div>
+            <p className="eyebrow">Directory</p>
+            <h2>Galleries</h2>
+          </div>
+          <Link className="link-arrow" href="/galleries">
+            All galleries →
+          </Link>
+        </header>
+        <div className="card-grid">
+          {galleryCards.map((gallery) => (
+            <GalleryCard key={gallery.id} gallery={gallery} />
+          ))}
+        </div>
+      </section>
+    </div>
   )
 }

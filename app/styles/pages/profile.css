@@ -1,0 +1,68 @@
+/* Gallery + Exhibition profiles (shared) */
+.profile { padding-top: var(--space-6); }
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 500 var(--t-eyebrow) var(--font-mono), monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-500);
+  margin-bottom: var(--space-5);
+}
+.back-link:hover { color: var(--ink-900); }
+
+/* type hero (works with no image) */
+.profile-hero { display: grid; gap: var(--space-3); padding-bottom: var(--space-6); }
+.profile-hero h1 { font: var(--fw-h1) clamp(2rem, 5vw, 3.4rem) / 1.04 var(--font-display), serif; letter-spacing: -0.02em; }
+.profile-hero__title { font: italic 500 clamp(1.8rem, 4.5vw, 3rem) / 1.08 var(--font-display), serif; }
+.profile-hero__meta { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+.profile-cover {
+  aspect-ratio: 16 / 7;
+  background: var(--placeholder);
+  overflow: hidden;
+  margin-bottom: var(--space-6);
+}
+.profile-cover img { width: 100%; height: 100%; object-fit: cover; }
+
+/* sub-nav tabs */
+.profile-tabs {
+  display: flex;
+  gap: var(--space-5);
+  border-bottom: 1px solid var(--hairline);
+  margin-bottom: var(--space-6);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.profile-tabs::-webkit-scrollbar { display: none; }
+.profile-tabs a {
+  padding: var(--space-3) 0;
+  font: 600 0.875rem var(--font-text), sans-serif;
+  color: var(--ink-500);
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+}
+.profile-tabs a:hover { color: var(--ink-900); }
+.profile-tabs a[aria-current='true'] { color: var(--ink-900); border-bottom-color: var(--accent); }
+
+/* About measure */
+.profile-about { max-width: var(--container-narrow); }
+.profile-about p { font: var(--fw-lead) var(--t-lead) / var(--lh-lead) var(--font-display), serif; color: var(--ink-700); }
+
+/* contact definition list */
+.def-list { display: grid; gap: var(--space-3); margin: 0; }
+.def-list > div { display: grid; grid-template-columns: 120px 1fr; gap: var(--space-3); align-items: baseline; }
+.def-list dt { font: 500 var(--t-eyebrow) var(--font-mono), monospace; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-500); margin: 0; }
+.def-list dd { margin: 0; color: var(--ink-900); }
+.def-list a { color: var(--accent); }
+
+.profile-section { margin-top: var(--space-8); }
+.profile-section > h2 { margin-bottom: var(--space-5); }
+.profile-cols { display: grid; gap: var(--space-7); }
+@media (min-width: 900px) { .profile-cols { grid-template-columns: 1fr 1fr; } }
+
+/* exhibition profile big image */
+.exhibition-image { background: var(--placeholder); margin-bottom: var(--space-6); }
+.exhibition-image img { width: 100%; height: auto; display: block; }
+
+.profile-map { aspect-ratio: 4 / 3; background: var(--placeholder); }

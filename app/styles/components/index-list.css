@@ -1,0 +1,45 @@
+/* Index toolbar + list (default) + date-group headers + desktop hover-reveal */
+.index-toolbar {
+  position: sticky;
+  top: 60px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  margin-bottom: var(--space-4);
+  background: var(--paper);
+  border-bottom: 1px solid var(--hairline);
+}
+@media (max-width: 899px) { .index-toolbar { top: 0; } }
+.index-toolbar .field { flex: 1; }
+.index-toolbar-spacer { flex: 1; }
+
+/* list / grid view toggle */
+.view-toggle { display: inline-flex; border: 1px solid var(--hairline-strong); border-radius: var(--radius-control); overflow: hidden; }
+.view-toggle button {
+  min-height: 40px; width: 44px; border: 0; background: var(--surface); cursor: pointer;
+  color: var(--ink-500); display: grid; place-items: center;
+}
+.view-toggle button[aria-pressed='true'] { background: var(--ink-900); color: var(--paper); }
+
+.index-list { list-style: none; margin: 0; padding: 0; }
+
+.date-group {
+  font: 500 var(--t-eyebrow) / 1 var(--font-mono), monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-500);
+  margin: var(--space-7) 0 var(--space-2);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--hairline-strong);
+}
+
+/* Desktop hover-reveal: hovered row stays ink, siblings fade */
+@media (min-width: 900px) and (hover: hover) {
+  .index-list:hover .ex { color: var(--ink-400); }
+  .index-list:hover .ex:hover { color: var(--ink-900); }
+  .index-list:hover .ex:hover .ex__gallery,
+  .index-list:hover .ex:hover .ex__meta { color: var(--ink-700); }
+  .index-list .ex { transition: color var(--dur) var(--ease); }
+}

@@ -1,24 +1,56 @@
-import { Manrope, Fraunces } from 'next/font/google'
+import { Manrope, Fraunces, Spline_Sans_Mono } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/next'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
-import './globals.css'
-import './redesign.css'
-import SiteNav from '../components/SiteNav'
-import { Analytics } from '@vercel/analytics/next'
 
-// Editorial high-contrast serif for display, paired with Manrope for clean UI/body text.
+// Base: tokens + reset
+import './globals.css'
+import './styles/base.css'
+import './styles/layout.css'
+// Components
+import './styles/components/buttons.css'
+import './styles/components/forms.css'
+import './styles/components/chips.css'
+import './styles/components/tags.css'
+import './styles/components/card-exhibition.css'
+import './styles/components/card-gallery.css'
+import './styles/components/header.css'
+import './styles/components/tabbar.css'
+import './styles/components/sheet.css'
+import './styles/components/index-list.css'
+// Pages
+import './styles/pages/home.css'
+import './styles/pages/whats-on.css'
+import './styles/pages/galleries.css'
+import './styles/pages/profile.css'
+import './styles/pages/map.css'
+import './styles/pages/auth.css'
+import './styles/pages/dashboard.css'
+
+import SiteNav from '../components/SiteNav'
+
+// Fraunces = display (serif titles, editorial). Manrope = sans (names, UI). Spline = mono (facts).
 const fraunces = Fraunces({
   subsets: ['latin'],
   variable: '--font-display',
-  weight: ['400', '500', '600', '700'],
-  style: ['normal', 'italic']
+  weight: ['400', '500', '600'],
+  style: ['normal', 'italic'],
+  display: 'swap'
 })
 
 const manrope = Manrope({
   subsets: ['latin'],
-  variable: '--font-manrope',
-  weight: ['400', '500', '600', '700']
+  variable: '--font-sans',
+  weight: ['400', '500', '600', '700'],
+  display: 'swap'
+})
+
+const mono = Spline_Sans_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+  weight: ['400', '500'],
+  display: 'swap'
 })
 
 export const metadata = {
@@ -30,10 +62,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${fraunces.variable} ${manrope.variable}`}>
-        <div className="site-shell">
+      <body className={`${fraunces.variable} ${manrope.variable} ${mono.variable}`}>
+        <div className="shell">
           <SiteNav />
-          <main className="site-main">{children}</main>
+          <main className="shell-main">{children}</main>
         </div>
         <Analytics />
       </body>
