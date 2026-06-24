@@ -68,18 +68,17 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
     [exhibitions, galleries, orderedOpeningWindows, orderedStatuses, precinct, search]
   )
 
+  // Status is shown as toolbar toggles, so it is NOT mirrored here (no duplicate "On now ×" chip).
+  // The applied row carries only filters that live in the Filters sheet / search box.
   const applied = useMemo(() => {
     const list = []
-    if (!isDefaultStatusSelection(orderedStatuses)) {
-      list.push({ key: 'status', label: orderedStatuses.map(statusLabel).join(' + ') })
-    }
     orderedOpeningWindows.forEach((w) =>
       list.push({ key: `opening:${w}`, label: openingFilterOptions.find((o) => o.value === w)?.label || w })
     )
     if (precinct !== 'all') list.push({ key: 'precinct', label: precinct })
     if (search.trim()) list.push({ key: 'search', label: `“${search.trim()}”` })
     return list
-  }, [orderedOpeningWindows, orderedStatuses, precinct, search])
+  }, [orderedOpeningWindows, precinct, search])
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString())

@@ -75,21 +75,21 @@ label.field > span {
 .checkbox-row { display: flex; align-items: center; gap: var(--space-2); font-weight: 500; }
 .checkbox-row input { width: auto; min-height: 0; }
 
-/* Search field — soft grey pill + leading magnifier (Ocula/Artsy) */
+/* Search field — clean compact bordered input + leading magnifier (Ocula/Artsy), not a grey pill */
 .search {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
-  min-height: 46px;
-  padding: 0 16px;
-  background: var(--surface-muted);
-  border: 1px solid transparent;
-  border-radius: var(--radius-pill);
-  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+  min-height: 40px;
+  padding: 0 12px;
+  background: var(--surface);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-control);
+  transition: border-color var(--dur) var(--ease);
 }
-.search:focus-within { background: var(--surface); border-color: var(--ink-900); }
-.search__icon { display: flex; flex-shrink: 0; color: var(--ink-500); }
+.search:focus-within { border-color: var(--ink-900); }
+.search__icon { display: flex; flex-shrink: 0; color: var(--ink-400); }
 .search:focus-within .search__icon { color: var(--ink-900); }
 .search__input {
   flex: 1;
@@ -97,7 +97,7 @@ label.field > span {
   border: 0;
   background: transparent;
   outline: none;
-  font: 400 0.95rem var(--font-text), sans-serif;
+  font: 400 0.9375rem var(--font-text), sans-serif;
   color: var(--ink-900);
 }
 .search__input::placeholder { color: var(--ink-400); }

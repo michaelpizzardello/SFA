@@ -35,6 +35,18 @@
 }
 .toolbar-control:hover { color: var(--ink-900); }
 
+/* status filters in the toolbar = quiet text tabs, not heavy pills (sheet chips keep the pill look) */
+.index-toolbar .chip {
+  min-height: 44px; padding: 0; border: 0; border-radius: 0; background: none;
+  color: var(--ink-500); font: 500 0.9375rem var(--font-text), sans-serif;
+}
+.index-toolbar .chip:hover { border: 0; color: var(--ink-900); }
+.index-toolbar .chip--active {
+  background: none; color: var(--ink-900);
+  border: 0; border-bottom: 2px solid var(--ink-900); border-radius: 0;
+}
+.index-toolbar .chip-row { gap: var(--space-5); }
+
 /* list / grid view toggle — quiet, de-boxed (active = ink, inactive = faint) */
 .view-toggle { display: inline-flex; gap: 2px; }
 .view-toggle button {
