@@ -5,9 +5,9 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import BackLinkButton from './BackLinkButton'
 import FilterSlidersIcon from './icons/FilterSlidersIcon'
-import { formatDateRange } from '../lib/utils/date'
+import { formatDateRange, todayISOInSydney } from '../lib/utils/date'
 import { filterExhibitions, filterMapGalleries, getPrecinctOptions } from '../lib/utils/filters'
-import { getExhibitionSlug, getGalleryBySlug } from '../lib/utils/exhibitions'
+import { getExhibitionSlug, getExhibitionStatus, getGalleryBySlug } from '../lib/utils/exhibitions'
 import { serializeBounds, SYDNEY_CENTER, SYDNEY_DEFAULT_ZOOM } from '../lib/utils/map'
 
 const LIST_SCROLL_STORAGE_KEY = 'saf_map_list_scroll'
@@ -284,6 +284,19 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
     [resultGalleries, selectedSlug]
   )
 
+  // Current + upcoming exhibitions for the selected gallery (shown inline in the selection card).
+  const selectedGalleryExhibitions = useMemo(() => {
+    if (!selectedGallery) {
+      return []
+    }
+    const today = todayISOInSydney()
+    return exhibitions
+      .filter((exhibition) => exhibition.gallerySlug === selectedGallery.slug)
+      .map((exhibition) => ({ exhibition, status: getExhibitionStatus(exhibition, today) }))
+      .filter((row) => row.status === 'current' || row.status === 'upcoming')
+      .sort((a, b) => (a.status === b.status ? 0 : a.status === 'current' ? -1 : 1))
+  }, [exhibitions, selectedGallery])
+
   const activeFilters = useMemo(() => {
     const filters = []
 
@@ -481,7 +494,9 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
 
         const map = L.map(mapContainerRef.current, {
           zoomControl: window.matchMedia('(min-width: 768px)').matches,
-          scrollWheelZoom: false
+          scrollWheelZoom: true,
+          wheelDebounceTime: 30,
+          wheelPxPerZoomLevel: 90
         }).setView([mapView.lat, mapView.lng], mapView.zoom)
 
         if (!map.getPane('user-location-pane')) {
@@ -1478,6 +1493,30 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
             {selectedGallery.suburb ? ` | ${selectedGallery.suburb}` : ''}
           </p>
           <p className="item-meta">{selectedGallery.address}</p>
+
+          {selectedGalleryExhibitions.length ? (
+            <ul className="map-selection-shows">
+              {selectedGalleryExhibitions.slice(0, 4).map(({ exhibition, status }) => (
+                <li key={exhibition.id}>
+                  <Link
+                    className="map-selection-show"
+                    href={`/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`}
+                  >
+                    <span className={`tag tag--${status} map-selection-show__tag`}>
+                      {status === 'current' ? 'On now' : 'Opening soon'}
+                    </span>
+                    <span className="map-selection-show__title">{exhibition.title}</span>
+                    <span className="map-selection-show__meta">
+                      {formatDateRange(exhibition.startDate, exhibition.endDate)}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="item-meta map-selection-empty">No current or upcoming exhibitions.</p>
+          )}
+
           <Link className="button button-primary" href={`/gallery/${encodeURIComponent(selectedGallery.slug)}`}>
             View gallery
           </Link>

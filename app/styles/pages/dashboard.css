@@ -40,7 +40,7 @@
   flex-wrap: wrap; padding: var(--space-3) 0; margin-bottom: var(--space-7);
   background: var(--paper); border-bottom: 1px solid var(--hairline);
 }
-.dashboard-brand { font: 600 1.05rem var(--font-display), serif; letter-spacing: -0.01em; text-decoration: none; color: var(--ink-900); }
+.dashboard-brand { font: 700 1.1rem var(--font-text), sans-serif; letter-spacing: -0.04em; text-decoration: none; color: var(--ink-900); }
 .dashboard-links { display: flex; gap: var(--space-4); flex: 1; }
 .dashboard-link { font: 600 0.9rem var(--font-text), sans-serif; color: var(--ink-500); text-decoration: none; padding: 6px 0; border-bottom: 2px solid transparent; }
 .dashboard-link.is-active { color: var(--ink-900); border-bottom-color: var(--accent); }

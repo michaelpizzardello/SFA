@@ -13,8 +13,8 @@
 }
 .site-header.is-map-route { display: none; }
 .site-header__brand {
-  font: 600 1.05rem var(--font-display), serif;
-  letter-spacing: -0.01em;
+  font: 700 1.15rem var(--font-text), sans-serif;
+  letter-spacing: -0.04em;
   color: var(--ink-900);
   white-space: nowrap;
 }

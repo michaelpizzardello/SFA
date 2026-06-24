@@ -525,8 +525,7 @@
     grid-template-areas:
       'top top'
       'map sheet'
-      'cta sheet'
-      'selection sheet';
+      'cta sheet';
     gap: var(--space-4);
   }
 
@@ -568,17 +567,18 @@
   }
 
   .map-selection-floating {
-    grid-area: selection;
-    position: static;
-    left: auto;
+    position: fixed;
+    left: var(--space-5);
+    bottom: var(--space-5);
     right: auto;
-    bottom: auto;
-    z-index: auto;
-    border-left: 1px solid var(--color-border);
-    border-right: 1px solid var(--color-border);
-    border-bottom: 1px solid var(--color-border);
+    width: min(360px, 32vw);
+    max-height: 64vh;
+    overflow-y: auto;
+    z-index: 62;
+    border: 1px solid var(--hairline);
     border-radius: var(--radius-block);
-    padding: var(--space-3);
+    box-shadow: var(--shadow-pop);
+    padding: var(--space-4);
     transform: none !important;
     touch-action: auto;
     user-select: auto;
@@ -624,3 +624,35 @@
     gap: 0;
   }
 }
+
+/* Selected-gallery card: current + upcoming exhibitions inline */
+.map-selection-shows {
+  list-style: none;
+  margin: var(--space-3) 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+  max-height: 240px;
+  overflow-y: auto;
+}
+.map-selection-show {
+  display: grid;
+  gap: 3px;
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--hairline);
+  text-decoration: none;
+  color: inherit;
+}
+.map-selection-shows li:first-child .map-selection-show { border-top: 0; }
+.map-selection-show__tag { width: fit-content; }
+.map-selection-show__title {
+  font: italic 500 0.95rem var(--font-text), sans-serif;
+  line-height: 1.25;
+  color: var(--ink-900);
+}
+.map-selection-show__meta {
+  font: 400 var(--t-meta) var(--font-mono), monospace;
+  color: var(--ink-500);
+}
+.map-selection-show:hover .map-selection-show__title { text-decoration: underline; text-underline-offset: 2px; }
+.map-selection-empty { margin: var(--space-2) 0; color: var(--ink-500); }
