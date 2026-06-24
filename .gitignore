@@ -19,8 +19,10 @@ out
 !.vscode/extensions.json
 .idea
 .DS_Store
-Icon?
+/Icon?
 tmp-*.png
+automation-artifacts/
+.claude/
 supabase/.temp/
 *.suo
 *.ntvs*
