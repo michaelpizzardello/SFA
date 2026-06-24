@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import BackLinkButton from './BackLinkButton'
 import FilterSlidersIcon from './icons/FilterSlidersIcon'
+import SearchField from './SearchField'
 import { formatDateRange, todayISOInSydney } from '../lib/utils/date'
 import { filterExhibitions, filterMapGalleries, getPrecinctOptions } from '../lib/utils/filters'
 import { getExhibitionSlug, getExhibitionStatus, getGalleryBySlug } from '../lib/utils/exhibitions'
@@ -1327,15 +1328,13 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
     <section className="map-page map-fullscreen" aria-label="Sydney gallery map">
       <div className="map-top-overlay" ref={topOverlayRef}>
         <BackLinkButton fallbackHref="/galleries" label="Back" />
-        <label className="field map-search-field">
-          <span className="visually-hidden">Search map</span>
-          <input
-            type="search"
-            placeholder={exhibitionMode ? 'Search exhibitions' : 'Search galleries'}
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-          />
-        </label>
+        <SearchField
+          className="map-search-field"
+          placeholder={exhibitionMode ? 'Search exhibitions' : 'Search galleries'}
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          aria-label="Search map"
+        />
         <button
           type="button"
           className="button button-secondary icon-button filter-icon-button map-filter-trigger"

@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import SearchField from './SearchField'
 
 const NAV = [
   { href: '/whats-on', label: "What's On", match: (p) => p === '/whats-on' || p.startsWith('/exhibition/') },
@@ -29,13 +30,7 @@ export default function SiteNav() {
         </Link>
 
         <form className="header__search" action="/whats-on" role="search">
-          <input
-            className="field"
-            type="search"
-            name="search"
-            placeholder="Search exhibitions, galleries, precincts"
-            aria-label="Search"
-          />
+          <SearchField name="search" placeholder="Search exhibitions, galleries, precincts" aria-label="Search" />
           <button type="submit" className="visually-hidden">
             Search
           </button>

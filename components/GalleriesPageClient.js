@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { filterGalleries, getGalleryDirectoryData, getPrecinctOptions } from '../lib/utils/filters'
 import GalleryCard from './GalleryCard'
+import SearchField from './SearchField'
 import { useDialog } from './useDialog'
 import { IconList, IconGrid } from './icons/ViewIcons'
 
@@ -59,9 +60,7 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
       </header>
 
       <div className="index-toolbar">
-        <input
-          className="field"
-          type="search"
+        <SearchField
           placeholder="Search galleries"
           value={search}
           onChange={(e) => setSearch(e.target.value)}

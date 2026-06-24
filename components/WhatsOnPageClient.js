@@ -6,6 +6,7 @@ import { todayISOInSydney } from '../lib/utils/date'
 import { filterExhibitions, getPrecinctOptions } from '../lib/utils/filters'
 import { getExhibitionStatus, getGalleryBySlug } from '../lib/utils/exhibitions'
 import ExhibitionCard from './ExhibitionCard'
+import SearchField from './SearchField'
 import { useDialog } from './useDialog'
 import { IconList, IconGrid } from './icons/ViewIcons'
 
@@ -136,9 +137,7 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
       </header>
 
       <div className="index-toolbar">
-        <input
-          className="field"
-          type="search"
+        <SearchField
           placeholder="Search exhibitions, galleries, precincts"
           value={search}
           onChange={(e) => setSearch(e.target.value)}

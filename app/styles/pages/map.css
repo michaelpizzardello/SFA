@@ -656,3 +656,6 @@
 }
 .map-selection-show:hover .map-selection-show__title { text-decoration: underline; text-underline-offset: 2px; }
 .map-selection-empty { margin: var(--space-2) 0; color: var(--ink-500); }
+
+/* search field in map overlay */
+.map-search-field{flex:1;min-width:0;}
