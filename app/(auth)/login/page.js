@@ -1,10 +1,17 @@
+import { redirect } from 'next/navigation'
 import LoginForm from '@/components/auth/LoginForm'
+import { getSessionUser } from '@/lib/auth/roles'
 
 export const dynamic = 'force-dynamic'
 
 export default async function LoginPage({ searchParams }) {
   const params = (await searchParams) || {}
   const redirectTo = typeof params.redirectTo === 'string' ? params.redirectTo : '/dashboard'
+
+  // Already signed in → go straight to the dashboard (no confusing "sign in" form).
+  if (await getSessionUser()) {
+    redirect(redirectTo)
+  }
 
   return (
     <section className="admin-shell">

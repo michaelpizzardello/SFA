@@ -15,9 +15,8 @@ const NAV = [
 const TABS = [
   { href: '/', label: 'Home', icon: 'home', match: (p) => p === '/' },
   { href: '/whats-on', label: "What's On", icon: 'whatson', match: (p) => p === '/whats-on' || p.startsWith('/exhibition/') },
-  { href: '/map', label: 'Map', icon: 'map', match: (p) => p.startsWith('/map') },
   { href: '/galleries', label: 'Galleries', icon: 'galleries', match: (p) => p === '/galleries' || p.startsWith('/gallery/') },
-  { href: '/dashboard', label: 'Account', icon: 'account', match: (p) => p.startsWith('/dashboard') || p.startsWith('/login') }
+  { href: '/map', label: 'Map', icon: 'map', match: (p) => p.startsWith('/map') }
 ]
 
 const ICON = {
@@ -79,9 +78,6 @@ export default function SiteNav() {
           >
             <SearchIcon />
           </button>
-          <Link className="header__signin" href="/dashboard">
-            Sign in
-          </Link>
         </div>
       </header>
 

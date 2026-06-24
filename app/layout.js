@@ -29,6 +29,8 @@ import './styles/pages/auth.css'
 import './styles/pages/dashboard.css'
 
 import SiteNav from '../components/SiteNav'
+import SiteFooter from '../components/SiteFooter'
+import { getAuthContext } from '../lib/auth/roles'
 
 // Fraunces = display (serif titles, editorial). Manrope = sans (names, UI). Spline = mono (facts).
 const fraunces = Fraunces({
@@ -59,7 +61,9 @@ export const metadata = {
     'Sydney Art Finder is your guide to galleries, exhibitions, and opening nights across Sydney.'
 }
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const { user, isSuperAdmin } = await getAuthContext()
+
   return (
     <html lang="en">
       <body className={`${fraunces.variable} ${manrope.variable} ${mono.variable}`}>
@@ -70,6 +74,7 @@ export default function RootLayout({ children }) {
           <SiteNav />
           <main id="main" tabIndex={-1} className="shell-main">
             {children}
+            <SiteFooter signedIn={Boolean(user)} isSuperAdmin={isSuperAdmin} />
           </main>
         </div>
         <Analytics />

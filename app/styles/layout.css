@@ -60,19 +60,36 @@
   font: italic var(--fw-lead) var(--t-lead) / var(--lh-lead) var(--font-display), serif;
 }
 
-/* Footer (dark band) */
+/* Footer (dark band) — gallery access lives here, not the top header */
 .site-footer {
   margin-top: var(--space-11);
   background: var(--ink-section);
   color: var(--on-section);
 }
-.site-footer-inner {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-5);
-  justify-content: space-between;
-  align-items: baseline;
-  padding-block: var(--space-8);
+.site-footer__inner {
+  display: grid;
+  gap: var(--space-7);
+  padding-block: var(--space-9);
 }
-.site-footer a { color: var(--on-section); }
-.site-footer .meta { color: var(--on-section-muted); }
+@media (min-width: 700px) {
+  .site-footer__inner { grid-template-columns: 1.6fr 1fr 1fr; gap: var(--space-8); }
+}
+.site-footer__brand { display: grid; gap: var(--space-3); align-content: start; }
+.site-footer__wordmark { font: 500 1.25rem var(--font-display), serif; color: var(--on-section); }
+.site-footer__tag { font: 400 var(--t-small) var(--font-text), sans-serif; color: var(--on-section-muted); max-width: 32ch; }
+.site-footer__col { display: grid; gap: var(--space-3); align-content: start; }
+.site-footer__label {
+  font: 500 var(--t-eyebrow) / 1 var(--font-mono), monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--on-section-muted);
+  margin: 0;
+}
+.site-footer a { color: var(--on-section); font: 400 var(--t-small) var(--font-text), sans-serif; }
+.site-footer a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.site-footer__base {
+  display: flex;
+  padding-block: var(--space-5);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+.site-footer__base .meta { color: var(--on-section-muted); }
