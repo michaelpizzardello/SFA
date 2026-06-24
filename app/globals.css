@@ -4,26 +4,26 @@
    typography is the artwork, one vermilion for interaction only.
    ============================================================ */
 :root {
-  /* ---- Canvas & ink ---- */
-  --paper:            #faf8f3;
+  /* ---- Canvas & ink (white gallery wall, à la Ocula/Artsy) ---- */
+  --paper:            #ffffff;
   --surface:          #ffffff;
-  --surface-muted:    #f2eee6;
-  --placeholder:      #ece7dd;  /* the one tonal token: no-image + skeleton + preload bg */
+  --surface-muted:    #f5f4f2;
+  --placeholder:      #ededec;  /* the one tonal token: no-image + skeleton + preload bg */
 
-  /* ---- Warm-neutral ramp (does the structural work) ---- */
-  --ink-900:          #181410;
-  --ink-700:          #46403a;
-  --ink-500:          #6b6358;
-  --ink-400:          #8c8473;
-  --ink-300:          #c8bfb0;
-  --hairline:         #e2dcd1;
-  --hairline-strong:  #c9c2b5;
+  /* ---- Neutral ramp (does the structural work) ---- */
+  --ink-900:          #0d0d0d;
+  --ink-700:          #3a3a3a;
+  --ink-500:          #6f6f6f;
+  --ink-400:          #9a9a9a;
+  --ink-300:          #cfcfcf;
+  --hairline:         #e8e8e6;
+  --hairline-strong:  #cdcdca;
 
-  /* ---- The one accent: vermilion, interaction only ---- */
-  --accent:           #bd3c1c;
-  --accent-hover:     #97300f;
-  --accent-press:     #7e2809;
-  --accent-tint:      #f6e7df;
+  /* ---- The one accent: a deep editorial blue, interaction only (sparingly) ---- */
+  --accent:           #14169c;
+  --accent-hover:     #0e1078;
+  --accent-press:     #0a0b5c;
+  --accent-tint:      #ececfb;
   --on-accent:        #ffffff;
 
   /* ---- Status (only inside tags + validation) ---- */
@@ -33,7 +33,7 @@
   --danger:           #b42318;  --danger-tint:      #fbe9e7;
 
   /* ---- Dark sections (footer, map chrome) ---- */
-  --ink-section:      #211d18;  --on-section: #f3efe8;  --on-section-muted: #a89e8d;
+  --ink-section:      #0d0d0d;  --on-section: #f5f5f5;  --on-section-muted: #9a9a9a;
 
   /* ---- Scrims (over the rare hero image) ---- */
   --scrim-strong:     rgba(20, 16, 12, 0.46);

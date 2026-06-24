@@ -6,6 +6,8 @@ import { getExhibitionSlug, getExhibitionStatus, getGalleryBySlug } from '../lib
 import ExhibitionCard from './ExhibitionCard'
 import GalleryCard from './GalleryCard'
 
+const imageFirst = (a, b) => Number(Boolean(b.exhibition.imageUrl)) - Number(Boolean(a.exhibition.imageUrl))
+
 export default function HomePage({ galleries, exhibitions }) {
   const today = todayISOInSydney()
 
@@ -17,12 +19,11 @@ export default function HomePage({ galleries, exhibitions }) {
 
   const current = withMeta
     .filter((r) => r.status === 'current')
-    .sort((a, b) => compareISO(b.exhibition.startDate, a.exhibition.startDate))
+    .sort((a, b) => imageFirst(a, b) || compareISO(b.exhibition.startDate, a.exhibition.startDate))
   const upcoming = withMeta
     .filter((r) => r.status === 'upcoming')
     .sort((a, b) => compareISO(a.exhibition.startDate, b.exhibition.startDate))
 
-  // galleries with a current show first
   const currentBySlug = new Set(current.map((r) => r.exhibition.gallerySlug))
   const galleryCards = [...galleries]
     .sort((a, b) => Number(currentBySlug.has(b.slug)) - Number(currentBySlug.has(a.slug)))
@@ -55,31 +56,27 @@ export default function HomePage({ galleries, exhibitions }) {
         </div>
       </section>
 
-      <div className="home-band">
-        <section>
+      {current.length ? (
+        <section className="section">
           <header className="section-head">
             <div>
               <p className="eyebrow">Now</p>
               <h2>On now</h2>
             </div>
             <Link className="link-arrow" href="/whats-on">
-              All →
+              All exhibitions →
             </Link>
           </header>
-          {current.length ? (
-            <ul className="index-list">
-              {current.slice(0, 7).map(({ exhibition, gallery, status }) => (
-                <li key={exhibition.id}>
-                  <ExhibitionCard exhibition={exhibition} gallery={gallery} status={status} />
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="empty-state">Nothing on right now.</p>
-          )}
+          <div className="card-grid">
+            {current.slice(0, 8).map(({ exhibition, gallery, status }) => (
+              <ExhibitionCard key={exhibition.id} exhibition={exhibition} gallery={gallery} status={status} />
+            ))}
+          </div>
         </section>
+      ) : null}
 
-        <section>
+      {upcoming.length ? (
+        <section className="section">
           <header className="section-head">
             <div>
               <p className="eyebrow">Soon</p>
@@ -89,26 +86,22 @@ export default function HomePage({ galleries, exhibitions }) {
               All →
             </Link>
           </header>
-          {upcoming.length ? (
-            <ul className="opening-list">
-              {upcoming.slice(0, 8).map(({ exhibition, gallery }) => (
-                <li key={exhibition.id}>
-                  <Link className="opening-row" href={`/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`}>
-                    <span className="opening-row__date">{formatDate(exhibition.startDate)}</span>
-                    <span>
-                      <span className="opening-row__title">{exhibition.title}</span>
-                      <br />
-                      <span className="opening-row__gallery">{gallery?.name || exhibition.galleryName}</span>
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="empty-state">No openings listed.</p>
-          )}
+          <ul className="opening-list">
+            {upcoming.slice(0, 8).map(({ exhibition, gallery }) => (
+              <li key={exhibition.id}>
+                <Link className="opening-row" href={`/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`}>
+                  <span className="opening-row__date">{formatDate(exhibition.startDate)}</span>
+                  <span>
+                    <span className="opening-row__title">{exhibition.title}</span>
+                    <br />
+                    <span className="opening-row__gallery">{gallery?.name || exhibition.galleryName}</span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </section>
-      </div>
+      ) : null}
 
       <section className="section">
         <header className="section-head">

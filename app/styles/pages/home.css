@@ -6,8 +6,8 @@
   max-width: 880px;
 }
 .hero__statement {
-  font: var(--fw-display) var(--t-display) / var(--lh-display) var(--font-display), serif;
-  letter-spacing: -0.02em;
+  font: 700 var(--t-display) / var(--lh-display) var(--font-text), sans-serif;
+  letter-spacing: -0.035em;
   color: var(--ink-900);
 }
 .hero__count { color: var(--ink-500); }

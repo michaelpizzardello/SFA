@@ -3,13 +3,13 @@ h1, h2, h3, h4 { margin: 0; }
 p { margin: 0; }
 
 h1 {
-  font: var(--fw-h1) var(--t-h1) / var(--lh-h1) var(--font-display), serif;
-  letter-spacing: -0.015em;
+  font: 700 var(--t-h1) / var(--lh-h1) var(--font-text), sans-serif;
+  letter-spacing: -0.025em;
   color: var(--ink-900);
 }
 h2 {
-  font: var(--fw-h2) var(--t-h2) / var(--lh-h2) var(--font-display), serif;
-  letter-spacing: -0.01em;
+  font: 600 var(--t-h2) / var(--lh-h2) var(--font-text), sans-serif;
+  letter-spacing: -0.02em;
   color: var(--ink-900);
 }
 h3 {
@@ -29,9 +29,9 @@ h3 {
   color: var(--ink-500);
   font-variant-numeric: tabular-nums;
 }
-/* serif-italic = work/exhibition titles */
+/* italic sans = work/exhibition titles (Ocula card anatomy) */
 .title-work {
-  font: italic 500 var(--t-card-title) / var(--lh-card-title) var(--font-display), serif;
+  font: italic 500 var(--t-card-title) / var(--lh-card-title) var(--font-text), sans-serif;
   color: var(--ink-900);
 }
 .lead {

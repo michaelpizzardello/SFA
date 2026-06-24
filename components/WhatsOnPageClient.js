@@ -41,7 +41,8 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
     () => new Set(normalizeOpeningSelection(initialFilters.openingWindows || []))
   )
   const [filtersOpen, setFiltersOpen] = useState(false)
-  const [view, setView] = useState('list')
+  // Image-forward by default now that exhibitions carry covers; list is the toggle.
+  const [view, setView] = useState('grid')
 
   const closeFilters = useCallback(() => setFiltersOpen(false), [])
   const sheetRef = useDialog(filtersOpen, closeFilters)
