@@ -5,7 +5,8 @@ import { usePathname } from 'next/navigation'
 
 // Public footer. Gallery access lives HERE (not the top header) — the public audience never signs in;
 // galleries do, occasionally. Auth-aware so the link reflects the actual state.
-export default function SiteFooter({ signedIn = false, isSuperAdmin = false }) {
+// (Admin console is intentionally NOT here — it's internal tooling reached from the dashboard.)
+export default function SiteFooter({ signedIn = false }) {
   const pathname = usePathname()
   const isAppRoute = /^\/(dashboard|login|forgot-password|reset-password|console)/.test(pathname)
   const isMapRoute = pathname.startsWith('/map')
@@ -37,7 +38,6 @@ export default function SiteFooter({ signedIn = false, isSuperAdmin = false }) {
           ) : (
             <Link href="/login">Gallery login</Link>
           )}
-          {isSuperAdmin ? <Link href="/console">Admin console</Link> : null}
         </nav>
       </div>
       <div className="container site-footer__base">

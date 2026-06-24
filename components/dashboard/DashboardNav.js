@@ -10,7 +10,7 @@ const LINKS = [
   ['/dashboard/exhibitions', 'Exhibitions']
 ]
 
-export default function DashboardNav() {
+export default function DashboardNav({ isSuperAdmin = false }) {
   const pathname = usePathname()
   return (
     <header className="dashboard-nav">
@@ -28,6 +28,11 @@ export default function DashboardNav() {
         })}
       </nav>
       <div className="dashboard-nav-actions">
+        {isSuperAdmin ? (
+          <Link href="/console" className="text-link">
+            Console
+          </Link>
+        ) : null}
         <Link href="/" className="text-link">
           View site
         </Link>

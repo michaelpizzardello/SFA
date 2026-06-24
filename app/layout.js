@@ -62,7 +62,7 @@ export const metadata = {
 }
 
 export default async function RootLayout({ children }) {
-  const { user, isSuperAdmin } = await getAuthContext()
+  const { user } = await getAuthContext()
 
   return (
     <html lang="en">
