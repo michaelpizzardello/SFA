@@ -36,6 +36,9 @@ export default function SiteNav() {
             placeholder="Search exhibitions, galleries, precincts"
             aria-label="Search"
           />
+          <button type="submit" className="visually-hidden">
+            Search
+          </button>
         </form>
 
         <nav className="header__nav" aria-label="Primary">

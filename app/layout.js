@@ -41,7 +41,7 @@ const fraunces = Fraunces({
 
 const manrope = Manrope({
   subsets: ['latin'],
-  variable: '--font-sans',
+  variable: '--font-text',
   weight: ['400', '500', '600', '700'],
   display: 'swap'
 })
@@ -63,9 +63,14 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${fraunces.variable} ${manrope.variable} ${mono.variable}`}>
+        <a className="skip-link" href="#main">
+          Skip to content
+        </a>
         <div className="shell">
           <SiteNav />
-          <main className="shell-main">{children}</main>
+          <main id="main" tabIndex={-1} className="shell-main">
+            {children}
+          </main>
         </div>
         <Analytics />
       </body>

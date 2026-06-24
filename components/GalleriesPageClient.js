@@ -1,17 +1,23 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { filterGalleries, getGalleryDirectoryData, getPrecinctOptions } from '../lib/utils/filters'
 import GalleryCard from './GalleryCard'
+import { useDialog } from './useDialog'
+import { IconList, IconGrid } from './icons/ViewIcons'
 
 export default function GalleriesPageClient({ galleries, exhibitions, initialFilters }) {
   const [search, setSearch] = useState(initialFilters.search)
   const [precinct, setPrecinct] = useState(initialFilters.precinct)
   const [sort, setSort] = useState(initialFilters.sort)
   const [filtersOpen, setFiltersOpen] = useState(false)
+  // Galleries deliberately lead with the monogram grid (the "Mondrian tiles" rich state); list is the toggle.
   const [view, setView] = useState('grid')
+
+  const closeFilters = useCallback(() => setFiltersOpen(false), [])
+  const sheetRef = useDialog(filtersOpen, closeFilters)
 
   const pathname = usePathname()
   const router = useRouter()
@@ -69,10 +75,10 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
         </button>
         <div className="view-toggle" role="group" aria-label="View">
           <button type="button" aria-pressed={view === 'grid'} aria-label="Grid view" onClick={() => setView('grid')}>
-            ▦
+            <IconGrid />
           </button>
           <button type="button" aria-pressed={view === 'list'} aria-label="List view" onClick={() => setView('list')}>
-            ☰
+            <IconList />
           </button>
         </div>
       </div>
@@ -81,7 +87,7 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
         <span className="results-meta">{rows.length} galleries</span>
         {applied.map((f) => (
           <span key={f.key} className="chip chip--applied">
-            {f.label}
+            <span className="chip__label">{f.label}</span>
             <button
               type="button"
               aria-label={`Remove ${f.label}`}
@@ -123,7 +129,7 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
       {filtersOpen ? (
         <>
           <div className="scrim" onClick={() => setFiltersOpen(false)} role="presentation" />
-          <section className="sheet" role="dialog" aria-modal="true" aria-label="Gallery filters">
+          <section className="sheet" role="dialog" aria-modal="true" aria-label="Gallery filters" ref={sheetRef}>
             <div className="sheet__handle" />
             <div className="sheet__head">
               <h2>Filters</h2>

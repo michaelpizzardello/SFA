@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import CardImage from './CardImage'
 
 function monogram(name) {
   const words = String(name || '').trim().split(/\s+/).filter(Boolean)
@@ -12,10 +13,10 @@ export default function GalleryCard({ gallery, currentCount = 0 }) {
   const sub = [gallery.precinct, gallery.suburb].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i).join(' · ')
 
   return (
-    <Link href={`/gallery/${encodeURIComponent(gallery.slug)}`} className="gal">
+    <Link href={`/gallery/${encodeURIComponent(gallery.slug)}`} className="gal" aria-label={gallery.name}>
       <div className="gal__media">
         {image ? (
-          <img className="gal__img" src={image} alt="" loading="lazy" />
+          <CardImage className="gal__img" src={image} />
         ) : (
           <span className="gal__monogram" aria-hidden="true">
             {monogram(gallery.name)}

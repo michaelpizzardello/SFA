@@ -1,7 +1,7 @@
 /* Index toolbar + list (default) + date-group headers + desktop hover-reveal */
 .index-toolbar {
   position: sticky;
-  top: 60px;
+  top: 60px; /* sits below the 60px header at all widths where it's present */
   z-index: 20;
   display: flex;
   flex-wrap: wrap;
@@ -12,19 +12,21 @@
   background: var(--paper);
   border-bottom: 1px solid var(--hairline);
 }
-@media (max-width: 899px) { .index-toolbar { top: 0; } }
 .index-toolbar .field { flex: 1 1 240px; min-width: 0; }
 .index-toolbar .chip-row { flex: 0 1 auto; }
+
+/* On the touch layout, keep only [search] + [Filters]; chips + view toggle live in the sheet
+   and list is the mandated default. */
 @media (max-width: 599px) {
   .index-toolbar .field { flex-basis: 100%; }
-  .index-toolbar .chip-row { flex: 1 1 auto; }
+  .index-toolbar .chip-row,
+  .index-toolbar .view-toggle { display: none; }
 }
-.index-toolbar-spacer { flex: 1; }
 
 /* list / grid view toggle */
 .view-toggle { display: inline-flex; border: 1px solid var(--hairline-strong); border-radius: var(--radius-control); overflow: hidden; }
 .view-toggle button {
-  min-height: 40px; width: 44px; border: 0; background: var(--surface); cursor: pointer;
+  min-height: 44px; width: 44px; border: 0; background: var(--surface); cursor: pointer;
   color: var(--ink-500); display: grid; place-items: center;
 }
 .view-toggle button[aria-pressed='true'] { background: var(--ink-900); color: var(--paper); }
@@ -41,11 +43,10 @@
   border-bottom: 1px solid var(--hairline-strong);
 }
 
-/* Desktop hover-reveal: hovered row stays ink, siblings fade */
+/* Desktop hover-reveal — opt-in via .index-list--reveal (What's On only) */
 @media (min-width: 900px) and (hover: hover) {
-  .index-list:hover .ex { color: var(--ink-400); }
-  .index-list:hover .ex:hover { color: var(--ink-900); }
-  .index-list:hover .ex:hover .ex__gallery,
-  .index-list:hover .ex:hover .ex__meta { color: var(--ink-700); }
-  .index-list .ex { transition: color var(--dur) var(--ease); }
+  .index-list--reveal:hover .ex { color: var(--ink-400); transition: color var(--dur) var(--ease); }
+  .index-list--reveal:hover .ex:hover { color: var(--ink-900); }
+  .index-list--reveal:hover .ex:hover .ex__gallery,
+  .index-list--reveal:hover .ex:hover .ex__meta { color: var(--ink-700); }
 }

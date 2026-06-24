@@ -1,72 +1,7 @@
-/* Gallery dashboard + super-admin console (shared shell) */
-.dash {
-  width: 100%;
-  max-width: 980px;
-  margin-inline: auto;
-  padding: 0 var(--gutter) var(--space-10);
-}
-.dash-nav {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  flex-wrap: wrap;
-  padding: var(--space-3) 0;
-  margin-bottom: var(--space-7);
-  background: var(--paper);
-  border-bottom: 1px solid var(--hairline);
-}
-.dash-brand { font: 600 1.05rem var(--font-display), serif; letter-spacing: -0.01em; }
-.dash-links { display: flex; gap: var(--space-4); flex: 1; }
-.dash-link { font: 600 0.9rem var(--font-text), sans-serif; color: var(--ink-500); padding: 6px 0; border-bottom: 2px solid transparent; }
-.dash-link.is-active { color: var(--ink-900); border-bottom-color: var(--accent); }
-.dash-actions { display: flex; align-items: center; gap: var(--space-4); }
-
-.dash-panel { display: grid; gap: var(--space-5); }
-.dash-panel h1 { font: var(--fw-h1) clamp(1.8rem, 4vw, 2.6rem) / 1.06 var(--font-display), serif; }
-
-/* stats as big display numbers + mono labels (no filled boxes) */
-.dash-stats { display: flex; flex-wrap: wrap; gap: var(--space-7); padding: var(--space-4) 0; border-block: 1px solid var(--hairline); }
-.dash-stat { display: grid; gap: 2px; }
-.dash-stat__num { font: 500 2rem / 1 var(--font-display), serif; }
-.dash-stat__label { font: 400 var(--t-meta) var(--font-mono), monospace; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-500); }
-
-/* checklist as hairline rows (no accent-fill box) */
-.dash-checklist { list-style: none; margin: 0; padding: 0; }
-.dash-checklist li {
-  display: flex; align-items: center; gap: var(--space-3);
-  padding: var(--space-3) 0; border-bottom: 1px solid var(--hairline);
-  color: var(--ink-700);
-}
-.dash-progress { font: 400 var(--t-meta) var(--font-mono), monospace; color: var(--ink-500); }
-
-.dash-quick { display: flex; flex-wrap: wrap; gap: var(--space-3); }
-
-/* forms */
-.dash-form { display: grid; gap: var(--space-5); max-width: 680px; }
-.dash-form-grid { display: grid; gap: var(--space-4); }
-@media (min-width: 600px) { .dash-form-grid { grid-template-columns: 1fr 1fr; } }
-.form-ok { color: var(--status-on); font-weight: 600; }
-.form-err { color: var(--danger); }
-
-/* table-as-list */
-.dash-list { list-style: none; margin: 0; padding: 0; display: grid; }
-.dash-row {
-  display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
-  flex-wrap: wrap; padding: var(--space-4) 0; border-bottom: 1px solid var(--hairline);
-}
-.dash-row__title { font-weight: 600; }
-.dash-row__title.is-draft { color: var(--ink-500); }
-.dash-row__actions { display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; }
-
-.upload-preview {
-  display: block; width: 100%; max-width: 280px; aspect-ratio: 3 / 2; object-fit: cover;
-  background: var(--placeholder); border: 1px solid var(--hairline); margin-bottom: var(--space-2);
-}
-.dash-delete { margin-top: var(--space-6); padding-top: var(--space-4); border-top: 1px solid var(--hairline); }
-.link-danger { color: var(--danger); }
+/* Dashboard + console: classes referenced by JSX but otherwise undefined */
+.dashboard-main { display: block; }
+.dashboard-row-main { display: grid; gap: 2px; min-width: 0; }
+.item-title { font: italic 500 var(--t-card-title) var(--font-display), serif; color: var(--ink-900); margin: 0; }
 
 /* ============================================================
    Legacy class compat for auth + dashboard + console

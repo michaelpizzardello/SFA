@@ -28,8 +28,8 @@ export default function ConsoleNav() {
         })}
       </nav>
       <div className="dashboard-nav-actions">
-        <Link href="/admin" className="text-link">
-          Weekly admin
+        <Link href="/" className="text-link">
+          View site
         </Link>
         <form action={signOutAction}>
           <button className="button button-secondary button-utility" type="submit">

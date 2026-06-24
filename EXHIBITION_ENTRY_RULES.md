@@ -29,13 +29,13 @@ Fill rows in the Exhibitions tab using the existing format:
 | C | Location |
 | D | Exhibition |
 | E | Start Date, `DD/MM` |
-| F | End Date, `DD/MM` |
+| F | End Date, `DD/MM`, if confirmed |
 | G | Opening Information |
 | H | Rating |
 | I | Featured checkbox |
 | J | Ongoing checkbox |
 | K | Full Start, `M/D/YYYY` |
-| L | Full End, `M/D/YYYY` |
+| L | Full End, `M/D/YYYY`, if confirmed |
 
 Leave Rating blank unless a rating has been intentionally assigned.
 
@@ -88,9 +88,9 @@ Do not split two same-date solo shows into separate rows when they function as t
 ## Date Handling
 
 - `Start Date` is `DD/MM`.
-- `End Date` is `DD/MM`.
+- `End Date` is `DD/MM` when the official source confirms it. Leave blank if the source only confirms the opening/start date.
 - `Full Start` is `M/D/YYYY`.
-- `Full End` is `M/D/YYYY`.
+- `Full End` is `M/D/YYYY` when the official source confirms it. Leave blank if the source only confirms the opening/start date.
 - Always verify the exhibition year from the source page or caption. Do not infer that an archive/current page item is 2026 just because it is visible today.
 - If a gallery page mixes years or has archive pagination, treat any undated or ambiguous listing as unsafe until the source clearly confirms the target year.
 - For Martin Browne Contemporary specifically, check the individual exhibition page/date text carefully because past-year exhibitions can appear in listing pages. Never add a Martin Browne row unless the page explicitly confirms 2026 dates.
@@ -105,7 +105,7 @@ Before adding a row, confirm:
 - The gallery name and location match the Index where available.
 - The exhibition opens in the target week, after applying the opening-date rule.
 - The source confirms the correct calendar year, especially on archive-heavy gallery websites.
-- The end date is from the official gallery page or caption.
+- Any end date entered is from the official gallery page or caption. End dates are not required when the direct source does not provide one.
 - The opening information is a real opening/reception detail, not gallery hours or appointment text.
 - The row does not duplicate an existing row already in the Exhibitions tab.
 

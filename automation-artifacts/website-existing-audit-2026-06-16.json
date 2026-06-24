@@ -1,0 +1,1299 @@
+{
+  "generatedAt": "2026-06-16T13:00:37.165Z",
+  "results": [
+    {
+      "row": 2,
+      "gallery": ".M Contemporary",
+      "location": "Darlinghurst",
+      "site": "https://mcontemp.com/upcoming-exhibitions/?srsltid=AfmBOorl1VENqyM9Mci5kJRTGjoNXaiLtqsOJd0IzEMMRvA0_GKfroO6",
+      "ig": "https://www.instagram.com/mcontemporary/",
+      "status": 200,
+      "title": "Upcoming exhibitions | .M Contemporary",
+      "desc": "Current Exhibitions Upcoming Exhibitions Past Exhibitions Online Exhibitions Art Fair",
+      "finalUrl": "https://mcontemp.com/upcoming-exhibitions/?srsltid=AfmBOorl1VENqyM9Mci5kJRTGjoNXaiLtqsOJd0IzEMMRvA0_GKfroO6",
+      "cleaned": "https://mcontemp.com/upcoming-exhibitions/",
+      "noisy": true,
+      "error": "",
+      "verdict": "CHECK",
+      "hits": []
+    },
+    {
+      "row": 3,
+      "gallery": "1301SW",
+      "location": "Alexandria",
+      "site": "https://www.1301sw.com/exhibition/",
+      "ig": "https://www.instagram.com/1301sw_au/",
+      "status": 200,
+      "title": "Exhibitions | 1301SW",
+      "desc": "",
+      "finalUrl": "https://www.1301sw.com/exhibition/",
+      "cleaned": "https://www.1301sw.com/exhibition/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "1301sw"
+      ]
+    },
+    {
+      "row": 4,
+      "gallery": "4A Centre for Contemporary Asian Art",
+      "location": "Haymarket",
+      "site": "https://4a.com.au/",
+      "ig": "https://www.instagram.com/4a_aus/",
+      "status": 200,
+      "title": "4A Centre for Contemporary Asian Art | 4A Centre for Contemporary Asian Art",
+      "desc": "4A Centre for Contemporary Asian Art fosters excellence and innovation in contemporary Asian and Australian culture through research, documentation, development",
+      "finalUrl": "https://4a.com.au/",
+      "cleaned": "https://4a.com.au/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "for",
+        "asian"
+      ]
+    },
+    {
+      "row": 5,
+      "gallery": "8 Wall Gallery",
+      "location": "Paddington",
+      "site": "https://8wallgallery.org/exhibitions/",
+      "ig": "https://www.instagram.com/8wallgallery/",
+      "status": 200,
+      "title": "Projects | 8 WALL GALLERY",
+      "desc": "",
+      "finalUrl": "https://8wallgallery.org/exhibitions/",
+      "cleaned": "https://8wallgallery.org/exhibitions/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "wall"
+      ]
+    },
+    {
+      "row": 6,
+      "gallery": "Airspace Projects",
+      "location": "Marrickville",
+      "site": "https://www.airspaceprojects.com.au/",
+      "ig": "https://www.instagram.com/airspaceprojects/",
+      "status": 200,
+      "title": "Airspace",
+      "desc": "",
+      "finalUrl": "https://www.airspaceprojects.com.au/",
+      "cleaned": "https://www.airspaceprojects.com.au/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "airspace",
+        "projects"
+      ]
+    },
+    {
+      "row": 7,
+      "gallery": "Ames Yavuz",
+      "location": "Surry Hills",
+      "site": "https://www.amesyavuz.com/exhibitions/",
+      "ig": "https://www.instagram.com/amesyavuz/",
+      "status": 0,
+      "title": "",
+      "desc": "",
+      "finalUrl": "",
+      "cleaned": "https://www.amesyavuz.com/exhibitions/",
+      "noisy": false,
+      "error": "fetch failed",
+      "verdict": "BAD",
+      "hits": [
+        "ames",
+        "yavuz"
+      ]
+    },
+    {
+      "row": 8,
+      "gallery": "Annandale Galleries",
+      "location": "Annandale",
+      "site": "https://www.annandalegalleries.com.au/exhibitions-upcoming.php",
+      "ig": "https://www.instagram.com/annandalegalleries/",
+      "status": 200,
+      "title": "Exhibitions - current, upcoming and present Annandale Galleries",
+      "desc": "Exhibitions at Annandale Galleries Sydney Australia featuring Australian, Indigenous, International and Modern Masters.",
+      "finalUrl": "https://www.annandalegalleries.com.au/exhibitions-upcoming.php",
+      "cleaned": "https://www.annandalegalleries.com.au/exhibitions-upcoming.php",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "annandale"
+      ]
+    },
+    {
+      "row": 10,
+      "gallery": "Art Gallery of New South Wales",
+      "location": "Sydney",
+      "site": "https://www.artgallery.nsw.gov.au/whats-on/exhibitions/",
+      "ig": "https://www.instagram.com/artgalleryofnsw/",
+      "status": 200,
+      "title": "Exhibitions | Art Gallery of NSW",
+      "desc": "",
+      "finalUrl": "https://www.artgallery.nsw.gov.au/whats-on/exhibitions/",
+      "cleaned": "https://www.artgallery.nsw.gov.au/whats-on/exhibitions/",
+      "noisy": false,
+      "error": "",
+      "verdict": "CHECK",
+      "hits": []
+    },
+    {
+      "row": 13,
+      "gallery": "Artbank Sydney",
+      "location": "Waterloo",
+      "site": "https://www.artbank.gov.au/exhibitions",
+      "ig": "https://www.instagram.com/artbankau/",
+      "status": 200,
+      "title": "What's On | artbank",
+      "desc": "",
+      "finalUrl": "https://www.artbank.gov.au/exhibitions",
+      "cleaned": "https://www.artbank.gov.au/exhibitions",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "artbank"
+      ]
+    },
+    {
+      "row": 14,
+      "gallery": "Arthouse",
+      "location": "Darlinghurst",
+      "site": "https://arthousegallery.com.au/exhibitions/",
+      "ig": "https://www.instagram.com/arthousegallery/",
+      "status": 200,
+      "title": "Exhibitions | Arthouse Gallery",
+      "desc": "",
+      "finalUrl": "https://arthousegallery.com.au/exhibitions/",
+      "cleaned": "https://arthousegallery.com.au/exhibitions/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "arthouse"
+      ]
+    },
+    {
+      "row": 17,
+      "gallery": "Artspace",
+      "location": "Woolloomooloo",
+      "site": "https://www.artspace.org.au/whats-on",
+      "ig": "https://www.instagram.com/artspacesydney/",
+      "status": 200,
+      "title": "What's On | Artspace",
+      "desc": "Artspace is one of the leading institutions for the production and presentation of contemporary art in the Asia Pacific",
+      "finalUrl": "https://www.artspace.org.au/whats-on",
+      "cleaned": "https://www.artspace.org.au/whats-on",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "artspace"
+      ]
+    },
+    {
+      "row": 19,
+      "gallery": "Australian Galleries",
+      "location": "Paddington",
+      "site": "https://australiangalleries.com.au/pages/exhibitions",
+      "ig": "https://www.instagram.com/australiangalleries/",
+      "status": 200,
+      "title": "Exhibitions at Australian Galleries",
+      "desc": "Discover monthly exhibitions at Australian Galleries, representing leading contemporary Australian artists in all mediums and genres.",
+      "finalUrl": "https://australiangalleries.com.au/pages/exhibitions",
+      "cleaned": "https://australiangalleries.com.au/pages/exhibitions",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "australian"
+      ]
+    },
+    {
+      "row": 20,
+      "gallery": "Barometer Gallery",
+      "location": "Paddington",
+      "site": "https://barometer.net.au/exhibitions/",
+      "ig": "https://www.instagram.com/barometergallery/",
+      "status": 200,
+      "title": "Events from November 13, 2008 - December 3, 2009Barometer",
+      "desc": "",
+      "finalUrl": "https://barometer.net.au/exhibitions/",
+      "cleaned": "https://barometer.net.au/exhibitions/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "barometer"
+      ]
+    },
+    {
+      "row": 21,
+      "gallery": "Behind the Gallery",
+      "location": "Paddington",
+      "site": "https://www.behindthegallery.com.au/pages/exhibitions?srsltid=AfmBOopDT67WlXBh4zc-du_8skB8co-JxP91BiwExqpLje8fCvDGSLIv",
+      "ig": "https://www.instagram.com/behind_the_gallery/",
+      "status": 200,
+      "title": "Exhibitions & Events &ndash; Behind The Gallery",
+      "desc": "All the information on latest Exhibitions",
+      "finalUrl": "https://www.behindthegallery.com.au/pages/exhibitions?srsltid=AfmBOopDT67WlXBh4zc-du_8skB8co-JxP91BiwExqpLje8fCvDGSLIv",
+      "cleaned": "https://www.behindthegallery.com.au/pages/exhibitions",
+      "noisy": true,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "behind"
+      ]
+    },
+    {
+      "row": 28,
+      "gallery": "Cassandra Bird",
+      "location": "Potts Point",
+      "site": "https://www.cassandrabird.com/exhibitions/location/1/",
+      "ig": "https://www.instagram.com/cassandrabird.gallery/",
+      "status": 200,
+      "title": "Location exhibitions | Cassandra Bird",
+      "desc": "",
+      "finalUrl": "https://www.cassandrabird.com/exhibitions/location/1/",
+      "cleaned": "https://www.cassandrabird.com/exhibitions/location/1/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "cassandra",
+        "bird"
+      ]
+    },
+    {
+      "row": 29,
+      "gallery": "Cato Gallery",
+      "location": "Surry Hills",
+      "site": "https://catogallery.com/",
+      "ig": "https://www.instagram.com/cato__gallery/",
+      "status": 200,
+      "title": "Home | Eloise Cato Gallery",
+      "desc": "Home | Eloise Cato Gallery",
+      "finalUrl": "https://catogallery.com/",
+      "cleaned": "https://catogallery.com/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "cato"
+      ]
+    },
+    {
+      "row": 30,
+      "gallery": "CBD Gallery",
+      "location": "Sydney",
+      "site": "https://cbdgallery.com.au/exhibitions/",
+      "ig": "https://www.instagram.com/cbdgallerysyd/",
+      "status": 200,
+      "title": "Exhibitions | CBD GALLERY",
+      "desc": "",
+      "finalUrl": "https://cbdgallery.com.au/exhibitions/",
+      "cleaned": "https://cbdgallery.com.au/exhibitions/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "cbd"
+      ]
+    },
+    {
+      "row": 32,
+      "gallery": "Chalk Horse",
+      "location": "Darlinghurst",
+      "site": "https://www.chalkhorse.com.au/exhibitions",
+      "ig": "https://www.instagram.com/chalkhorsegallery/",
+      "status": 200,
+      "title": "CHALK HORSE Art Gallery: Exhibitions | Chalk Horse",
+      "desc": "CHALK HORSE annually presents a number of exhibitions, often featuring a solo artist.",
+      "finalUrl": "https://www.chalkhorse.com.au/exhibitions",
+      "cleaned": "https://www.chalkhorse.com.au/exhibitions",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "chalk",
+        "horse"
+      ]
+    },
+    {
+      "row": 34,
+      "gallery": "Chauffeur",
+      "location": "Darlinghurst",
+      "site": "https://www.chauffeurgallery.com.au/program",
+      "ig": "https://www.instagram.com/chauffeur_syd/",
+      "status": 0,
+      "title": "",
+      "desc": "",
+      "finalUrl": "",
+      "cleaned": "https://www.chauffeurgallery.com.au/program",
+      "noisy": false,
+      "error": "fetch failed",
+      "verdict": "BAD",
+      "hits": [
+        "chauffeur"
+      ]
+    },
+    {
+      "row": 35,
+      "gallery": "China Heights",
+      "location": "Surry Hills",
+      "site": "https://chinaheights.com/",
+      "ig": "https://www.instagram.com/chinaheights/",
+      "status": 200,
+      "title": "China Heights contemporary art gallery",
+      "desc": "China Heights is an independent contemporary art gallery in Sydney established in 2004",
+      "finalUrl": "https://chinaheights.com/",
+      "cleaned": "https://chinaheights.com/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "china",
+        "heights"
+      ]
+    },
+    {
+      "row": 36,
+      "gallery": "COMA",
+      "location": "Marrickville",
+      "site": "https://www.comagallery.com/exhibitions/",
+      "ig": "https://www.instagram.com/comagallery/",
+      "status": 200,
+      "title": "Current | COMA",
+      "desc": "",
+      "finalUrl": "https://www.comagallery.com/exhibitions/current/",
+      "cleaned": "https://www.comagallery.com/exhibitions/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "coma"
+      ]
+    },
+    {
+      "row": 37,
+      "gallery": "Curatorial + Co",
+      "location": "Woolloomooloo",
+      "site": "https://curatorialandco.com/exhibitions/?filter=upcoming",
+      "ig": "https://www.instagram.com/curatorialandco/",
+      "status": 200,
+      "title": "Exhibitions - Curatorial+Co.",
+      "desc": "",
+      "finalUrl": "https://curatorialandco.com/exhibitions/?filter=upcoming",
+      "cleaned": "https://curatorialandco.com/exhibitions/?filter=upcoming",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "curatorial"
+      ]
+    },
+    {
+      "row": 38,
+      "gallery": "Darren Knight",
+      "location": "Waterloo",
+      "site": "https://darrenknightgallery.com/exhibitions/",
+      "ig": "https://www.instagram.com/darrenknightgallery/",
+      "status": 200,
+      "title": "Exhibitions &raquo; Darren Knight Gallery",
+      "desc": "Darren Knight gallery exhibits contemporary Australian and New Zealand artists. The gallery is located at 840 Elizabeth Street, Waterloo, Sydney, NSW, Australia. Find out about cur",
+      "finalUrl": "https://darrenknightgallery.com/exhibitions/",
+      "cleaned": "https://darrenknightgallery.com/exhibitions/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "darren",
+        "knight"
+      ]
+    },
+    {
+      "row": 40,
+      "gallery": "Defiance Gallery",
+      "location": "Paddington",
+      "site": "https://defiancegallery.com/",
+      "ig": "https://www.instagram.com/defiancegallery/",
+      "status": 200,
+      "title": "Defiance Gallery",
+      "desc": "Defiance Gallery represents a varied and innovative stable of artists at the forefront of Australian and International contemporary art and sculpture. The gallery was founded in 19",
+      "finalUrl": "https://defiancegallery.com/",
+      "cleaned": "https://defiancegallery.com/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "defiance"
+      ]
+    },
+    {
+      "row": 41,
+      "gallery": "Dominik Mersch",
+      "location": "Rushcutters Bay",
+      "site": "https://dominikmerschgallery.com/exhibition/",
+      "ig": "https://www.instagram.com/dominikmerschgallery/",
+      "status": 200,
+      "title": "Exhibitions - Dominik Mersch Gallery",
+      "desc": "Immerse yourself in the dynamic world of contemporary art exhibitions at Dominik Mersch Gallery. Experience thought-provoking shows featuring cutting-edge artworks.",
+      "finalUrl": "https://dominikmerschgallery.com/exhibition/",
+      "cleaned": "https://dominikmerschgallery.com/exhibition/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "dominik",
+        "mersch"
+      ]
+    },
+    {
+      "row": 42,
+      "gallery": "DRAW Space",
+      "location": "Newtown",
+      "site": "https://drawspace.org/exhibitions-and-events",
+      "ig": "https://www.instagram.com/drawspacesydney/",
+      "status": 200,
+      "title": "Exhibitions and Events &mdash; DRAW Space",
+      "desc": "",
+      "finalUrl": "https://drawspace.org/exhibitions-and-events",
+      "cleaned": "https://drawspace.org/exhibitions-and-events",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "draw"
+      ]
+    },
+    {
+      "row": 43,
+      "gallery": "Fine Arts Sydney",
+      "location": "Paddington",
+      "site": "https://www.finearts.sydney/exhibitions",
+      "ig": "https://www.instagram.com/fineartssydney/",
+      "status": 200,
+      "title": "Fine Arts, Sydney - Artists & Exhibitions",
+      "desc": "",
+      "finalUrl": "https://www.finearts.sydney/exhibitions",
+      "cleaned": "https://www.finearts.sydney/exhibitions",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "fine"
+      ]
+    },
+    {
+      "row": 44,
+      "gallery": "Firstdraft",
+      "location": "Woolloomooloo",
+      "site": "https://firstdraft.org.au/current",
+      "ig": "https://www.instagram.com/firstdraft_/",
+      "status": 200,
+      "title": "current &mdash; firstdraft",
+      "desc": "",
+      "finalUrl": "https://firstdraft.org.au/current",
+      "cleaned": "https://firstdraft.org.au/current",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "firstdraft"
+      ]
+    },
+    {
+      "row": 46,
+      "gallery": "Gallery 144 (Formerly Outsider)",
+      "location": "Surry Hills",
+      "site": "https://gallery144.com.au/",
+      "ig": "https://www.instagram.com/gallery144__/",
+      "status": 200,
+      "title": "Contemporary Art Gallery in Sydney | Surry Hills",
+      "desc": "Gallery 144 is a contemporary art gallery in Surry Hills, Sydney, presenting curated exhibitions, artist talks, and collectible artworks by emerging and established Australian and ",
+      "finalUrl": "https://gallery144.com.au/",
+      "cleaned": "https://gallery144.com.au/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "144"
+      ]
+    },
+    {
+      "row": 48,
+      "gallery": "Gallery Sally Dan-Cuthbert",
+      "location": "Darlinghurst",
+      "site": "https://gallerysallydancuthbert.com/exhibitions/",
+      "ig": "https://www.instagram.com/gallerysallydancuthbert/",
+      "status": 200,
+      "title": "EXHIBITIONS | GALLERY SALLY DAN-CUTHBERT",
+      "desc": "",
+      "finalUrl": "https://gallerysallydancuthbert.com/exhibitions/",
+      "cleaned": "https://gallerysallydancuthbert.com/exhibitions/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "sally",
+        "dan",
+        "cuthbert"
+      ]
+    },
+    {
+      "row": 49,
+      "gallery": "Goodspace",
+      "location": "Chippendale",
+      "site": "https://www.instagram.com/goodspacegallery/",
+      "ig": "https://www.instagram.com/goodspacegallery/",
+      "status": 200,
+      "title": "Goodspace Gallery (@goodspacegallery) • Instagram photos and videos",
+      "desc": "20K Followers, 277 Following, 1,736 Posts - See Instagram photos and videos from Goodspace Gallery (@goodspacegallery)",
+      "finalUrl": "https://www.instagram.com/goodspacegallery/",
+      "cleaned": "https://www.instagram.com/goodspacegallery/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "goodspace"
+      ]
+    },
+    {
+      "row": 51,
+      "gallery": "Hazelhurst Arts Centre",
+      "location": "Gymea",
+      "site": "https://hazelhurst.com.au/",
+      "ig": "https://www.instagram.com/hazelhurstartscentre/",
+      "status": 403,
+      "title": "Just a moment...",
+      "desc": "",
+      "finalUrl": "https://hazelhurst.com.au/",
+      "cleaned": "https://hazelhurst.com.au/",
+      "noisy": false,
+      "error": "",
+      "verdict": "BAD",
+      "hits": [
+        "hazelhurst"
+      ]
+    },
+    {
+      "row": 52,
+      "gallery": "King Street Gallery",
+      "location": "Darlinghurst",
+      "site": "https://kingstreetgallery.com.au/exhibition/",
+      "ig": "https://www.instagram.com/kingstreetgallery/",
+      "status": 200,
+      "title": "Exhibitions Archive - King Street Gallery on William",
+      "desc": "",
+      "finalUrl": "https://kingstreetgallery.com.au/exhibition/",
+      "cleaned": "https://kingstreetgallery.com.au/exhibition/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "king",
+        "street"
+      ]
+    },
+    {
+      "row": 53,
+      "gallery": "Laila Gallery",
+      "location": "Marrickville",
+      "site": "https://www.laila.sydney/exhibitions",
+      "ig": "https://www.instagram.com/laila__sydney/",
+      "status": 200,
+      "title": "Exhibitions | LAILA gallery",
+      "desc": "",
+      "finalUrl": "https://www.laila.sydney/exhibitions",
+      "cleaned": "https://www.laila.sydney/exhibitions",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "laila"
+      ]
+    },
+    {
+      "row": 54,
+      "gallery": "Liverpool Street Gallery",
+      "location": "Darlinghurst",
+      "site": "https://www.liverpoolstgallery.com.au/exhibitions",
+      "ig": "https://www.instagram.com/liverpoolstreetgallery/",
+      "status": 200,
+      "title": "Exhibitions &mdash; Liverpool Street Gallery",
+      "desc": "exhibitions",
+      "finalUrl": "https://www.liverpoolstgallery.com.au/exhibitions",
+      "cleaned": "https://www.liverpoolstgallery.com.au/exhibitions",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "liverpool",
+        "street"
+      ]
+    },
+    {
+      "row": 55,
+      "gallery": "Local Edition",
+      "location": "Glebe",
+      "site": "https://localedition.com.au/collections/exhibitions",
+      "ig": "https://www.instagram.com/localedition.au/",
+      "status": 200,
+      "title": "Exhibitions &ndash; Local Edition",
+      "desc": "Discover Local Edition in the heart of Sydney – your destination for curated artistry, live music and creative workshops. Explore our collection of artisan jewellery, sculptures, c",
+      "finalUrl": "https://localedition.com.au/collections/exhibitions",
+      "cleaned": "https://localedition.com.au/collections/exhibitions",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "local",
+        "edition"
+      ]
+    },
+    {
+      "row": 58,
+      "gallery": "Mais Wright",
+      "location": "Darlinghurst",
+      "site": "https://www.maiswright.com/",
+      "ig": "https://www.instagram.com/maiswright.gallery/",
+      "status": 200,
+      "title": "MAIS WRIGHT | Sydney",
+      "desc": "",
+      "finalUrl": "https://www.maiswright.com/",
+      "cleaned": "https://www.maiswright.com/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "mais",
+        "wright"
+      ]
+    },
+    {
+      "row": 59,
+      "gallery": "Martin Browne Contemporary",
+      "location": "Paddington",
+      "site": "https://martinbrownecontemporary.com/exhibitions/",
+      "ig": "https://www.instagram.com/martinbrownecontemporary/",
+      "status": 200,
+      "title": "EXHIBITIONS &#8211; MARTIN BROWNE CONTEMPORARY",
+      "desc": "",
+      "finalUrl": "https://martinbrownecontemporary.com/exhibitions/",
+      "cleaned": "https://martinbrownecontemporary.com/exhibitions/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "martin",
+        "browne"
+      ]
+    },
+    {
+      "row": 60,
+      "gallery": "Mega",
+      "location": "Redfern",
+      "site": "https://megamegamegamega.com/shows",
+      "ig": "https://www.instagram.com/_mega_mega_mega_mega_/",
+      "status": 200,
+      "title": "Shows — Mega",
+      "desc": "cargo.site",
+      "finalUrl": "https://megamegamegamega.com/shows",
+      "cleaned": "https://megamegamegamega.com/shows",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "mega"
+      ]
+    },
+    {
+      "row": 63,
+      "gallery": "Minerva",
+      "location": "Redfern",
+      "site": "https://minervasydney.com/",
+      "ig": "https://www.instagram.com/minervasydney/",
+      "status": 200,
+      "title": "Minerva,",
+      "desc": "4/111 Macleay Street, Potts Point, Sydney, NSW 2011, Australia",
+      "finalUrl": "https://minervasydney.com/",
+      "cleaned": "https://minervasydney.com/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "minerva"
+      ]
+    },
+    {
+      "row": 66,
+      "gallery": "Museum of Contemporary Art",
+      "location": "The Rocks",
+      "site": "https://www.mca.com.au/exhibitions/",
+      "ig": "https://www.instagram.com/mca_australia/",
+      "status": 200,
+      "title": "Exhibitions | MCA Australia",
+      "desc": "The MCA presents, collects and engages with the art of now. Find out more about its exhibitions.",
+      "finalUrl": "https://www.mca.com.au/exhibitions/",
+      "cleaned": "https://www.mca.com.au/exhibitions/",
+      "noisy": false,
+      "error": "",
+      "verdict": "CHECK",
+      "hits": []
+    },
+    {
+      "row": 67,
+      "gallery": "N. Smith",
+      "location": "Surry Hills",
+      "site": "https://www.nsmithgallery.com/exhibitions/current/",
+      "ig": "https://www.instagram.com/n.smithgallery/",
+      "status": 200,
+      "title": "Current exhibitions. | N.Smith Gallery",
+      "desc": "",
+      "finalUrl": "https://www.nsmithgallery.com/exhibitions/current/",
+      "cleaned": "https://www.nsmithgallery.com/exhibitions/current/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "smith"
+      ]
+    },
+    {
+      "row": 68,
+      "gallery": "Nanda/Hobbs",
+      "location": "Chippendale",
+      "site": "https://nandahobbs.com/exhibitions/",
+      "ig": "https://www.instagram.com/nandahobbs/",
+      "status": 200,
+      "title": "Exhibitions | Nanda\\Hobbs",
+      "desc": "Explore the latest exhibitions at Nanda\\Hobbs, showcasing contemporary artworks by leading artists.",
+      "finalUrl": "https://nandahobbs.com/exhibitions/",
+      "cleaned": "https://nandahobbs.com/exhibitions/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "nanda",
+        "hobbs"
+      ]
+    },
+    {
+      "row": 69,
+      "gallery": "Nasha",
+      "location": "Haymarket",
+      "site": "https://nasha.com.au/Exhibitions",
+      "ig": "https://www.instagram.com/nasha.au/",
+      "status": 200,
+      "title": "Nasha Gallery",
+      "desc": "Cargo",
+      "finalUrl": "https://nasha.com.au/Exhibitions",
+      "cleaned": "https://nasha.com.au/Exhibitions",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "nasha"
+      ]
+    },
+    {
+      "row": 70,
+      "gallery": "National Art School",
+      "location": "Darlinghurst",
+      "site": "https://www.nas.edu.au/whats-on/",
+      "ig": "https://www.instagram.com/nas_au/",
+      "status": 200,
+      "title": "What’s On - National Art School | National Art School",
+      "desc": "",
+      "finalUrl": "https://nas.edu.au/whats-on/",
+      "cleaned": "https://www.nas.edu.au/whats-on/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "national",
+        "school"
+      ]
+    },
+    {
+      "row": 73,
+      "gallery": "Ochredfern",
+      "location": "Alexandria",
+      "site": "https://ochredfern.com.au/",
+      "ig": "https://www.instagram.com/ochredfern/",
+      "status": 200,
+      "title": "OCHREDFERN",
+      "desc": "",
+      "finalUrl": "https://ochredfern.com.au/",
+      "cleaned": "https://ochredfern.com.au/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "ochredfern"
+      ]
+    },
+    {
+      "row": 75,
+      "gallery": "Palas",
+      "location": "Zetland",
+      "site": "https://palas.sydney/exhibition",
+      "ig": "https://www.instagram.com/palas.sydney/",
+      "status": 200,
+      "title": "PALAS | Current Exhibitions",
+      "desc": "",
+      "finalUrl": "https://palas.sydney/exhibition",
+      "cleaned": "https://palas.sydney/exhibition",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "palas"
+      ]
+    },
+    {
+      "row": 76,
+      "gallery": "PARI",
+      "location": "Parramatta ",
+      "site": "https://pariari.org/",
+      "ig": "https://www.instagram.com/pari_ari_/",
+      "status": 200,
+      "title": "Pari",
+      "desc": "",
+      "finalUrl": "https://pariari.org/",
+      "cleaned": "https://pariari.org/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "pari"
+      ]
+    },
+    {
+      "row": 77,
+      "gallery": "Passage",
+      "location": "Haymarket",
+      "site": "https://www.passagegallery.com/exhibitions",
+      "ig": "https://www.instagram.com/passagegallery_/",
+      "status": 200,
+      "title": "Exhibitions | Passage Gallery",
+      "desc": "",
+      "finalUrl": "https://www.passagegallery.com/exhibitions",
+      "cleaned": "https://www.passagegallery.com/exhibitions",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "passage"
+      ]
+    },
+    {
+      "row": 79,
+      "gallery": "PIERMARQ*",
+      "location": "Surry Hills",
+      "site": "https://www.piermarq.com.au/exhibitions/",
+      "ig": "https://www.instagram.com/piermarqart/",
+      "status": 200,
+      "title": "PIERMARQ* | Contemporary Art Gallery Sydney",
+      "desc": "",
+      "finalUrl": "https://www.piermarq.com.au/exhibitions/",
+      "cleaned": "https://www.piermarq.com.au/exhibitions/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "piermarq"
+      ]
+    },
+    {
+      "row": 82,
+      "gallery": "Redbase",
+      "location": "Chippendale",
+      "site": "https://gallery.redbaseart.com/event/exhibition/f/all",
+      "ig": "https://www.instagram.com/redbaseau/",
+      "status": 200,
+      "title": "REDBASE Art Space: exhibition index",
+      "desc": "Discover the latest exhibition at Redbase Art Space, featuring contemporary art from diverse artists around the world. Explore upcoming and past exhibition, incl",
+      "finalUrl": "https://gallery.redbaseart.com/event/exhibition/f/all",
+      "cleaned": "https://gallery.redbaseart.com/event/exhibition/f/all",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "redbase"
+      ]
+    },
+    {
+      "row": 83,
+      "gallery": "Roslyn Oxley9 Gallery",
+      "location": "Paddington",
+      "site": "https://www.roslynoxley9.com.au/exhibitions",
+      "ig": "https://www.instagram.com/roslynoxley9/",
+      "status": 200,
+      "title": "Exhibitions - Roslyn Oxley9 Gallery",
+      "desc": "Roslyn Oxley9 Gallery presents exhibitions across its forty year history. Featuring internationally acclaimed artists both represented and visiting, the gallery has been home to so",
+      "finalUrl": "https://www.roslynoxley9.com.au/exhibitions",
+      "cleaned": "https://www.roslynoxley9.com.au/exhibitions",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "roslyn",
+        "oxley9"
+      ]
+    },
+    {
+      "row": 84,
+      "gallery": "S. H. Ervin Gallery",
+      "location": "Millers Point",
+      "site": "https://www.shervingallery.com.au/",
+      "ig": "https://www.instagram.com/shervingallery/",
+      "status": 200,
+      "title": "S.H. Ervin Gallery",
+      "desc": "Home",
+      "finalUrl": "https://www.shervingallery.com.au/",
+      "cleaned": "https://www.shervingallery.com.au/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "ervin"
+      ]
+    },
+    {
+      "row": 86,
+      "gallery": "Saint Cloche",
+      "location": "Paddington",
+      "site": "https://saintcloche.com/pages/exhibitions",
+      "ig": "https://www.instagram.com/saint_cloche/",
+      "status": 200,
+      "title": "Saint Cloche - Exhibitions",
+      "desc": "Saint Cloche is a dynamic gallery with diverse and high-calibre exhibitions changing fortnightly and is at the epicentre of a growing community of like-minded creatives, promoting ",
+      "finalUrl": "https://saintcloche.com/pages/exhibitions",
+      "cleaned": "https://saintcloche.com/pages/exhibitions",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "saint",
+        "cloche"
+      ]
+    },
+    {
+      "row": 87,
+      "gallery": "SCA Gallery",
+      "location": "Camperdown",
+      "site": "https://www.sydney.edu.au/arts/schools/sydney-college-of-the-arts/galleries-and-exhibitions.html",
+      "ig": "https://www.instagram.com/sca_sydney/",
+      "status": 200,
+      "title": "Galleries and exhibitions - The University of Sydney",
+      "desc": "At Sydney College of the Arts we showcase our work to staff, students and broader arts communities. Discover our active galleries and exhibitions program.",
+      "finalUrl": "https://www.sydney.edu.au/arts/schools/sydney-college-of-the-arts/galleries-and-exhibitions.html",
+      "cleaned": "https://www.sydney.edu.au/arts/schools/sydney-college-of-the-arts/galleries-and-exhibitions.html",
+      "noisy": false,
+      "error": "",
+      "verdict": "CHECK",
+      "hits": []
+    },
+    {
+      "row": 88,
+      "gallery": "Schmick Contemporary",
+      "location": "Haymarket",
+      "site": "https://schmickcontemporary.com/",
+      "ig": "https://www.instagram.com/schmickcontemporary/",
+      "status": 200,
+      "title": "schmickcontemporary",
+      "desc": "cargo.site",
+      "finalUrl": "https://schmickcontemporary.com/",
+      "cleaned": "https://schmickcontemporary.com/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "schmick"
+      ]
+    },
+    {
+      "row": 91,
+      "gallery": "Stanley Street Gallery",
+      "location": "Darlinghurst",
+      "site": "https://stanleystreetgallery.com.au/exhibitions/",
+      "ig": "https://www.instagram.com/stanley_street_gallery/",
+      "status": 200,
+      "title": "Exhibitions | Stanley Street Gallery",
+      "desc": "",
+      "finalUrl": "https://stanleystreetgallery.com.au/exhibitions/",
+      "cleaned": "https://stanleystreetgallery.com.au/exhibitions/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "stanley",
+        "street"
+      ]
+    },
+    {
+      "row": 92,
+      "gallery": "Station",
+      "location": "Surry Hills",
+      "site": "https://stationgallery.com/exhibition/?filter=sydney&srsltid=AfmBOorfGtor-LIHdezPDnJs_g9apK_HZ5-z6WlLl3qr-bEUYhmifk7Y",
+      "ig": "https://www.instagram.com/stationgalleryaustralia/",
+      "status": 200,
+      "title": "Exhibitions - Station Gallery",
+      "desc": "",
+      "finalUrl": "https://stationgallery.com/exhibition/?filter=sydney&srsltid=AfmBOorfGtor-LIHdezPDnJs_g9apK_HZ5-z6WlLl3qr-bEUYhmifk7Y",
+      "cleaned": "https://stationgallery.com/exhibition/?filter=sydney",
+      "noisy": true,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "station"
+      ]
+    },
+    {
+      "row": 93,
+      "gallery": "Sullivan + Strumpf",
+      "location": "Zetland",
+      "site": "https://www.sullivanstrumpf.com/exhibitions",
+      "ig": "https://www.instagram.com/sullivanstrumpf/",
+      "status": 429,
+      "title": "Vercel Security Checkpoint",
+      "desc": "",
+      "finalUrl": "https://www.sullivanstrumpf.com/exhibitions",
+      "cleaned": "https://www.sullivanstrumpf.com/exhibitions",
+      "noisy": false,
+      "error": "",
+      "verdict": "BAD",
+      "hits": [
+        "sullivan",
+        "strumpf"
+      ]
+    },
+    {
+      "row": 94,
+      "gallery": "Sydenham International",
+      "location": "Marrickville",
+      "site": "https://www.instagram.com/sydenham_international/?hl=en",
+      "ig": "https://www.instagram.com/sydenham_international/",
+      "status": 200,
+      "title": "sydenham international (@sydenham_international) • Instagram photos and videos",
+      "desc": "4,841 Followers, 1,389 Following, 559 Posts - See Instagram photos and videos from sydenham international (@sydenham_international)",
+      "finalUrl": "https://www.instagram.com/sydenham_international/?hl=en",
+      "cleaned": "https://www.instagram.com/sydenham_international/?hl=en",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "sydenham",
+        "international"
+      ]
+    },
+    {
+      "row": 96,
+      "gallery": "SydneySydney",
+      "location": "Potts Point",
+      "site": "https://www.sydneysydney.net/archive",
+      "ig": "https://www.instagram.com/s_y_d_n_e_y_s_y_d_n_e_y_/",
+      "status": 200,
+      "title": "Archive &mdash; Sydney",
+      "desc": "",
+      "finalUrl": "https://www.sydneysydney.net/archive",
+      "cleaned": "https://www.sydneysydney.net/archive",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "sydneysydney"
+      ]
+    },
+    {
+      "row": 97,
+      "gallery": "SYRUP",
+      "location": "Marrickville",
+      "site": "https://www.syrupcontemporary.com/future",
+      "ig": "https://www.instagram.com/syrup.contemporary/",
+      "status": 200,
+      "title": "Future &mdash; SYRUP Sydney",
+      "desc": "",
+      "finalUrl": "https://www.syrupcontemporary.com/future",
+      "cleaned": "https://www.syrupcontemporary.com/future",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "syrup"
+      ]
+    },
+    {
+      "row": 98,
+      "gallery": "The Commercial",
+      "location": "Marrickville",
+      "site": "https://thecommercialgallery.com/program",
+      "ig": "https://www.instagram.com/thecommercial/",
+      "status": 200,
+      "title": "Program – The Commercial",
+      "desc": "Current and upcoming exhibitions at The Commercial, Sydney.",
+      "finalUrl": "https://thecommercialgallery.com/program",
+      "cleaned": "https://thecommercialgallery.com/program",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "commercial"
+      ]
+    },
+    {
+      "row": 100,
+      "gallery": "The Shop Gallery",
+      "location": "Glebe",
+      "site": "https://theshopgalleryglebe.blogspot.com/",
+      "ig": "",
+      "status": 200,
+      "title": "The Shop Gallery Glebe",
+      "desc": "",
+      "finalUrl": "https://theshopgalleryglebe.blogspot.com/",
+      "cleaned": "https://theshopgalleryglebe.blogspot.com/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "shop"
+      ]
+    },
+    {
+      "row": 101,
+      "gallery": "Tiles",
+      "location": "Lewisham",
+      "site": "http://www.tiles2049.com/",
+      "ig": "https://www.instagram.com/tiles.lewisham/",
+      "status": 200,
+      "title": "Tiles Lewisham",
+      "desc": "Artist-Run Space in Lewisham, Sydney",
+      "finalUrl": "https://tiles2049.com/",
+      "cleaned": "http://www.tiles2049.com/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "tiles"
+      ]
+    },
+    {
+      "row": 104,
+      "gallery": "UNSW Galleries",
+      "location": "Paddington",
+      "site": "https://www.galleries.unsw.edu.au/",
+      "ig": "https://www.instagram.com/unswgalleries/",
+      "status": 200,
+      "title": "UNSW Galleries | UNSW Galleries",
+      "desc": "",
+      "finalUrl": "https://www.galleries.unsw.edu.au/",
+      "cleaned": "https://www.galleries.unsw.edu.au/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "unsw"
+      ]
+    },
+    {
+      "row": 107,
+      "gallery": "Velvet Lobster",
+      "location": "Surry Hills",
+      "site": "https://www.velvetlobster.com.au/exhibitions/",
+      "ig": "https://www.instagram.com/velvet.lobster/",
+      "status": 200,
+      "title": "Exhibitions | Velvet Lobster Gallery",
+      "desc": "VELVET LOBSTER Past, current and future exhibition will be displayed in this paged including solo and group Exhibitions.",
+      "finalUrl": "https://www.velvetlobster.com.au/exhibitions/",
+      "cleaned": "https://www.velvetlobster.com.au/exhibitions/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "velvet",
+        "lobster"
+      ]
+    },
+    {
+      "row": 108,
+      "gallery": "Verge Gallery",
+      "location": "University of Sydney",
+      "site": "https://www.verge-gallery.net/exhibitions-new",
+      "ig": "https://www.instagram.com/vergegallery/",
+      "status": 200,
+      "title": "EXHIBITIONS &mdash; Verge Gallery",
+      "desc": "",
+      "finalUrl": "https://www.verge-gallery.net/exhibitions-new",
+      "cleaned": "https://www.verge-gallery.net/exhibitions-new",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "verge"
+      ]
+    },
+    {
+      "row": 109,
+      "gallery": "Wagner Contemporary",
+      "location": "Paddington",
+      "site": "https://wagnercontemporary.com.au/exhibitions/",
+      "ig": "https://www.instagram.com/wagnercontemporary/",
+      "status": 200,
+      "title": "Past Exhibitions - Wagner Contemporary",
+      "desc": "",
+      "finalUrl": "https://wagnercontemporary.com.au/gallery/past-exhibitions/",
+      "cleaned": "https://wagnercontemporary.com.au/exhibitions/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "wagner"
+      ]
+    },
+    {
+      "row": 111,
+      "gallery": "White Rabbit Gallery",
+      "location": "Chippendale",
+      "site": "https://whiterabbitcollection.org/exhibitions/",
+      "ig": "https://www.instagram.com/whiterabbitgallery/",
+      "status": 200,
+      "title": "Exhibitions &#8212; White Rabbit Gallery",
+      "desc": "The White Rabbit Gallery Past and current exhibitions. we showcase the world’s most significant collections of Chinese contemporary art.",
+      "finalUrl": "https://whiterabbitcollection.org/exhibitions/",
+      "cleaned": "https://whiterabbitcollection.org/exhibitions/",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "white",
+        "rabbit"
+      ]
+    },
+    {
+      "row": 112,
+      "gallery": "Woollahra Gallery",
+      "location": "Woollahra",
+      "site": "https://www.woollahragallery.com.au/Whats-On/Current-and-Upcoming-Exhibitions",
+      "ig": "https://www.instagram.com/woollahragallery/",
+      "status": 200,
+      "title": "Current and Upcoming Exhibitions | Woollahra Gallery at Redleaf",
+      "desc": "&nbsp;",
+      "finalUrl": "https://www.woollahragallery.com.au/Whats-On/Current-and-Upcoming-Exhibitions",
+      "cleaned": "https://www.woollahragallery.com.au/Whats-On/Current-and-Upcoming-Exhibitions",
+      "noisy": false,
+      "error": "",
+      "verdict": "MATCH",
+      "hits": [
+        "woollahra"
+      ]
+    }
+  ]
+}

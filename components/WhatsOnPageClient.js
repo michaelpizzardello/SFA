@@ -1,17 +1,19 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { todayISOInSydney } from '../lib/utils/date'
 import { filterExhibitions, getPrecinctOptions } from '../lib/utils/filters'
 import { getExhibitionStatus, getGalleryBySlug } from '../lib/utils/exhibitions'
 import ExhibitionCard from './ExhibitionCard'
+import { useDialog } from './useDialog'
+import { IconList, IconGrid } from './icons/ViewIcons'
 
-const statusLabels = { current: 'Current', upcoming: 'Upcoming', past: 'Past' }
 const statusFilterOptions = [
   { value: 'current', label: 'On now' },
-  { value: 'upcoming', label: 'Upcoming' }
+  { value: 'upcoming', label: 'Opening soon' }
 ]
+const statusLabel = (s) => statusFilterOptions.find((o) => o.value === s)?.label || s
 const openingFilterOptions = [
   { value: 'tonight', label: 'Opening today' },
   { value: 'week', label: 'Opening this week' }
@@ -41,6 +43,9 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [view, setView] = useState('list')
 
+  const closeFilters = useCallback(() => setFiltersOpen(false), [])
+  const sheetRef = useDialog(filtersOpen, closeFilters)
+
   const pathname = usePathname()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -64,7 +69,7 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
   const applied = useMemo(() => {
     const list = []
     if (!isDefaultStatusSelection(orderedStatuses)) {
-      list.push({ key: 'status', label: orderedStatuses.map((s) => statusLabels[s]).join(' + ') })
+      list.push({ key: 'status', label: orderedStatuses.map(statusLabel).join(' + ') })
     }
     orderedOpeningWindows.forEach((w) =>
       list.push({ key: `opening:${w}`, label: openingFilterOptions.find((o) => o.value === w)?.label || w })
@@ -133,7 +138,7 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
         <input
           className="field"
           type="search"
-          placeholder="Search exhibitions, artists, galleries"
+          placeholder="Search exhibitions, galleries, precincts"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           aria-label="Search exhibitions"
@@ -156,10 +161,10 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
         </button>
         <div className="view-toggle" role="group" aria-label="View">
           <button type="button" aria-pressed={view === 'list'} aria-label="List view" onClick={() => setView('list')}>
-            ☰
+            <IconList />
           </button>
           <button type="button" aria-pressed={view === 'grid'} aria-label="Grid view" onClick={() => setView('grid')}>
-            ▦
+            <IconGrid />
           </button>
         </div>
       </div>
@@ -168,7 +173,7 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
         <span className="results-meta">{filteredExhibitions.length} exhibitions</span>
         {applied.map((f) => (
           <span key={f.key} className="chip chip--applied">
-            {f.label}
+            <span className="chip__label">{f.label}</span>
             <button type="button" aria-label={`Remove ${f.label}`} onClick={() => removeApplied(f.key)}>
               ×
             </button>
@@ -176,9 +181,10 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
         ))}
       </div>
 
+      <h2 className="visually-hidden">Exhibitions</h2>
       {filteredExhibitions.length ? (
         view === 'list' ? (
-          <ul className="index-list">
+          <ul className="index-list index-list--reveal">
             {filteredExhibitions.map((exhibition) => (
               <li key={exhibition.id}>
                 <ExhibitionCard
@@ -208,7 +214,7 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
       {filtersOpen ? (
         <>
           <div className="scrim" onClick={() => setFiltersOpen(false)} role="presentation" />
-          <section className="sheet" role="dialog" aria-modal="true" aria-label="Filters">
+          <section className="sheet" role="dialog" aria-modal="true" aria-label="Filters" ref={sheetRef}>
             <div className="sheet__handle" />
             <div className="sheet__head">
               <h2>Filters</h2>

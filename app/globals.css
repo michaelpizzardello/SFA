@@ -28,8 +28,8 @@
 
   /* ---- Status (only inside tags + validation) ---- */
   --status-on:        #2f6b4f;  --status-on-tint:   #e4efe8;
-  --status-soon:      #9a6515;  --status-soon-tint: #f4ead7;
-  --status-past:      #8c8473;  --status-past-tint: #eeeae2;
+  --status-soon:      #7a4f10;  --status-soon-tint: #f4ead7;
+  --status-past:      #5e574c;  --status-past-tint: #eeeae2;
   --danger:           #b42318;  --danger-tint:      #fbe9e7;
 
   /* ---- Dark sections (footer, map chrome) ---- */
@@ -39,8 +39,8 @@
   --scrim-strong:     rgba(20, 16, 12, 0.46);
   --scrim-soft:       rgba(20, 16, 12, 0.20);
 
-  /* ---- Type families (next/font sets --font-display / --font-sans / --font-mono) ---- */
-  --font-text: var(--font-sans);
+  /* ---- Type families: next/font sets --font-display / --font-text / --font-mono directly.
+     (Keep --font-text a DIRECT next/font var — a nested alias breaks the `font:` shorthand.) ---- */
 
   /* ---- Type scale (one scale; reflow, don't re-typeset) ---- */
   --t-display: clamp(2.5rem, 7vw, 5rem);      --lh-display: 1.02; --fw-display: 500;
@@ -90,7 +90,7 @@
   --color-border: var(--hairline);
   --color-accent: var(--accent);
   --radius-block: 12px;
-  --font-manrope: var(--font-sans);
+  --font-manrope: var(--font-text);
 }
 
 /* ---- Reset / base elements ---- */
@@ -115,6 +115,20 @@ button { font: inherit; }
   overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
 }
 
+/* Skip link — first focusable, appears on focus */
+.skip-link {
+  position: absolute; left: var(--space-3); top: -60px; z-index: 100;
+  background: var(--ink-900); color: var(--paper); padding: 10px 16px;
+  border-radius: var(--radius-control); font: 600 0.875rem var(--font-text), sans-serif;
+  transition: top var(--dur) var(--ease);
+}
+.skip-link:focus-visible { top: var(--space-3); }
+
 @media (prefers-reduced-motion: reduce) {
-  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

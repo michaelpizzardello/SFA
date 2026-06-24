@@ -53,8 +53,11 @@
 .def-list { display: grid; gap: var(--space-3); margin: 0; }
 .def-list > div { display: grid; grid-template-columns: 120px 1fr; gap: var(--space-3); align-items: baseline; }
 .def-list dt { font: 500 var(--t-eyebrow) var(--font-mono), monospace; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-500); margin: 0; }
-.def-list dd { margin: 0; color: var(--ink-900); }
-.def-list a { color: var(--accent); }
+.def-list dd { margin: 0; color: var(--ink-900); overflow-wrap: anywhere; }
+.def-list a { color: var(--accent); overflow-wrap: anywhere; }
+@media (max-width: 599px) {
+  .def-list > div { grid-template-columns: 1fr; gap: 2px; }
+}
 
 .profile-section { margin-top: var(--space-8); }
 .profile-section > h2 { margin-bottom: var(--space-5); }
