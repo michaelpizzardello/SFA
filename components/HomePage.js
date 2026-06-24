@@ -33,7 +33,7 @@ export default function HomePage({ galleries, exhibitions }) {
     <div className="container">
       <section className="hero">
         <p className="eyebrow">On in Sydney</p>
-        <h1 className="hero__statement">Every exhibition worth seeing in Sydney.</h1>
+        <h1 className="hero__statement">Every exhibition on in Sydney.</h1>
         <p className="meta hero__count">
           {galleries.length} galleries · {exhibitions.length} exhibitions
         </p>
