@@ -5,11 +5,11 @@ function sanitizePhone(phoneNumber) {
   return phoneNumber.replace(/[^\d+]/g, '')
 }
 
-function ExGrid({ exhibitions, gallery, status }) {
+function ExGrid({ exhibitions, gallery }) {
   return (
     <div className="card-grid">
       {exhibitions.map((exhibition) => (
-        <ExhibitionCard key={exhibition.id} exhibition={exhibition} gallery={gallery} status={status} />
+        <ExhibitionCard key={exhibition.id} exhibition={exhibition} gallery={gallery} />
       ))}
     </div>
   )
@@ -42,8 +42,9 @@ export default function GalleryProfilePage({ gallery, groupedExhibitions }) {
     }
   ].filter(Boolean)
 
-  const cover = gallery.coverUrl || gallery.logoUrl
+  const cover = gallery.coverUrl
   const { current, upcoming, past } = groupedExhibitions
+  const hasExhibitions = current.length || upcoming.length || past.length
 
   return (
     <div className="container profile">
@@ -105,21 +106,27 @@ export default function GalleryProfilePage({ gallery, groupedExhibitions }) {
       {current.length ? (
         <section className="profile-section">
           <h2>Current exhibitions</h2>
-          <ExGrid exhibitions={current} gallery={gallery} status="current" />
+          <ExGrid exhibitions={current} gallery={gallery} />
         </section>
       ) : null}
 
       {upcoming.length ? (
         <section className="profile-section">
           <h2>Upcoming</h2>
-          <ExGrid exhibitions={upcoming} gallery={gallery} status="upcoming" />
+          <ExGrid exhibitions={upcoming} gallery={gallery} />
         </section>
       ) : null}
 
       {past.length ? (
         <section className="profile-section">
           <h2>Past</h2>
-          <ExGrid exhibitions={past} gallery={gallery} status="past" />
+          <ExGrid exhibitions={past} gallery={gallery} />
+        </section>
+      ) : null}
+
+      {!hasExhibitions ? (
+        <section className="profile-section">
+          <p className="text-muted">No exhibitions listed yet.</p>
         </section>
       ) : null}
     </div>

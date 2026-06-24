@@ -3,8 +3,6 @@ import { formatDateRange, todayISOInSydney } from '../lib/utils/date'
 import { getExhibitionSlug } from '../lib/utils/exhibitions'
 import CardImage from './CardImage'
 
-const STATUS_LABEL = { current: 'On now', upcoming: 'Opening soon', past: 'Past' }
-
 function daysUntil(iso, today) {
   const a = Date.parse(`${iso}T00:00:00Z`)
   const b = Date.parse(`${today}T00:00:00Z`)
@@ -12,8 +10,8 @@ function daysUntil(iso, today) {
   return Math.round((a - b) / 86400000)
 }
 
-// "On now" rows with an end date inside the next week become "Closes in N days" — the spec's
-// urgency device that gives an image-less list energy.
+// Cards carry NO status pill by default (status comes from the section/grouping + the grey date,
+// per Ocula/Artsy). The ONE exception is genuine urgency: a current show closing within a week.
 function resolveTag(exhibition, status) {
   if (status === 'current' && exhibition.endDate) {
     const d = daysUntil(exhibition.endDate, todayISOInSydney())
@@ -22,7 +20,7 @@ function resolveTag(exhibition, status) {
       return { cls: 'closing', label }
     }
   }
-  return { cls: status, label: STATUS_LABEL[status] || status }
+  return null
 }
 
 export default function ExhibitionCard({ exhibition, gallery, status }) {

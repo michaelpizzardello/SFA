@@ -45,12 +45,11 @@
   opacity: 0.9;
 }
 .hero-slide__title {
-  font: 700 clamp(1.9rem, 4.2vw, 3.4rem) / 1.04 var(--font-text), sans-serif;
-  letter-spacing: -0.03em;
+  font: 500 clamp(2rem, 4.4vw, 3.6rem) / 1.05 var(--font-display), serif;
+  letter-spacing: -0.02em;
 }
-.hero-slide__meta { font: 400 var(--t-meta) var(--font-mono), monospace; opacity: 0.92; }
-.hero-slide__cta { margin-top: var(--space-2); font: 600 0.95rem var(--font-text), sans-serif; }
-.hero-slide:hover .hero-slide__cta { text-decoration: underline; text-underline-offset: 3px; }
+.hero-slide__meta { font: 400 var(--t-meta) var(--font-text), sans-serif; opacity: 0.92; }
+.hero-slide:hover .hero-slide__title { text-decoration: underline; text-underline-offset: 4px; }
 .hero-dots {
   position: absolute;
   right: clamp(var(--space-4), 4vw, var(--space-7));
@@ -74,6 +73,10 @@
 
 /* compact intro under the hero banner */
 .home-intro{ padding: var(--space-6) 0 0; display:grid; gap:4px; }
+
+/* serif section headings (editorial), and a tighter gap straight after the hero */
+.section-head h2 { font: 500 1.75rem / 1.1 var(--font-display), serif; letter-spacing: -0.01em; }
+.container > .section:first-child { margin-top: var(--space-7); }
 
 /* Home — typographic hero fallback (when no featured images) */
 .hero {
@@ -109,8 +112,8 @@
   color: inherit;
   text-decoration: none;
 }
-.opening-row__date { font: 400 var(--t-meta) var(--font-mono), monospace; color: var(--ink-500); white-space: nowrap; }
-.opening-row__title { font: italic 500 var(--t-card-title) var(--font-display), serif; }
+.opening-row__date { font: 400 var(--t-meta) var(--font-text), sans-serif; color: var(--ink-500); white-space: nowrap; }
+.opening-row__title { font: italic 500 var(--t-card-title) var(--font-text), sans-serif; }
 .opening-row__gallery { font: 400 var(--t-card-name) var(--font-text), sans-serif; color: var(--ink-700); }
 .opening-row:hover .opening-row__title { text-decoration: underline; text-underline-offset: 3px; }
 

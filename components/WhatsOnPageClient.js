@@ -170,7 +170,7 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
       </div>
 
       <div className="applied-row">
-        <span className="results-meta">{filteredExhibitions.length} exhibitions</span>
+        {applied.length ? <span className="results-meta">{filteredExhibitions.length} exhibitions</span> : null}
         {applied.map((f) => (
           <span key={f.key} className="chip chip--applied">
             <span className="chip__label">{f.label}</span>
@@ -184,7 +184,7 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
       <h2 className="visually-hidden">Exhibitions</h2>
       {filteredExhibitions.length ? (
         view === 'list' ? (
-          <ul className="index-list index-list--reveal">
+          <ul className="index-list">
             {filteredExhibitions.map((exhibition) => (
               <li key={exhibition.id}>
                 <ExhibitionCard

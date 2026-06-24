@@ -7,13 +7,13 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-3) 0;
+  padding: var(--space-4) 0;
   margin-bottom: var(--space-4);
   background: var(--paper);
-  border-bottom: 1px solid var(--hairline);
 }
+/* search sits as one quiet control, not the centerpiece */
 .index-toolbar .field,
-.index-toolbar .search { flex: 1 1 240px; min-width: 0; }
+.index-toolbar .search { flex: 0 1 300px; max-width: 320px; min-width: 0; }
 .index-toolbar .chip-row { flex: 0 1 auto; }
 /* mobile header height varies (search wraps to a 2nd row), so don't sticky-overlap */
 @media (max-width: 899px) { .index-toolbar { position: static; } }
@@ -27,13 +27,15 @@
   .index-toolbar .view-toggle { display: none; }
 }
 
-/* list / grid view toggle */
-.view-toggle { display: inline-flex; border: 1px solid var(--hairline-strong); border-radius: var(--radius-control); overflow: hidden; }
+/* list / grid view toggle — quiet, de-boxed (active = ink, inactive = faint) */
+.view-toggle { display: inline-flex; gap: 2px; }
 .view-toggle button {
-  min-height: 44px; width: 44px; border: 0; background: var(--surface); cursor: pointer;
-  color: var(--ink-500); display: grid; place-items: center;
+  min-height: 44px; width: 40px; border: 0; background: none; cursor: pointer;
+  color: var(--ink-400); display: grid; place-items: center;
+  transition: color var(--dur) var(--ease);
 }
-.view-toggle button[aria-pressed='true'] { background: var(--ink-900); color: var(--paper); }
+.view-toggle button:hover { color: var(--ink-700); }
+.view-toggle button[aria-pressed='true'] { color: var(--ink-900); }
 
 .index-list { list-style: none; margin: 0; padding: 0; }
 
@@ -47,10 +49,3 @@
   border-bottom: 1px solid var(--hairline-strong);
 }
 
-/* Desktop hover-reveal — opt-in via .index-list--reveal (What's On only) */
-@media (min-width: 900px) and (hover: hover) {
-  .index-list--reveal:hover .ex { color: var(--ink-400); transition: color var(--dur) var(--ease); }
-  .index-list--reveal:hover .ex:hover { color: var(--ink-900); }
-  .index-list--reveal:hover .ex:hover .ex__gallery,
-  .index-list--reveal:hover .ex:hover .ex__meta { color: var(--ink-700); }
-}

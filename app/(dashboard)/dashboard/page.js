@@ -38,16 +38,9 @@ export default async function DashboardOverview() {
         </p>
       ) : null}
 
-      <div className="dashboard-stats">
-        <div className="dashboard-stat">
-          <span className="dashboard-stat-num">{exhibitions.length}</span>
-          <span className="dashboard-stat-label">Exhibitions</span>
-        </div>
-        <div className="dashboard-stat">
-          <span className="dashboard-stat-num">{publishedCount}</span>
-          <span className="dashboard-stat-label">Published</span>
-        </div>
-      </div>
+      <p className="row-meta">
+        {exhibitions.length} exhibition{exhibitions.length === 1 ? '' : 's'} · {publishedCount} published
+      </p>
 
       {checklist.length ? (
         <div className="dashboard-checklist">
@@ -59,7 +52,7 @@ export default async function DashboardOverview() {
           </ul>
         </div>
       ) : (
-        <p className="form-success">Your gallery profile is looking complete. 🎉</p>
+        <p className="section-copy">Your gallery profile is complete.</p>
       )}
 
       <div className="dashboard-quick-actions">

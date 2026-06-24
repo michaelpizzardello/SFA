@@ -47,10 +47,10 @@
   row-gap: var(--grid-row-gap);
 }
 @media (min-width: 600px) { .card-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (min-width: 1024px) { .card-grid { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 1440px) { .card-grid { grid-template-columns: repeat(4, 1fr); } }
 
 .results-meta {
-  font: 400 var(--t-meta) / var(--lh-meta) var(--font-mono), monospace;
+  font: 400 var(--t-meta) / var(--lh-meta) var(--font-text), sans-serif;
   color: var(--ink-500);
 }
 

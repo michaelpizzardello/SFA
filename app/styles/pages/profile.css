@@ -13,7 +13,7 @@
 .back-link:hover { color: var(--ink-900); }
 
 /* type hero (works with no image) */
-.profile-hero { display: grid; gap: var(--space-3); padding-bottom: var(--space-6); }
+.profile-hero { display: grid; gap: var(--space-3); }
 .profile-hero h1 { font: var(--fw-h1) clamp(2rem, 5vw, 3.4rem) / 1.04 var(--font-display), serif; letter-spacing: -0.02em; }
 .profile-hero__title { font: italic 500 clamp(1.8rem, 4.5vw, 3rem) / 1.08 var(--font-display), serif; }
 .profile-hero__meta { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
@@ -51,7 +51,7 @@
 
 /* contact definition list */
 .def-list { display: grid; gap: var(--space-3); margin: 0; }
-.def-list > div { display: grid; grid-template-columns: 120px 1fr; gap: var(--space-3); align-items: baseline; }
+.def-list > div { display: grid; grid-template-columns: 96px 1fr; gap: var(--space-2) var(--space-4); align-items: baseline; }
 .def-list dt { font: 500 var(--t-eyebrow) var(--font-mono), monospace; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-500); margin: 0; }
 .def-list dd { margin: 0; color: var(--ink-900); overflow-wrap: anywhere; }
 .def-list a { color: var(--accent); overflow-wrap: anywhere; }
@@ -60,12 +60,46 @@
 }
 
 .profile-section { margin-top: var(--space-8); }
-.profile-section > h2 { margin-bottom: var(--space-5); }
+/* in-page section dividers = tiny grey eyebrows, not big black headings (the key Ocula/Artsy move) */
+.profile-section > h2 {
+  font: 500 var(--t-eyebrow) / var(--lh-eyebrow) var(--font-mono), monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-500);
+  margin-bottom: var(--space-5);
+}
+/* quiet caption-style metadata block reads on the narrow measure, not the full 1240px */
+.profile-section:has(.def-list) { max-width: var(--container-narrow); }
 .profile-cols { display: grid; gap: var(--space-7); }
-@media (min-width: 900px) { .profile-cols { grid-template-columns: 1fr 1fr; } }
 
-/* exhibition profile big image */
-.exhibition-image { background: var(--placeholder); margin-bottom: var(--space-6); }
-.exhibition-image img { width: 100%; height: auto; display: block; }
+/* Exhibition detail — image contained on a neutral mat (respects proportions, never balloons),
+   with who/when/where beside it on desktop. */
+.exhibition-detail__top { display: grid; gap: var(--space-6); }
+@media (min-width: 900px) {
+  .exhibition-detail__top:not(.exhibition-detail__top--noimg) {
+    grid-template-columns: minmax(0, 1.7fr) minmax(280px, 1fr);
+    gap: var(--space-8);
+    align-items: start;
+  }
+  .exhibition-detail__top:not(.exhibition-detail__top--noimg) .profile-hero {
+    position: sticky;
+    top: var(--space-7);
+  }
+}
+.exhibition-image {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background: var(--placeholder);
+  overflow: hidden;
+}
+.exhibition-image img {
+  width: auto;
+  max-width: 100%;
+  max-height: 76vh;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
 
 .profile-map { aspect-ratio: 4 / 3; background: var(--placeholder); }

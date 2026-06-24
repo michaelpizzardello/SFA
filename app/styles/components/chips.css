@@ -15,9 +15,10 @@
   transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), color var(--dur) var(--ease);
 }
 .chip:hover { border-color: var(--ink-900); }
-.chip--active,
-.chip--applied { background: var(--accent-tint); border-color: var(--accent); color: var(--accent-press); }
-.chip--applied { max-width: 100%; }
+/* selected filter = solid ink pill (Artsy); accent stays off listing chrome */
+.chip--active { background: var(--ink-900); border-color: var(--ink-900); color: var(--paper); }
+/* applied/removable token = quiet outline, not a colored lozenge */
+.chip--applied { background: transparent; border-color: var(--hairline-strong); color: var(--ink-900); max-width: 100%; }
 .chip__label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 .chip--applied button {
   border: 0; background: none; cursor: pointer; color: inherit;

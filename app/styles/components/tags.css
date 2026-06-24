@@ -1,16 +1,19 @@
-/* Status tags — colour quarantined here; status always also conveyed by text */
+/* Status = near-silent. The WORD (+ grey date) carries it; no colored pills.
+   The one accent is reserved for genuine "closing soon" urgency. */
 .tag {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 5px 9px;
+  padding: 0;
+  background: none;
+  border-radius: 0;
   font: 500 var(--t-eyebrow) / 1 var(--font-mono), monospace;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  border-radius: var(--radius-pill);
+  letter-spacing: 0.1em;
+  color: var(--ink-500);
   width: fit-content;
 }
-.tag--current { background: var(--status-on-tint); color: var(--status-on); }
-.tag--upcoming { background: var(--status-soon-tint); color: var(--status-soon); }
-.tag--past { background: var(--status-past-tint); color: var(--status-past); }
-.tag--closing { background: var(--accent-tint); color: var(--accent-press); }
+.tag--current,
+.tag--upcoming,
+.tag--past { color: var(--ink-500); }
+.tag--closing { color: var(--accent); }

@@ -5,7 +5,7 @@
   gap: var(--space-3);
   max-width: 820px;
 }
-.whats-on-head h1 { font: 700 var(--t-display) / var(--lh-display) var(--font-text), sans-serif; letter-spacing: -0.035em; }
+.whats-on-head h1 { font: 500 var(--t-display) / var(--lh-display) var(--font-display), serif; letter-spacing: -0.02em; }
 .applied-row {
   display: flex;
   gap: var(--space-2);

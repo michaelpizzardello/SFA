@@ -51,7 +51,6 @@ export default function HeroBanner({ slides }) {
               <span className="hero-slide__meta">
                 {(gallery?.name || exhibition.galleryName) + ' · ' + formatDateRange(exhibition.startDate, exhibition.endDate)}
               </span>
-              <span className="hero-slide__cta">View exhibition →</span>
             </span>
           </Link>
         )

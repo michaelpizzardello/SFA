@@ -36,23 +36,10 @@ export default function HomePage({ galleries, exhibitions }) {
     <>
       {featured.length ? <HeroBanner slides={featured} /> : null}
       <div className="container">
-        {featured.length ? (
-          <section className="home-intro">
-            <p className="eyebrow">On in Sydney</p>
-            <p className="meta hero__count">
-              {galleries.length} galleries · {exhibitions.length} exhibitions ·{' '}
-              <Link className="text-link" href="/whats-on">
-                Browse all →
-              </Link>
-            </p>
-          </section>
-        ) : (
+        {!featured.length ? (
           <section className="hero">
             <p className="eyebrow">On in Sydney</p>
             <h1 className="hero__statement">Every exhibition on in Sydney.</h1>
-            <p className="meta hero__count">
-              {galleries.length} galleries · {exhibitions.length} exhibitions
-            </p>
             <div className="hero__actions">
               <Link className="link-arrow" href="/whats-on">
                 Browse what&apos;s on →
@@ -62,15 +49,12 @@ export default function HomePage({ galleries, exhibitions }) {
               </Link>
             </div>
           </section>
-        )}
+        ) : null}
 
       {current.length ? (
         <section className="section">
           <header className="section-head">
-            <div>
-              <p className="eyebrow">Now</p>
-              <h2>On now</h2>
-            </div>
+            <h2>On now</h2>
             <Link className="link-arrow" href="/whats-on">
               All exhibitions →
             </Link>
@@ -86,10 +70,7 @@ export default function HomePage({ galleries, exhibitions }) {
       {upcoming.length ? (
         <section className="section">
           <header className="section-head">
-            <div>
-              <p className="eyebrow">Soon</p>
-              <h2>Opening soon</h2>
-            </div>
+            <h2>Opening soon</h2>
             <Link className="link-arrow" href="/whats-on?status=upcoming">
               All →
             </Link>
@@ -113,10 +94,7 @@ export default function HomePage({ galleries, exhibitions }) {
 
       <section className="section">
         <header className="section-head">
-          <div>
-            <p className="eyebrow">Directory</p>
-            <h2>Galleries</h2>
-          </div>
+          <h2>Galleries</h2>
           <Link className="link-arrow" href="/galleries">
             All galleries →
           </Link>

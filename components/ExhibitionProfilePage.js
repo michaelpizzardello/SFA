@@ -14,27 +14,29 @@ export default function ExhibitionProfilePage({ exhibition, gallery }) {
         ← What&apos;s On
       </Link>
 
-      {exhibition.imageUrl ? (
-        <div className="exhibition-image">
-          <img src={exhibition.imageUrl} alt={exhibition.title} />
-        </div>
-      ) : null}
+      <div className={`exhibition-detail__top${exhibition.imageUrl ? '' : ' exhibition-detail__top--noimg'}`}>
+        {exhibition.imageUrl ? (
+          <div className="exhibition-image">
+            <img src={exhibition.imageUrl} alt={exhibition.title} />
+          </div>
+        ) : null}
 
-      <section className="profile-hero">
-        <span className={`tag tag--${status}`}>{STATUS_LABEL[status]}</span>
-        <h1>{exhibition.title}</h1>
-        {exhibition.artist ? <p className="lead">{exhibition.artist}</p> : null}
-        <div className="profile-hero__meta">
-          <span className="meta">{formatDateRange(exhibition.startDate, exhibition.endDate)}</span>
-          {gallery ? (
-            <Link className="link-arrow" href={`/gallery/${encodeURIComponent(gallery.slug)}`}>
-              {gallery.name} →
-            </Link>
-          ) : (
-            <span className="meta">{exhibition.galleryName}</span>
-          )}
-        </div>
-      </section>
+        <section className="profile-hero">
+          {status ? <span className={`tag tag--${status}`}>{STATUS_LABEL[status]}</span> : null}
+          <h1>{exhibition.title}</h1>
+          {exhibition.artist ? <p className="lead">{exhibition.artist}</p> : null}
+          <div className="profile-hero__meta">
+            <span className="meta">{formatDateRange(exhibition.startDate, exhibition.endDate)}</span>
+            {gallery ? (
+              <Link className="link-arrow" href={`/gallery/${encodeURIComponent(gallery.slug)}`}>
+                {gallery.name} →
+              </Link>
+            ) : (
+              <span className="meta">{exhibition.galleryName}</span>
+            )}
+          </div>
+        </section>
+      </div>
 
       {exhibition.summary ? (
         <section className="profile-section profile-about">

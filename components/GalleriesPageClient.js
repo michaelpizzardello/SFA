@@ -83,7 +83,7 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
       </div>
 
       <div className="applied-row">
-        <span className="results-meta">{rows.length} galleries</span>
+        {applied.length ? <span className="results-meta">{rows.length} galleries</span> : null}
         {applied.map((f) => (
           <span key={f.key} className="chip chip--applied">
             <span className="chip__label">{f.label}</span>
@@ -101,21 +101,17 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
       {rows.length ? (
         view === 'grid' ? (
           <div className="card-grid">
-            {rows.map(({ gallery, summary }) => (
-              <GalleryCard key={gallery.id} gallery={gallery} currentCount={summary?.current || 0} />
+            {rows.map(({ gallery }) => (
+              <GalleryCard key={gallery.id} gallery={gallery} />
             ))}
           </div>
         ) : (
           <ul className="gal-list">
-            {rows.map(({ gallery, summary }) => (
+            {rows.map(({ gallery }) => (
               <li key={gallery.id}>
                 <Link className="gal-row" href={`/gallery/${encodeURIComponent(gallery.slug)}`}>
-                  <span>
-                    <span className="gal-row__name">{gallery.name}</span>
-                    <br />
-                    <span className="meta">{[gallery.precinct, gallery.suburb].filter(Boolean).join(' · ')}</span>
-                  </span>
-                  {summary?.current ? <span className="meta" style={{ color: 'var(--accent)' }}>{summary.current} current</span> : null}
+                  <span className="gal-row__name">{gallery.name}</span>
+                  <span className="gal-row__meta">{[gallery.precinct, gallery.suburb].filter(Boolean).join(' · ')}</span>
                 </Link>
               </li>
             ))}

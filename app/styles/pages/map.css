@@ -651,7 +651,7 @@
   color: var(--ink-900);
 }
 .map-selection-show__meta {
-  font: 400 var(--t-meta) var(--font-mono), monospace;
+  font: 400 var(--t-meta) var(--font-text), sans-serif;
   color: var(--ink-500);
 }
 .map-selection-show:hover .map-selection-show__title { text-decoration: underline; text-underline-offset: 2px; }
@@ -659,3 +659,66 @@
 
 /* search field in map overlay */
 .map-search-field{flex:1;min-width:0;}
+
+/* ---- Filter sheet (was unstyled: a raw form dumped over the map) ---- */
+.filter-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: var(--scrim-strong);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+@media (min-width: 1024px) { .filter-sheet-overlay { align-items: center; } }
+.filter-sheet {
+  width: 100%;
+  max-width: 480px;
+  max-height: 88dvh;
+  overflow-y: auto;
+  background: var(--surface);
+  border-radius: var(--radius-sheet);
+  padding: var(--space-5) var(--gutter) var(--space-7);
+  display: grid;
+  gap: var(--space-5);
+}
+@media (min-width: 1024px) { .filter-sheet { border-radius: var(--radius-block); } }
+.filter-sheet-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); }
+.filter-sheet-head h2 { font: 500 var(--t-h3) var(--font-display), serif; margin: 0; }
+.filter-sheet-body { display: grid; gap: var(--space-5); }
+.filter-toggle-grid { display: grid; gap: var(--space-4); }
+.toggle-chip-row { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+/* reuse the chip atom look for the map's status/opening toggles */
+.toggle-chip {
+  font: 500 0.8125rem / 1 var(--font-text), sans-serif;
+  min-height: 36px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-pill);
+  color: var(--ink-700);
+  cursor: pointer;
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.toggle-chip:hover { border-color: var(--ink-900); }
+.toggle-chip.is-active { background: var(--ink-900); border-color: var(--ink-900); color: var(--paper); }
+
+/* applied-filter row + removable pills */
+.active-filters { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+.filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-pill);
+  color: var(--ink-900);
+  background: transparent;
+}
+.filter-pill.is-removable { cursor: pointer; }
+.filter-pill.is-removable:hover { border-color: var(--ink-900); }

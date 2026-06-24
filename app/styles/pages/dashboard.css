@@ -29,7 +29,13 @@
 .section-copy { color: var(--ink-500); max-width: 62ch; }
 .admin-error { color: var(--danger); }
 .form-hint { font: 400 var(--t-small) var(--font-text), sans-serif; color: var(--ink-500); }
-.form-success { color: var(--status-on); font-weight: 600; }
+.form-success { color: var(--ok); font-weight: 600; }
+
+/* exhibition publish state — quiet text, not a colored pill */
+.status-tag { font: 500 var(--t-meta) var(--font-text), sans-serif; text-transform: uppercase; letter-spacing: 0.06em; }
+.status-current { color: var(--ink-900); }
+.status-upcoming { color: var(--ink-500); }
+.status-past { color: var(--ink-400); }
 .empty-copy { color: var(--ink-500); font: italic var(--fw-lead) var(--t-lead) var(--font-display), serif; padding: var(--space-7) 0; }
 .item-kicker { font: 500 var(--t-eyebrow) var(--font-mono), monospace; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); }
 .row-meta { font: 400 var(--t-meta) var(--font-mono), monospace; color: var(--ink-500); }
@@ -40,7 +46,7 @@
   flex-wrap: wrap; padding: var(--space-3) 0; margin-bottom: var(--space-7);
   background: var(--paper); border-bottom: 1px solid var(--hairline);
 }
-.dashboard-brand { font: 700 1.1rem var(--font-text), sans-serif; letter-spacing: -0.04em; text-decoration: none; color: var(--ink-900); }
+.dashboard-brand { font: 500 1.2rem var(--font-display), serif; letter-spacing: -0.01em; text-decoration: none; color: var(--ink-900); }
 .dashboard-links { display: flex; gap: var(--space-4); flex: 1; }
 .dashboard-link { font: 600 0.9rem var(--font-text), sans-serif; color: var(--ink-500); text-decoration: none; padding: 6px 0; border-bottom: 2px solid transparent; }
 .dashboard-link.is-active { color: var(--ink-900); border-bottom-color: var(--accent); }

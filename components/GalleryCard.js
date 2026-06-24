@@ -8,13 +8,13 @@ function monogram(name) {
   return (words[0][0] + words[words.length - 1][0]).toUpperCase()
 }
 
-export default function GalleryCard({ gallery, currentCount = 0 }) {
+export default function GalleryCard({ gallery }) {
   const image = gallery.coverUrl || gallery.logoUrl
   const sub = [gallery.precinct, gallery.suburb].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i).join(' · ')
 
   return (
     <Link href={`/gallery/${encodeURIComponent(gallery.slug)}`} className="gal" aria-label={gallery.name}>
-      <div className="gal__media">
+      <div className={`gal__media${image ? '' : ' gal__media--empty'}`}>
         {image ? (
           <CardImage className="gal__img" src={image} />
         ) : (
@@ -25,8 +25,7 @@ export default function GalleryCard({ gallery, currentCount = 0 }) {
       </div>
       <div className="gal__body">
         <p className="gal__name">{gallery.name}</p>
-        {sub ? <p className="gal__meta meta">{sub}</p> : null}
-        {currentCount > 0 ? <p className="gal__count">{currentCount} current</p> : null}
+        {sub ? <p className="gal__meta">{sub}</p> : null}
       </div>
     </Link>
   )
