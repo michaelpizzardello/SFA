@@ -74,7 +74,7 @@ export default async function RootLayout({ children }) {
           <SiteNav />
           <main id="main" tabIndex={-1} className="shell-main">
             {children}
-            <SiteFooter signedIn={Boolean(user)} isSuperAdmin={isSuperAdmin} />
+            <SiteFooter signedIn={Boolean(user)} />
           </main>
         </div>
         <Analytics />

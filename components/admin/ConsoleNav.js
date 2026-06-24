@@ -28,6 +28,9 @@ export default function ConsoleNav() {
         })}
       </nav>
       <div className="dashboard-nav-actions">
+        <Link href="/dashboard" className="text-link">
+          My gallery
+        </Link>
         <Link href="/" className="text-link">
           View site
         </Link>
