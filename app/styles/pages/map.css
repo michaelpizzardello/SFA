@@ -554,7 +554,8 @@
     letter-spacing: 0.1em;
     color: var(--ink-500);
   }
-  .map-search-field { flex: 0 1 380px; max-width: 380px; justify-self: start; }
+  /* search fills the bar; filter sits at the end (no stranded far-right gap) */
+  .map-search-field { flex: 1 1 auto; max-width: none; justify-self: stretch; }
 
   .map-canvas-full {
     grid-area: map;

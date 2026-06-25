@@ -20,6 +20,7 @@ export default async function DashboardOverview() {
 
   const gallery = galleries[0]
   const exhibitions = await getGalleryExhibitions(gallery.id)
+  const publishedCount = exhibitions.filter((e) => e.published).length
 
   const checklist = []
   if (!gallery.about) checklist.push({ label: 'Add an About description', href: '/dashboard/profile' })
@@ -35,18 +36,43 @@ export default async function DashboardOverview() {
 
   return (
     <section className="dashboard-panel">
-      <p className="item-kicker">{gallery.precinct}</p>
-      <h1>{gallery.name}</h1>
+      <div className="page-head">
+        <div className="page-head__title">
+          <p className="item-kicker">{gallery.precinct}</p>
+          <h1>{gallery.name}</h1>
+        </div>
+        <Link className="button button-primary" href={primary.href}>
+          {primary.label}
+        </Link>
+      </div>
+
       {galleries.length > 1 ? (
         <p className="form-hint">
           You manage {galleries.length} galleries. This dashboard currently edits {gallery.name}.
         </p>
       ) : null}
 
+      <div className="dash-cards">
+        <div className="dash-card">
+          <span className="dash-card__label">Exhibitions</span>
+          <span className="dashboard-stat-num">{exhibitions.length}</span>
+        </div>
+        <div className="dash-card">
+          <span className="dash-card__label">Published</span>
+          <span className="dashboard-stat-num">{publishedCount}</span>
+        </div>
+        <div className="dash-card">
+          <span className="dash-card__label">Profile</span>
+          <span className={`badge ${profileIncomplete ? 'badge--draft' : 'badge--published'}`}>
+            {profileIncomplete ? 'Needs setup' : 'Complete'}
+          </span>
+        </div>
+      </div>
+
       {checklist.length ? (
-        <div className="dashboard-checklist">
-          <h2>Finish setting up</h2>
-          <ul>
+        <div className="dash-card">
+          <span className="dash-card__label">Finish setting up</span>
+          <ul className="dashboard-checklist-list">
             {checklist.map((item) => (
               <li key={item.label}>
                 <Link href={item.href}>{item.label}</Link>
@@ -54,16 +80,11 @@ export default async function DashboardOverview() {
             ))}
           </ul>
         </div>
-      ) : (
-        <p className="section-copy">Your gallery profile is complete.</p>
-      )}
+      ) : null}
 
       <div className="dashboard-quick-actions">
-        <Link className="button button-primary" href={primary.href}>
-          {primary.label}
-        </Link>
         <Link className="button button-secondary" href="/dashboard/exhibitions">
-          Exhibitions
+          Manage exhibitions
         </Link>
         <Link className="button button-secondary" href="/dashboard/profile">
           Edit profile
