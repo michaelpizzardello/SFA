@@ -3,11 +3,16 @@
 import Link from 'next/link'
 import { compareISO, formatDate, todayISOInSydney } from '../lib/utils/date'
 import { getExhibitionSlug, getExhibitionStatus, getGalleryBySlug } from '../lib/utils/exhibitions'
+import { DEFAULT_WINDOW, TIME_WINDOWS, matchesWindow } from '../lib/utils/windows'
 import ExhibitionCard from './ExhibitionCard'
 import GalleryCard from './GalleryCard'
 import HeroBanner from './HeroBanner'
 
 const imageFirst = (a, b) => Number(Boolean(b.exhibition.imageUrl)) - Number(Boolean(a.exhibition.imageUrl))
+
+function windowHref(slug) {
+  return slug === DEFAULT_WINDOW ? '/whats-on' : `/whats-on?when=${slug}`
+}
 
 export default function HomePage({ galleries, exhibitions }) {
   const today = todayISOInSydney()
@@ -27,6 +32,21 @@ export default function HomePage({ galleries, exhibitions }) {
 
   const featured = current.filter((r) => r.exhibition.imageUrl).slice(0, 6)
 
+  // Live count per window — turns the quick-nav into a digest of the city, and teaches the IA.
+  const windowCounts = Object.fromEntries(
+    TIME_WINDOWS.map((w) => [w.slug, exhibitions.filter((e) => matchesWindow(e, w.slug, today)).length])
+  )
+
+  const closingSoon = current
+    .filter((r) => matchesWindow(r.exhibition, 'closing-soon', today))
+    .sort((a, b) => compareISO(a.exhibition.endDate, b.exhibition.endDate))
+    .slice(0, 8)
+
+  const openingThisWeek = upcoming.filter((r) => matchesWindow(r.exhibition, 'opening-this-week', today))
+  const openingRows = (openingThisWeek.length ? openingThisWeek : upcoming).slice(0, 8)
+  const openingTitle = openingThisWeek.length ? 'Opening this week' : 'Opening soon'
+  const openingHref = openingThisWeek.length ? windowHref('opening-this-week') : '/whats-on?when=opening-this-week'
+
   const currentBySlug = new Set(current.map((r) => r.exhibition.gallerySlug))
   const galleryCards = [...galleries]
     .sort((a, b) => Number(currentBySlug.has(b.slug)) - Number(currentBySlug.has(a.slug)))
@@ -40,71 +60,89 @@ export default function HomePage({ galleries, exhibitions }) {
           <section className="hero">
             <p className="eyebrow">On in Sydney</p>
             <h1 className="hero__statement">Every exhibition on in Sydney.</h1>
-            <div className="hero__actions">
-              <Link className="link-arrow" href="/whats-on">
-                Browse what&apos;s on →
+          </section>
+        ) : null}
+
+        {/* TIME SPINE — the structural hinge: four named windows, each a live count of the city */}
+        <nav className="home-windows" aria-label="Browse by when">
+          {TIME_WINDOWS.map((w) => (
+            <Link key={w.slug} className="home-windows__item" href={windowHref(w.slug)}>
+              <span className="home-windows__count">{windowCounts[w.slug]}</span>
+              <span className="home-windows__label">{w.label}</span>
+            </Link>
+          ))}
+        </nav>
+
+        {current.length ? (
+          <section className="section">
+            <header className="section-head">
+              <h2>On now</h2>
+              <Link className="link-arrow" href={windowHref('on-now')}>
+                See all on now →
               </Link>
-              <Link className="link-arrow" href="/galleries">
-                All galleries →
-              </Link>
+            </header>
+            <div className="card-grid">
+              {current.slice(0, 8).map(({ exhibition, gallery, status }) => (
+                <ExhibitionCard key={exhibition.id} exhibition={exhibition} gallery={gallery} status={status} />
+              ))}
             </div>
           </section>
         ) : null}
 
-      {current.length ? (
+        {closingSoon.length ? (
+          <section className="section">
+            <header className="section-head">
+              <h2>Closing soon</h2>
+              <Link className="link-arrow" href={windowHref('closing-soon')}>
+                See all closing soon →
+              </Link>
+            </header>
+            <div className="card-grid">
+              {closingSoon.map(({ exhibition, gallery, status }) => (
+                <ExhibitionCard key={exhibition.id} exhibition={exhibition} gallery={gallery} status={status} />
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        {openingRows.length ? (
+          <section className="section">
+            <header className="section-head">
+              <h2>{openingTitle}</h2>
+              <Link className="link-arrow" href={openingHref}>
+                All →
+              </Link>
+            </header>
+            <ul className="opening-list">
+              {openingRows.map(({ exhibition, gallery }) => (
+                <li key={exhibition.id}>
+                  <Link className="opening-row" href={`/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`}>
+                    <span className="opening-row__date">{formatDate(exhibition.startDate)}</span>
+                    <span>
+                      <span className="opening-row__title">{exhibition.title}</span>
+                      <br />
+                      <span className="opening-row__gallery">{gallery?.name || exhibition.galleryName}</span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
         <section className="section">
           <header className="section-head">
-            <h2>On now</h2>
-            <Link className="link-arrow" href="/whats-on">
-              All exhibitions →
+            <h2>Galleries</h2>
+            <Link className="link-arrow" href="/galleries">
+              All galleries →
             </Link>
           </header>
           <div className="card-grid">
-            {current.slice(0, 8).map(({ exhibition, gallery, status }) => (
-              <ExhibitionCard key={exhibition.id} exhibition={exhibition} gallery={gallery} status={status} />
+            {galleryCards.map((gallery) => (
+              <GalleryCard key={gallery.id} gallery={gallery} />
             ))}
           </div>
         </section>
-      ) : null}
-
-      {upcoming.length ? (
-        <section className="section">
-          <header className="section-head">
-            <h2>Opening soon</h2>
-            <Link className="link-arrow" href="/whats-on?status=upcoming">
-              All →
-            </Link>
-          </header>
-          <ul className="opening-list">
-            {upcoming.slice(0, 8).map(({ exhibition, gallery }) => (
-              <li key={exhibition.id}>
-                <Link className="opening-row" href={`/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`}>
-                  <span className="opening-row__date">{formatDate(exhibition.startDate)}</span>
-                  <span>
-                    <span className="opening-row__title">{exhibition.title}</span>
-                    <br />
-                    <span className="opening-row__gallery">{gallery?.name || exhibition.galleryName}</span>
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
-
-      <section className="section">
-        <header className="section-head">
-          <h2>Galleries</h2>
-          <Link className="link-arrow" href="/galleries">
-            All galleries →
-          </Link>
-        </header>
-        <div className="card-grid">
-          {galleryCards.map((gallery) => (
-            <GalleryCard key={gallery.id} gallery={gallery} />
-          ))}
-        </div>
-      </section>
       </div>
     </>
   )
