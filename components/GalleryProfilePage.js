@@ -7,6 +7,14 @@ function sanitizePhone(phoneNumber) {
   return phoneNumber.replace(/[^\d+]/g, '')
 }
 
+function instagramHandle(value) {
+  const handle = value
+    .replace(/^https?:\/\/(www\.)?instagram\.com\//i, '')
+    .replace(/\/+$/, '')
+    .replace(/^@/, '')
+  return handle ? `@${handle}` : 'Instagram'
+}
+
 function ExGrid({ exhibitions, gallery }) {
   return (
     <div className="card-grid">
@@ -38,7 +46,7 @@ export default function GalleryProfilePage({ gallery, groupedExhibitions }) {
       label: 'Instagram',
       value: (
         <a href={gallery.instagram} target="_blank" rel="noreferrer">
-          Instagram
+          {instagramHandle(gallery.instagram)}
         </a>
       )
     }
@@ -61,25 +69,22 @@ export default function GalleryProfilePage({ gallery, groupedExhibitions }) {
       ) : null}
 
       <section className="gallery-hero">
-        <div className="gallery-hero__id">
-          {gallery.logoUrl ? <img className="gallery-hero__logo" src={gallery.logoUrl} alt="" /> : null}
-          <div className="gallery-hero__head">
-            {sub ? <p className="eyebrow">{sub}</p> : null}
-            <h1>{gallery.name}</h1>
-            <p className="gallery-hero__loc meta">
-              {gallery.address || gallery.suburb || ''}
-              {current.length ? `${gallery.address || gallery.suburb ? ' · ' : ''}${current.length} on view` : ''}
-            </p>
-          </div>
-        </div>
-        <div className="gallery-hero__actions">
-          <FollowButton slug={gallery.slug} label={gallery.name} />
-          <ShareButton title={gallery.name} />
-          {gallery.address ? (
-            <a className="btn btn--ghost" href={directionsHref} target="_blank" rel="noreferrer">
-              Directions
-            </a>
+        {gallery.logoUrl ? <img className="gallery-hero__logo" src={gallery.logoUrl} alt="" /> : null}
+        <div className="gallery-hero__head">
+          {sub ? <p className="eyebrow">{sub}</p> : null}
+          <h1>{gallery.name}</h1>
+          {gallery.address || gallery.suburb ? (
+            <p className="gallery-hero__loc meta">{gallery.address || gallery.suburb}</p>
           ) : null}
+          <div className="gallery-hero__actions">
+            <FollowButton slug={gallery.slug} label={gallery.name} />
+            <ShareButton title={gallery.name} />
+            {gallery.address ? (
+              <a className="btn btn--ghost" href={directionsHref} target="_blank" rel="noreferrer">
+                Directions
+              </a>
+            ) : null}
+          </div>
         </div>
       </section>
 
@@ -88,32 +93,6 @@ export default function GalleryProfilePage({ gallery, groupedExhibitions }) {
           <p>{gallery.about}</p>
         </section>
       ) : null}
-
-      <div className="profile-cols">
-        {contact.length || gallery.openingHours?.length ? (
-          <section className="profile-section">
-            <h2>Visit</h2>
-            <dl className="def-list">
-              {contact.map((row) => (
-                <div key={row.label}>
-                  <dt>{row.label}</dt>
-                  <dd>{row.value}</dd>
-                </div>
-              ))}
-              {gallery.openingHours?.length ? (
-                <div>
-                  <dt>Hours</dt>
-                  <dd>
-                    {gallery.openingHours.map((h) => (
-                      <div key={h}>{h}</div>
-                    ))}
-                  </dd>
-                </div>
-              ) : null}
-            </dl>
-          </section>
-        ) : null}
-      </div>
 
       {current.length ? (
         <section className="profile-section">
@@ -133,6 +112,32 @@ export default function GalleryProfilePage({ gallery, groupedExhibitions }) {
         <section className="profile-section">
           <h2>Past</h2>
           <ExGrid exhibitions={past} gallery={gallery} />
+        </section>
+      ) : null}
+
+      {contact.length || gallery.openingHours?.length ? (
+        <section className="profile-section gallery-visit">
+          <h2>Visit</h2>
+          <div className="gallery-visit__cols">
+            {gallery.openingHours?.length ? (
+              <div className="gallery-visit__hours">
+                <p className="eyebrow">Hours</p>
+                {gallery.openingHours.map((h) => (
+                  <p key={h} className="gallery-visit__hour">{h}</p>
+                ))}
+              </div>
+            ) : null}
+            {contact.length ? (
+              <dl className="def-list">
+                {contact.map((row) => (
+                  <div key={row.label}>
+                    <dt>{row.label}</dt>
+                    <dd>{row.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            ) : null}
+          </div>
         </section>
       ) : null}
 

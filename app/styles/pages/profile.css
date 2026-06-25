@@ -25,14 +25,20 @@
 }
 .profile-cover img { width: 100%; height: 100%; object-fit: cover; }
 
-/* Gallery profile header (Ocula/Artsy: logo + name + locations on the left, Follow/Share right) */
-.gallery-hero { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: var(--space-5); }
-.gallery-hero__id { display: flex; gap: var(--space-4); align-items: flex-start; min-width: 0; }
+/* Gallery profile header (Ocula/Artsy: logo + name + locations, then actions beneath — all left-aligned,
+   closed by a hairline divider so the head never floats over a big empty gap for short names). */
+.gallery-hero {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-5);
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid var(--hairline);
+}
 .gallery-hero__logo { width: 64px; height: 64px; object-fit: contain; background: var(--surface-muted); border: 1px solid var(--hairline); flex: none; }
-.gallery-hero__head { display: grid; gap: var(--space-2); min-width: 0; }
+.gallery-hero__head { display: grid; gap: var(--space-2); min-width: 0; flex: 1; }
 .gallery-hero h1 { font: var(--fw-h1) clamp(2rem, 5vw, 3.4rem) / 1.04 var(--font-display), serif; letter-spacing: -0.02em; }
 .gallery-hero__loc { margin: 0; }
-.gallery-hero__actions { display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center; }
+.gallery-hero__actions { display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center; margin-top: var(--space-3); }
 
 /* About measure */
 .profile-about { max-width: var(--container-narrow); }
@@ -59,7 +65,16 @@
 }
 /* quiet caption-style metadata block reads on the narrow measure, not the full 1240px */
 .profile-section:has(.def-list) { max-width: var(--container-narrow); }
-.profile-cols { display: grid; gap: var(--space-7); }
+
+/* Visit block: hours beside contact details, both on a quiet narrow measure (Ocula/Artsy
+   put practical info last, compact, never sprawling across the full width). */
+.gallery-visit { max-width: var(--container-narrow); }
+.gallery-visit__cols { display: grid; gap: var(--space-6); }
+@media (min-width: 700px) {
+  .gallery-visit__cols { grid-template-columns: 1fr 1fr; gap: var(--space-8); align-items: start; }
+}
+.gallery-visit__hours .eyebrow { margin-bottom: var(--space-2); }
+.gallery-visit__hour { margin: 0; color: var(--ink-900); line-height: 1.6; }
 
 /* Exhibition detail — image contained on a neutral mat (respects proportions, never balloons),
    with who/when/where beside it on desktop. */
