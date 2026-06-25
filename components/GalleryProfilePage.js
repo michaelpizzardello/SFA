@@ -1,5 +1,7 @@
 import Link from 'next/link'
 import ExhibitionCard from './ExhibitionCard'
+import FollowButton from './FollowButton'
+import ShareButton from './ShareButton'
 
 function sanitizePhone(phoneNumber) {
   return phoneNumber.replace(/[^\d+]/g, '')
@@ -58,14 +60,24 @@ export default function GalleryProfilePage({ gallery, groupedExhibitions }) {
         </div>
       ) : null}
 
-      <section className="profile-hero">
-        <p className="eyebrow">{sub}</p>
-        <h1>{gallery.name}</h1>
-        <div className="profile-hero__meta">
-          {gallery.address ? <span className="meta">{gallery.address}</span> : null}
+      <section className="gallery-hero">
+        <div className="gallery-hero__id">
+          {gallery.logoUrl ? <img className="gallery-hero__logo" src={gallery.logoUrl} alt="" /> : null}
+          <div className="gallery-hero__head">
+            {sub ? <p className="eyebrow">{sub}</p> : null}
+            <h1>{gallery.name}</h1>
+            <p className="gallery-hero__loc meta">
+              {gallery.address || gallery.suburb || ''}
+              {current.length ? `${gallery.address || gallery.suburb ? ' · ' : ''}${current.length} on view` : ''}
+            </p>
+          </div>
+        </div>
+        <div className="gallery-hero__actions">
+          <FollowButton slug={gallery.slug} label={gallery.name} />
+          <ShareButton title={gallery.name} />
           {gallery.address ? (
             <a className="btn btn--ghost" href={directionsHref} target="_blank" rel="noreferrer">
-              Get directions
+              Directions
             </a>
           ) : null}
         </div>
