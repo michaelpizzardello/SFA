@@ -12,8 +12,8 @@
 }
 .back-link:hover { color: var(--ink-900); }
 
-/* type hero (works with no image) */
-.profile-hero { display: grid; gap: var(--space-3); }
+/* type hero (works with no image) — held to a reading measure beneath the lead image */
+.profile-hero { display: grid; gap: var(--space-3); max-width: 880px; }
 .profile-hero h1 { font: var(--fw-h1) clamp(2rem, 5vw, 3.4rem) / 1.04 var(--font-display), serif; letter-spacing: -0.02em; }
 .profile-hero__title { font: italic 500 clamp(1.8rem, 4.5vw, 3rem) / 1.08 var(--font-display), serif; }
 .profile-hero__meta { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
@@ -119,32 +119,25 @@
 .gallery-visit__hours .eyebrow { margin-bottom: var(--space-2); }
 .gallery-visit__hour { margin: 0; color: var(--ink-900); line-height: 1.6; }
 
-/* Exhibition detail — image contained on a neutral mat (respects proportions, never balloons),
-   with who/when/where beside it on desktop. */
-.exhibition-detail__top { display: grid; gap: var(--space-6); }
-@media (min-width: 900px) {
-  .exhibition-detail__top:not(.exhibition-detail__top--noimg) {
-    grid-template-columns: minmax(0, 1.6fr) minmax(320px, 1fr);
-    gap: var(--space-8);
-    align-items: start;
-  }
-}
+/* Exhibition detail — SINGLE column (Ocula/Artsy): the lead image sits on top, contained and
+   centred; the header sits beneath it at a reading measure. No two-column dead-space quadrant. */
+.exhibition-detail__top { display: grid; gap: var(--space-6); justify-items: start; }
+.exhibition-detail__top > .profile-hero { width: 100%; max-width: 880px; }
 .profile-hero__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-2); }
 .profile-opening { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: baseline; }
 .exhibition-image {
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  background: var(--placeholder);
-  overflow: hidden;
+  justify-content: flex-start;
+  width: 100%;
 }
 .exhibition-image img {
   width: auto;
   max-width: 100%;
-  max-height: 70vh;
+  max-height: 66vh;
   height: auto;
   object-fit: contain;
   display: block;
+  background: var(--placeholder);
 }
 
 .profile-map { aspect-ratio: 4 / 3; background: var(--placeholder); }
