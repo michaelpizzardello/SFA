@@ -25,20 +25,60 @@
 }
 .profile-cover img { width: 100%; height: 100%; object-fit: cover; }
 
-/* Gallery profile header (Ocula/Artsy: logo + name + locations, then actions beneath — all left-aligned,
-   closed by a hairline divider so the head never floats over a big empty gap for short names). */
+/* Gallery profile header (Ocula/Artsy pattern: logo + name lockup, compact location beneath,
+   then a primary Follow + one secondary action). Identity block on the left; actions can sit
+   beside it on desktop, stacked below on mobile. */
 .gallery-hero {
   display: flex;
-  align-items: flex-start;
-  gap: var(--space-5);
-  padding-bottom: var(--space-6);
-  border-bottom: 1px solid var(--hairline);
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4) var(--space-5);
 }
-.gallery-hero__logo { width: 64px; height: 64px; object-fit: contain; background: var(--surface-muted); border: 1px solid var(--hairline); flex: none; }
-.gallery-hero__head { display: grid; gap: var(--space-2); min-width: 0; flex: 1; }
-.gallery-hero h1 { font: var(--fw-h1) clamp(2rem, 5vw, 3.4rem) / 1.04 var(--font-display), serif; letter-spacing: -0.02em; }
-.gallery-hero__loc { margin: 0; }
-.gallery-hero__actions { display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center; margin-top: var(--space-3); }
+.gallery-hero__id { display: flex; align-items: center; gap: var(--space-4); min-width: 0; flex: 1 1 280px; }
+.gallery-hero__logo { width: 56px; height: 56px; object-fit: contain; background: var(--surface-muted); border: 1px solid var(--hairline); flex: none; }
+.gallery-hero__head { display: grid; gap: var(--space-1); min-width: 0; }
+.gallery-hero h1 { font: var(--fw-h1) clamp(2rem, 5vw, 3.2rem) / 1.04 var(--font-display), serif; letter-spacing: -0.02em; }
+.gallery-hero__loc { margin: 0; font: 500 var(--t-meta) var(--font-mono), monospace; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-500); }
+.gallery-hero__actions { display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center; flex: 0 0 auto; }
+
+/* Tab sub-nav — the wayfinding strip both Ocula and Artsy lead with. Scrolls horizontally on
+   mobile, sticks under the header, closed by a hairline so sections read as one document. */
+.gallery-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  gap: var(--space-5);
+  margin-top: var(--space-5);
+  padding: 0;
+  border-bottom: 1px solid var(--hairline);
+  background: var(--paper);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+/* tighten the section that immediately follows the tab strip so content reads as attached to it */
+.gallery-tabs + .profile-section { margin-top: var(--space-6); }
+.gallery-tabs::-webkit-scrollbar { display: none; }
+.gallery-tabs__tab {
+  flex: none;
+  padding: var(--space-3) 0;
+  font: 500 var(--t-small) var(--font-text), sans-serif;
+  color: var(--ink-500);
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.gallery-tabs__tab:hover { color: var(--ink-900); }
+.gallery-tabs__tab.is-active { color: var(--ink-900); border-bottom-color: var(--ink-900); }
+/* anchored sections clear the sticky tab strip when jumped to */
+.gallery-profile [id] { scroll-margin-top: 64px; }
+.gallery-visit__directions { margin-top: var(--space-5); }
+/* on desktop the site header is sticky (60px); tabs stick just beneath it */
+@media (min-width: 900px) {
+  .gallery-tabs { top: 60px; }
+  .gallery-profile [id] { scroll-margin-top: 108px; }
+}
 
 /* About measure */
 .profile-about { max-width: var(--container-narrow); }

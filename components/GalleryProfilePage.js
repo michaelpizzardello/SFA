@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import ExhibitionCard from './ExhibitionCard'
 import FollowButton from './FollowButton'
+import GalleryTabs from './GalleryTabs'
 import ShareButton from './ShareButton'
 
 function sanitizePhone(phoneNumber) {
@@ -55,9 +56,19 @@ export default function GalleryProfilePage({ gallery, groupedExhibitions }) {
   const cover = gallery.coverUrl
   const { current, upcoming, past } = groupedExhibitions
   const hasExhibitions = current.length || upcoming.length || past.length
+  const locationLine = sub || gallery.suburb || ''
+  const hasVisit = contact.length || gallery.openingHours?.length
+
+  // Tab sub-nav (the wayfinding element Ocula + Artsy both lead with). Only sections
+  // that actually have content become tabs, so a sparse gallery doesn't get a hollow bar.
+  const tabs = [
+    hasExhibitions && { id: 'exhibitions', label: 'Exhibitions' },
+    gallery.about && { id: 'about', label: 'About' },
+    hasVisit && { id: 'visit', label: 'Visit' }
+  ].filter(Boolean)
 
   return (
-    <div className="container profile">
+    <div className="container profile gallery-profile">
       <Link className="back-link" href="/galleries">
         ← Galleries
       </Link>
@@ -68,55 +79,52 @@ export default function GalleryProfilePage({ gallery, groupedExhibitions }) {
         </div>
       ) : null}
 
-      <section className="gallery-hero">
-        {gallery.logoUrl ? <img className="gallery-hero__logo" src={gallery.logoUrl} alt="" /> : null}
-        <div className="gallery-hero__head">
-          {sub ? <p className="eyebrow">{sub}</p> : null}
-          <h1>{gallery.name}</h1>
-          {gallery.address || gallery.suburb ? (
-            <p className="gallery-hero__loc meta">{gallery.address || gallery.suburb}</p>
-          ) : null}
-          <div className="gallery-hero__actions">
-            <FollowButton slug={gallery.slug} label={gallery.name} />
-            <ShareButton title={gallery.name} />
-            {gallery.address ? (
-              <a className="btn btn--ghost" href={directionsHref} target="_blank" rel="noreferrer">
-                Directions
-              </a>
-            ) : null}
+      <header className="gallery-hero">
+        <div className="gallery-hero__id">
+          {gallery.logoUrl ? <img className="gallery-hero__logo" src={gallery.logoUrl} alt="" /> : null}
+          <div className="gallery-hero__head">
+            <h1>{gallery.name}</h1>
+            {locationLine ? <p className="gallery-hero__loc">{locationLine}</p> : null}
           </div>
         </div>
-      </section>
+        <div className="gallery-hero__actions">
+          <FollowButton slug={gallery.slug} label={gallery.name} />
+          <ShareButton title={gallery.name} />
+        </div>
+      </header>
 
-      {gallery.about ? (
-        <section className="profile-section profile-about">
-          <p>{gallery.about}</p>
-        </section>
-      ) : null}
+      {tabs.length >= 2 ? <GalleryTabs tabs={tabs} /> : null}
 
       {current.length ? (
-        <section className="profile-section">
+        <section id="exhibitions" className="profile-section">
           <h2>Current exhibitions</h2>
           <ExGrid exhibitions={current} gallery={gallery} />
         </section>
       ) : null}
 
       {upcoming.length ? (
-        <section className="profile-section">
+        <section className="profile-section" id={current.length ? undefined : 'exhibitions'}>
           <h2>Upcoming</h2>
           <ExGrid exhibitions={upcoming} gallery={gallery} />
         </section>
       ) : null}
 
       {past.length ? (
-        <section className="profile-section">
+        <section className="profile-section" id={current.length || upcoming.length ? undefined : 'exhibitions'}>
           <h2>Past</h2>
           <ExGrid exhibitions={past} gallery={gallery} />
         </section>
       ) : null}
 
-      {contact.length || gallery.openingHours?.length ? (
-        <section className="profile-section gallery-visit">
+      {gallery.about ? (
+        <section id="about" className="profile-section profile-about">
+          <h2>About</h2>
+          <p>{gallery.about}</p>
+        </section>
+      ) : null}
+
+      {hasVisit ? (
+        <section id="visit" className="profile-section gallery-visit">
           <h2>Visit</h2>
           <div className="gallery-visit__cols">
             {gallery.openingHours?.length ? (
@@ -138,6 +146,11 @@ export default function GalleryProfilePage({ gallery, groupedExhibitions }) {
               </dl>
             ) : null}
           </div>
+          {gallery.address ? (
+            <a className="btn btn--ghost gallery-visit__directions" href={directionsHref} target="_blank" rel="noreferrer">
+              Get directions
+            </a>
+          ) : null}
         </section>
       ) : null}
 
