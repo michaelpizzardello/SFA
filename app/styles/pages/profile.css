@@ -63,6 +63,9 @@
   color: var(--ink-500);
   margin-bottom: var(--space-5);
 }
+/* a section-label eyebrow (e.g. "Details") gets the same breathing room below it as an h2 label */
+.profile-section > .eyebrow { margin-bottom: var(--space-5); }
+
 /* quiet caption-style metadata block reads on the narrow measure, not the full 1240px */
 .profile-section:has(.def-list) { max-width: var(--container-narrow); }
 
