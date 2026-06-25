@@ -20,7 +20,6 @@ export default function SavedPageClient({ exhibitions, galleries }) {
   return (
     <div className="container">
       <header className="whats-on-head">
-        <p className="eyebrow">Your list</p>
         <h1>Saved</h1>
       </header>
 

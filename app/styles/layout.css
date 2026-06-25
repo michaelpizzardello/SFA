@@ -89,6 +89,8 @@
 }
 .site-footer a { color: var(--on-section); font: 400 var(--t-small) var(--font-text), sans-serif; }
 .site-footer a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.site-footer__social { display: inline-flex; color: var(--on-section-muted); margin-top: var(--space-1); }
+.site-footer__social:hover { color: var(--on-section); }
 .site-footer__base {
   display: flex;
   padding-block: var(--space-5);

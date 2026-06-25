@@ -55,7 +55,6 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
   return (
     <div className="container">
       <header className="galleries-head">
-        <p className="eyebrow">Directory</p>
         <h1>Galleries</h1>
       </header>
 

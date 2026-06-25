@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react'
 import SearchField from './SearchField'
 import SearchIcon from './icons/SearchIcon'
 import StarIcon from './icons/StarIcon'
+import InstagramIcon from './icons/InstagramIcon'
+import { SAF_INSTAGRAM } from '../lib/site'
 
 const NAV = [
   { href: '/whats-on', label: "What's On", match: (p) => p === '/whats-on' || p.startsWith('/exhibition/') },
@@ -87,6 +89,9 @@ export default function SiteNav() {
           >
             <StarIcon />
           </Link>
+          <a className="header__icon-btn" href={SAF_INSTAGRAM} target="_blank" rel="noreferrer" aria-label="Instagram">
+            <InstagramIcon />
+          </a>
         </div>
       </header>
 

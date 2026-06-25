@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { formatDateRange } from '../lib/utils/date'
 import { getExhibitionSlug } from '../lib/utils/exhibitions'
@@ -20,6 +20,18 @@ export default function HeroBanner({ slides }) {
     return () => clearInterval(timer)
   }, [count, paused])
 
+  const touchStartX = useRef(null)
+  const go = (dir) => setIndex((p) => (p + dir + count) % count)
+  function onTouchStart(e) {
+    touchStartX.current = e.touches[0].clientX
+  }
+  function onTouchEnd(e) {
+    if (touchStartX.current == null || count <= 1) return
+    const dx = e.changedTouches[0].clientX - touchStartX.current
+    touchStartX.current = null
+    if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1)
+  }
+
   if (!count) return null
   const safeIndex = index % count
 
@@ -32,6 +44,8 @@ export default function HeroBanner({ slides }) {
       onMouseLeave={() => setPaused(false)}
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => setPaused(false)}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
     >
       {slides.map(({ exhibition, gallery }, idx) => {
         const active = idx === safeIndex

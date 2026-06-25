@@ -131,7 +131,6 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
   return (
     <div className="container">
       <header className="whats-on-head">
-        <p className="eyebrow">On in Sydney</p>
         <h1>What&apos;s On</h1>
       </header>
 

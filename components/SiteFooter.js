@@ -2,6 +2,8 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import InstagramIcon from './icons/InstagramIcon'
+import { SAF_INSTAGRAM } from '../lib/site'
 
 // Public footer. Gallery access lives HERE (not the top header) — the public audience never signs in;
 // galleries do, occasionally. Auth-aware so the link reflects the actual state.
@@ -22,6 +24,9 @@ export default function SiteFooter({ signedIn = false }) {
             Sydney Art Finder
           </Link>
           <p className="site-footer__tag">Exhibitions, galleries and openings across Sydney.</p>
+          <a className="site-footer__social" href={SAF_INSTAGRAM} target="_blank" rel="noreferrer" aria-label="Instagram">
+            <InstagramIcon size={20} />
+          </a>
         </div>
 
         <nav className="site-footer__col" aria-label="Browse">
