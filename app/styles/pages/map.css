@@ -66,14 +66,41 @@
   right: 0;
   z-index: 30;
   padding: var(--space-3);
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  display: flex;
+  flex-direction: column;
   gap: var(--space-2);
-  align-items: center;
   border-bottom: 1px solid var(--color-border);
   background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(4px);
 }
+.map-top-overlay__row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+/* The map's time spine — same windows as What's On, as a horizontally scrollable lens selector */
+.map-window-bar {
+  display: flex;
+  gap: var(--space-4);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.map-window-bar::-webkit-scrollbar { display: none; }
+.map-window-bar__item {
+  flex: none;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  padding: var(--space-1) 0;
+  font: 500 0.875rem var(--font-text), sans-serif;
+  color: var(--ink-500);
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+}
+.map-window-bar__item:hover { color: var(--ink-900); }
+.map-window-bar__item.is-active { color: var(--ink-900); border-bottom-color: var(--ink-900); }
 
 .map-top-overlay .icon-back-button,
 .map-top-overlay .map-filter-trigger {

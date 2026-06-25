@@ -10,6 +10,7 @@ import { formatDateRange, todayISOInSydney } from '../lib/utils/date'
 import { filterExhibitions, filterMapGalleries, getPrecinctOptions } from '../lib/utils/filters'
 import { getExhibitionSlug, getExhibitionStatus, getGalleryBySlug } from '../lib/utils/exhibitions'
 import { serializeBounds, SYDNEY_CENTER, SYDNEY_DEFAULT_ZOOM } from '../lib/utils/map'
+import { TIME_WINDOWS, getWindowLabel, isTimeWindow } from '../lib/utils/windows'
 
 const LIST_SCROLL_STORAGE_KEY = 'saf_map_list_scroll'
 const DETENT_ORDER = ['collapsed', 'half', 'full']
@@ -17,13 +18,11 @@ const MOBILE_COLLAPSED_HEIGHT = 72
 const MOBILE_HALF_HEIGHT_RATIO = 0.52
 const DRAG_SNAP_VELOCITY = 0.45
 const TOP_OVERLAY_FALLBACK_BOTTOM = 72
-const statusFilterOptions = [
-  { value: 'current', label: 'Current exhibitions' },
-  { value: 'upcoming', label: 'Upcoming exhibitions' }
-]
-const openingFilterOptions = [
-  { value: 'tonight', label: 'Opening today' },
-  { value: 'week', label: 'Opening this week' }
+// The map is a lens over the same time spine as What's On: 'galleries' shows all space pins,
+// any time window shows that window's shows. One query (?when+?precinct), two lenses.
+const MAP_WINDOW_OPTIONS = [
+  { slug: 'galleries', label: 'Galleries' },
+  ...TIME_WINDOWS.map((w) => ({ slug: w.slug, label: w.short }))
 ]
 
 function bringLayerToFront(layer) {
@@ -150,27 +149,10 @@ function canStartSelectionDrag(target) {
   return !target.closest('a, button, input, select, textarea')
 }
 
-function normalizeStatusSelection(values = []) {
-  return statusFilterOptions
-    .map((option) => option.value)
-    .filter((value) => values.includes(value))
-}
-
-function normalizeOpeningSelection(values = []) {
-  return openingFilterOptions
-    .map((option) => option.value)
-    .filter((value) => values.includes(value))
-}
-
 export default function MapPageClient({ galleries, exhibitions, initialFilters }) {
   const [search, setSearch] = useState(initialFilters.search)
   const [precinct, setPrecinct] = useState(initialFilters.precinct)
-  const [selectedStatuses, setSelectedStatuses] = useState(
-    () => new Set(normalizeStatusSelection(initialFilters.statuses))
-  )
-  const [selectedOpeningWindows, setSelectedOpeningWindows] = useState(
-    () => new Set(normalizeOpeningSelection(initialFilters.openingWindows))
-  )
+  const [when, setWhen] = useState(() => (isTimeWindow(initialFilters.when) ? initialFilters.when : 'galleries'))
   const [areaEnabled, setAreaEnabled] = useState(initialFilters.areaEnabled)
   const [viewportBounds, setViewportBounds] = useState(initialFilters.viewportBounds)
   const [mapView, setMapView] = useState(initialFilters.mapView)
@@ -211,15 +193,7 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
   const selectionTouchDragActiveRef = useRef(false)
 
   const precinctOptions = useMemo(() => getPrecinctOptions(galleries), [galleries])
-  const orderedStatuses = useMemo(
-    () => normalizeStatusSelection([...selectedStatuses]),
-    [selectedStatuses]
-  )
-  const orderedOpeningWindows = useMemo(
-    () => normalizeOpeningSelection([...selectedOpeningWindows]),
-    [selectedOpeningWindows]
-  )
-  const exhibitionMode = orderedStatuses.length > 0 || orderedOpeningWindows.length > 0
+  const exhibitionMode = isTimeWindow(when)
 
   const baseFilteredGalleries = useMemo(
     () =>
@@ -248,14 +222,9 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
   const filteredExhibitions = useMemo(
     () =>
       exhibitionMode
-        ? filterExhibitions(galleries, exhibitions, {
-            search,
-            precinct,
-            statuses: orderedStatuses,
-            openingWindows: orderedOpeningWindows
-          })
+        ? filterExhibitions(galleries, exhibitions, { search, precinct, when })
         : [],
-    [exhibitionMode, exhibitions, galleries, orderedOpeningWindows, orderedStatuses, precinct, search]
+    [exhibitionMode, exhibitions, galleries, precinct, search, when]
   )
 
   const resultGalleries = useMemo(() => {
@@ -325,32 +294,16 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
       })
     }
 
-    orderedStatuses.forEach((status) => {
-      filters.push({
-        key: `status:${status}`,
-        label: statusFilterOptions.find((option) => option.value === status)?.label || status,
-        removable: true
-      })
-    })
-
-    orderedOpeningWindows.forEach((window) => {
-      filters.push({
-        key: `opening:${window}`,
-        label: openingFilterOptions.find((option) => option.value === window)?.label || window,
-        removable: true
-      })
-    })
-
     if (!filters.length) {
       filters.push({
         key: 'all',
-        label: 'All galleries',
+        label: exhibitionMode ? getWindowLabel(when) : 'All galleries',
         removable: false
       })
     }
 
     return filters
-  }, [areaEnabled, orderedOpeningWindows, orderedStatuses, precinct, search])
+  }, [areaEnabled, exhibitionMode, precinct, search, when])
 
   const resultsLabel = exhibitionMode ? 'Exhibitions' : 'Galleries'
   const activeSheetHeight = Math.round(sheetDragHeight ?? detentHeights[sheetDetent] ?? detentHeights.collapsed)
@@ -383,17 +336,14 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
       params.delete('precinct')
     }
 
-    if (orderedStatuses.length) {
-      params.set('status', orderedStatuses.join(','))
+    if (exhibitionMode) {
+      params.set('when', when)
     } else {
-      params.delete('status')
+      params.delete('when')
     }
-
-    if (orderedOpeningWindows.length) {
-      params.set('opening', orderedOpeningWindows.join(','))
-    } else {
-      params.delete('opening')
-    }
+    // retire legacy status/opening params
+    params.delete('status')
+    params.delete('opening')
 
     if (areaEnabled && viewportBounds) {
       params.set('area', '1')
@@ -427,9 +377,8 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
     }
   }, [
     areaEnabled,
+    exhibitionMode,
     mapView,
-    orderedOpeningWindows,
-    orderedStatuses,
     pathname,
     precinct,
     router,
@@ -437,7 +386,8 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
     searchParams,
     selectedSlug,
     sheetDetent,
-    viewportBounds
+    viewportBounds,
+    when
   ])
 
   useEffect(() => {
@@ -691,52 +641,11 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
       return
     }
 
-    if (filterKey.startsWith('status:')) {
-      const status = filterKey.slice('status:'.length)
-      setSelectedStatuses((current) => {
-        const next = new Set(current)
-        next.delete(status)
-        return next
-      })
-      return
-    }
-
-    if (filterKey.startsWith('opening:')) {
-      const window = filterKey.slice('opening:'.length)
-      setSelectedOpeningWindows((current) => {
-        const next = new Set(current)
-        next.delete(window)
-        return next
-      })
-    }
   }
 
-  function toggleStatus(status) {
-    setSelectedStatuses((current) => {
-      const next = new Set(current)
-
-      if (next.has(status)) {
-        next.delete(status)
-      } else {
-        next.add(status)
-      }
-
-      return next
-    })
-  }
-
-  function toggleOpeningWindow(window) {
-    setSelectedOpeningWindows((current) => {
-      const next = new Set(current)
-
-      if (next.has(window)) {
-        next.delete(window)
-      } else {
-        next.add(window)
-      }
-
-      return next
-    })
+  function selectWindow(slug) {
+    setWhen(slug)
+    setSelectedSlug(null)
   }
 
   function resetView() {
@@ -752,8 +661,7 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
     setMapMoved(false)
     setSelectedSlug(null)
     setLocationError('')
-    setSelectedStatuses(new Set())
-    setSelectedOpeningWindows(new Set())
+    setWhen('galleries')
   }
 
   function clearSelectedGallery() {
@@ -1327,23 +1235,39 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
   return (
     <section className="map-page map-fullscreen" aria-label="Sydney gallery map">
       <div className="map-top-overlay" ref={topOverlayRef}>
-        <BackLinkButton fallbackHref="/galleries" label="Back" />
-        <SearchField
-          className="map-search-field"
-          placeholder={exhibitionMode ? 'Search exhibitions' : 'Search galleries'}
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-          aria-label="Search map"
-        />
-        <button
-          type="button"
-          className="button button-secondary icon-button filter-icon-button map-filter-trigger"
-          aria-label="Open filters"
-          onClick={() => setFiltersOpen(true)}
-        >
-          <FilterSlidersIcon />
-          <span className="visually-hidden">Filters</span>
-        </button>
+        <div className="map-top-overlay__row">
+          <BackLinkButton fallbackHref="/galleries" label="Back" />
+          <SearchField
+            className="map-search-field"
+            placeholder={exhibitionMode ? 'Search exhibitions' : 'Search galleries'}
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            aria-label="Search map"
+          />
+          <button
+            type="button"
+            className="button button-secondary icon-button filter-icon-button map-filter-trigger"
+            aria-label="Open filters"
+            onClick={() => setFiltersOpen(true)}
+          >
+            <FilterSlidersIcon />
+            <span className="visually-hidden">Filters</span>
+          </button>
+        </div>
+        {/* Time spine, mirrored on the map: the same windows as What's On, as a lens over geography */}
+        <nav className="map-window-bar" aria-label="Time window">
+          {MAP_WINDOW_OPTIONS.map((option) => (
+            <button
+              key={option.slug}
+              type="button"
+              className={`map-window-bar__item${when === option.slug ? ' is-active' : ''}`}
+              aria-pressed={when === option.slug}
+              onClick={() => selectWindow(option.slug)}
+            >
+              {option.label}
+            </button>
+          ))}
+        </nav>
       </div>
 
       {filtersOpen ? (
@@ -1373,42 +1297,6 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
                   ))}
                 </select>
               </label>
-
-              <div className="filter-toggle-grid">
-                <div className="field">
-                  <span>Show exhibitions</span>
-                  <div className="toggle-chip-row" role="group" aria-label="Map exhibition status filters">
-                    {statusFilterOptions.map((option) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        className={`toggle-chip ${selectedStatuses.has(option.value) ? 'is-active' : ''}`}
-                        onClick={() => toggleStatus(option.value)}
-                        aria-pressed={selectedStatuses.has(option.value)}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="field">
-                  <span>Opening</span>
-                  <div className="toggle-chip-row" role="group" aria-label="Map opening filters">
-                    {openingFilterOptions.map((option) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        className={`toggle-chip ${selectedOpeningWindows.has(option.value) ? 'is-active' : ''}`}
-                        onClick={() => toggleOpeningWindow(option.value)}
-                        aria-pressed={selectedOpeningWindows.has(option.value)}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
 
               <div className="map-secondary-actions">
                 <button
