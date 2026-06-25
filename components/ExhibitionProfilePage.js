@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { addDaysISO, compareISO, formatDate, formatDateRange, todayISOInSydney } from '../lib/utils/date'
 import { getExhibitionSlug, getExhibitionStatus, getGalleryBySlug } from '../lib/utils/exhibitions'
+import ExhibitionBackLink from './ExhibitionBackLink'
 import ExhibitionCard from './ExhibitionCard'
 import ShareButton from './ShareButton'
 
@@ -66,9 +67,7 @@ export default function ExhibitionProfilePage({ exhibition, gallery, allExhibiti
 
   return (
     <div className="container ex2">
-      <Link className="back-link" href="/whats-on">
-        ← What&apos;s On
-      </Link>
+      <ExhibitionBackLink galleryName={gallery?.name} galleryHref={galleryHref} />
 
       <header className="ex2__masthead">
         <div className="ex2__kicker">

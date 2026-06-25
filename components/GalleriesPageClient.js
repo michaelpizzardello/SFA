@@ -13,6 +13,7 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
   const [search, setSearch] = useState(initialFilters.search)
   const [precinct, setPrecinct] = useState(initialFilters.precinct)
   const [sort, setSort] = useState(initialFilters.sort)
+  const [onlyOnNow, setOnlyOnNow] = useState(false)
   const [filtersOpen, setFiltersOpen] = useState(false)
   // Galleries deliberately lead with the monogram grid (the "Mondrian tiles" rich state); list is the toggle.
   const [view, setView] = useState('grid')
@@ -29,10 +30,15 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
     () => filterGalleries(galleries, { search, precinct, sort }),
     [galleries, precinct, search, sort]
   )
-  const rows = useMemo(
-    () => getGalleryDirectoryData(filteredGalleries, exhibitions),
-    [exhibitions, filteredGalleries]
-  )
+  const rows = useMemo(() => {
+    const base = getGalleryDirectoryData(filteredGalleries, exhibitions)
+    const scoped = onlyOnNow ? base.filter((row) => (row.summary?.current || 0) > 0) : base
+    // lean the index toward "what can I see now": galleries with a current show float up (stable, so
+    // the chosen A–Z / precinct order is preserved within each group)
+    return [...scoped].sort(
+      (a, b) => Number((b.summary?.current || 0) > 0) - Number((a.summary?.current || 0) > 0)
+    )
+  }, [exhibitions, filteredGalleries, onlyOnNow])
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString())
@@ -65,6 +71,14 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
           onChange={(e) => setSearch(e.target.value)}
           aria-label="Search galleries"
         />
+        <button
+          type="button"
+          className={`chip${onlyOnNow ? ' chip--active' : ''}`}
+          aria-pressed={onlyOnNow}
+          onClick={() => setOnlyOnNow((v) => !v)}
+        >
+          On now
+        </button>
         <Link className="toolbar-control" href={precinct !== 'all' ? `/map?precinct=${encodeURIComponent(precinct)}` : '/map'}>
           Map
         </Link>

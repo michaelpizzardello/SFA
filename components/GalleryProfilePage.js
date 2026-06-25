@@ -97,14 +97,14 @@ export default function GalleryProfilePage({ gallery, groupedExhibitions }) {
 
       {current.length ? (
         <section id="exhibitions" className="profile-section">
-          <h2>Current exhibitions</h2>
+          <h2>On now</h2>
           <ExGrid exhibitions={current} gallery={gallery} />
         </section>
       ) : null}
 
       {upcoming.length ? (
         <section className="profile-section" id={current.length ? undefined : 'exhibitions'}>
-          <h2>Upcoming</h2>
+          <h2>Opening soon</h2>
           <ExGrid exhibitions={upcoming} gallery={gallery} />
         </section>
       ) : null}
