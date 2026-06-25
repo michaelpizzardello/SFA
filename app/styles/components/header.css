@@ -80,5 +80,6 @@
 
 @media (max-width: 899px) {
   .header__nav { display: none; }
-  .site-header { gap: var(--space-3); }
+  /* on mobile the fixed bottom tab bar carries nav, so the header can scroll away */
+  .site-header { position: static; gap: var(--space-3); }
 }
