@@ -23,7 +23,6 @@ function RelatedGrid({ items, galleries, today }) {
 
 export default function ExhibitionProfilePage({ exhibition, gallery, allExhibitions = [], allGalleries = [] }) {
   const status = getExhibitionStatus(exhibition)
-  const precinct = gallery?.precinct || exhibition.location || ''
   const currentSlug = getExhibitionSlug(exhibition)
   const mapsHref = gallery?.address
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(gallery.address)}`
@@ -77,12 +76,6 @@ export default function ExhibitionProfilePage({ exhibition, gallery, allExhibiti
               <span className="meta">{exhibition.galleryName}</span>
             )}
           </div>
-          {openingNight ? (
-            <p className="profile-opening">
-              <span className="eyebrow">Opening night</span>
-              <span className="meta">{openingNight}</span>
-            </p>
-          ) : null}
           <div className="profile-hero__actions">
             {mapsHref ? (
               <a className="btn btn--ghost" href={mapsHref} target="_blank" rel="noreferrer">
@@ -100,42 +93,35 @@ export default function ExhibitionProfilePage({ exhibition, gallery, allExhibiti
         </section>
       ) : null}
 
-      <section className="profile-section">
-        <p className="eyebrow">Details</p>
-        <dl className="def-list">
-          {openingNight ? (
-            <div>
-              <dt>Opening</dt>
-              <dd>{openingNight}</dd>
-            </div>
-          ) : null}
-          {gallery ? (
-            <div>
-              <dt>Gallery</dt>
-              <dd>
-                <Link href={`/gallery/${encodeURIComponent(gallery.slug)}`}>{gallery.name}</Link>
-                {precinct ? `, ${precinct}` : ''}
-              </dd>
-            </div>
-          ) : null}
-          {gallery?.address ? (
-            <div>
-              <dt>Address</dt>
-              <dd>{gallery.address}</dd>
-            </div>
-          ) : null}
-          {gallery?.openingHours?.length ? (
-            <div>
-              <dt>Hours</dt>
-              <dd>
-                {gallery.openingHours.map((h) => (
-                  <div key={h}>{h}</div>
-                ))}
-              </dd>
-            </div>
-          ) : null}
-        </dl>
-      </section>
+      {openingNight || gallery?.address || gallery?.openingHours?.length ? (
+        <section className="profile-section">
+          <p className="eyebrow">Details</p>
+          <dl className="def-list">
+            {openingNight ? (
+              <div>
+                <dt>Opening</dt>
+                <dd>{openingNight}</dd>
+              </div>
+            ) : null}
+            {gallery?.address ? (
+              <div>
+                <dt>Address</dt>
+                <dd>{gallery.address}</dd>
+              </div>
+            ) : null}
+            {gallery?.openingHours?.length ? (
+              <div>
+                <dt>Hours</dt>
+                <dd>
+                  {gallery.openingHours.map((h) => (
+                    <div key={h}>{h}</div>
+                  ))}
+                </dd>
+              </div>
+            ) : null}
+          </dl>
+        </section>
+      ) : null}
 
       {moreAtGallery.length ? (
         <section className="profile-section">
