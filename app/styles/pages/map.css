@@ -467,6 +467,27 @@
   transform: scale(1.2);
 }
 
+/* De-chrome Leaflet's default green/amber/orange clusters to the editorial monochrome:
+   a soft ink halo around a solid ink disc with a mono count (matches .map-dot-node). */
+.marker-cluster,
+.marker-cluster-small,
+.marker-cluster-medium,
+.marker-cluster-large {
+  background: rgba(20, 20, 20, 0.16);
+}
+.marker-cluster div,
+.marker-cluster-small div,
+.marker-cluster-medium div,
+.marker-cluster-large div {
+  background: var(--ink-900);
+  color: var(--paper);
+}
+.marker-cluster span {
+  color: var(--paper);
+  font-family: var(--font-mono), monospace;
+  font-weight: 500;
+}
+
 .leaflet-popup-content-wrapper {
   border: 1px solid var(--color-border);
   border-radius: 10px;
