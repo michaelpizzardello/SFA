@@ -141,3 +141,58 @@
 }
 
 .profile-map { aspect-ratio: 4 / 3; background: var(--placeholder); }
+
+/* ============================================================
+   Exhibition detail — editorial system: type-led masthead, framed plate,
+   ruled spec ledger. Hairline rules are the connective grammar. White only.
+   ============================================================ */
+.ex2 { padding-top: var(--space-5); padding-bottom: var(--space-10); }
+
+/* Masthead leads with TYPE — a ruled kicker, an oversized serif title */
+.ex2__masthead { display: grid; gap: var(--space-4); }
+.ex2__kicker {
+  display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-4);
+  padding-bottom: var(--space-3); border-bottom: 1px solid var(--ink-900);
+  font: 500 var(--t-eyebrow) var(--font-mono), monospace;
+  text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-500);
+}
+.ex2__title {
+  margin: var(--space-2) 0 0;
+  font: var(--fw-h1) clamp(2.6rem, 6.8vw, 5rem) / 0.98 var(--font-display), serif;
+  letter-spacing: -0.03em; max-width: 18ch;
+}
+.ex2__artist {
+  margin: 0;
+  font: italic 500 clamp(1.2rem, 2.4vw, 1.8rem) / 1.2 var(--font-display), serif;
+  color: var(--ink-700);
+}
+.ex2__byline { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); align-items: baseline; margin: var(--space-1) 0 0; }
+.ex2__dates { font: 500 var(--t-meta) var(--font-mono), monospace; letter-spacing: 0.04em; color: var(--ink-700); }
+.ex2__gallery { font: 500 var(--t-meta) var(--font-mono), monospace; letter-spacing: 0.04em; color: var(--accent); }
+.ex2__actions { display: flex; gap: var(--space-3); flex-wrap: wrap; margin-top: var(--space-4); }
+
+/* The plate — the work, contained (height-capped so a landscape never goes edge-to-edge) */
+.ex2__plate { margin: var(--space-8) 0 0; }
+.ex2__plate img { width: auto; max-width: 100%; max-height: 72vh; height: auto; display: block; background: var(--placeholder); }
+
+/* About — a serif lead at a reading measure */
+.ex2__about { margin-top: var(--space-9); max-width: 64ch; }
+.ex2__about p { margin: 0; font: var(--fw-lead) var(--t-lead) / var(--lh-lead) var(--font-display), serif; color: var(--ink-700); }
+
+/* Blocks (Details + related) sit under a quiet mono section label */
+.ex2__block { margin-top: var(--space-9); }
+.ex2__label { margin: 0 0 var(--space-5); font: 500 var(--t-eyebrow) var(--font-mono), monospace; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-500); }
+
+/* The ledger — a designed spec sheet: a strong top rule, hairline rows, mono tabular values */
+.ledger { max-width: 720px; margin: 0; border-top: 2px solid var(--ink-900); }
+.ledger > div {
+  display: grid; grid-template-columns: 150px 1fr; gap: var(--space-5);
+  padding: var(--space-4) 0; border-bottom: 1px solid var(--hairline); align-items: baseline;
+}
+.ledger dt { margin: 0; font: 500 var(--t-eyebrow) var(--font-mono), monospace; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-500); }
+.ledger dd { margin: 0; font: 400 0.9375rem var(--font-mono), monospace; color: var(--ink-900); line-height: 1.5; }
+.ledger dd a { color: var(--ink-900); }
+.ledger__line { display: block; }
+@media (max-width: 599px) {
+  .ledger > div { grid-template-columns: 1fr; gap: 2px; padding: var(--space-3) 0; }
+}

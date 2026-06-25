@@ -49,90 +49,90 @@ export default function ExhibitionProfilePage({ exhibition, gallery, allExhibiti
     .sort((a, b) => compareISO(a.endDate, b.endDate))
     .slice(0, 3)
 
+  const galleryHref = gallery ? `/gallery/${encodeURIComponent(gallery.slug)}` : null
+  const locality = gallery?.precinct || gallery?.suburb || exhibition.location || ''
+  const facts = [
+    openingNight && { label: 'Opening', value: openingNight },
+    gallery?.address && { label: 'Address', value: gallery.address },
+    gallery?.openingHours?.length && {
+      label: 'Hours',
+      value: gallery.openingHours.map((h) => (
+        <span key={h} className="ledger__line">
+          {h}
+        </span>
+      ))
+    }
+  ].filter(Boolean)
+
   return (
-    <div className="container profile">
+    <div className="container ex2">
       <Link className="back-link" href="/whats-on">
         ← What&apos;s On
       </Link>
 
-      <div className={`exhibition-detail__top${exhibition.imageUrl ? '' : ' exhibition-detail__top--noimg'}`}>
-        {exhibition.imageUrl ? (
-          <div className="exhibition-image">
-            <img src={exhibition.imageUrl} alt={exhibition.title} />
-          </div>
-        ) : null}
+      <header className="ex2__masthead">
+        <div className="ex2__kicker">
+          <span>{status ? STATUS_LABEL[status] : 'Exhibition'}</span>
+          {locality ? <span>{locality}</span> : null}
+        </div>
+        <h1 className="ex2__title">{exhibition.title}</h1>
+        {exhibition.artist ? <p className="ex2__artist">{exhibition.artist}</p> : null}
+        <p className="ex2__byline">
+          <span className="ex2__dates">{formatDateRange(exhibition.startDate, exhibition.endDate)}</span>
+          {gallery ? (
+            <Link className="ex2__gallery" href={galleryHref}>
+              {gallery.name} →
+            </Link>
+          ) : exhibition.galleryName ? (
+            <span className="ex2__gallery">{exhibition.galleryName}</span>
+          ) : null}
+        </p>
+        <div className="ex2__actions">
+          {mapsHref ? (
+            <a className="btn btn--ghost" href={mapsHref} target="_blank" rel="noreferrer">
+              Get directions
+            </a>
+          ) : null}
+          <ShareButton title={exhibition.title} />
+        </div>
+      </header>
 
-        <section className="profile-hero">
-          {status ? <span className={`tag tag--${status}`}>{STATUS_LABEL[status]}</span> : null}
-          <h1>{exhibition.title}</h1>
-          {exhibition.artist ? <p className="lead">{exhibition.artist}</p> : null}
-          <div className="profile-hero__meta">
-            <span className="meta">{formatDateRange(exhibition.startDate, exhibition.endDate)}</span>
-            {gallery ? (
-              <Link className="link-arrow" href={`/gallery/${encodeURIComponent(gallery.slug)}`}>
-                {gallery.name} →
-              </Link>
-            ) : (
-              <span className="meta">{exhibition.galleryName}</span>
-            )}
-          </div>
-          <div className="profile-hero__actions">
-            {mapsHref ? (
-              <a className="btn btn--ghost" href={mapsHref} target="_blank" rel="noreferrer">
-                Get directions
-              </a>
-            ) : null}
-            <ShareButton title={exhibition.title} />
-          </div>
-        </section>
-      </div>
+      {exhibition.imageUrl ? (
+        <figure className="ex2__plate">
+          <img src={exhibition.imageUrl} alt={exhibition.title} />
+        </figure>
+      ) : null}
 
       {exhibition.summary ? (
-        <section className="profile-section profile-about">
+        <section className="ex2__about">
           <p>{exhibition.summary}</p>
         </section>
       ) : null}
 
-      {openingNight || gallery?.address || gallery?.openingHours?.length ? (
-        <section className="profile-section">
-          <p className="eyebrow">Details</p>
-          <dl className="def-list">
-            {openingNight ? (
-              <div>
-                <dt>Opening</dt>
-                <dd>{openingNight}</dd>
+      {facts.length ? (
+        <section className="ex2__block">
+          <p className="ex2__label">Details</p>
+          <dl className="ledger">
+            {facts.map((f) => (
+              <div key={f.label}>
+                <dt>{f.label}</dt>
+                <dd>{f.value}</dd>
               </div>
-            ) : null}
-            {gallery?.address ? (
-              <div>
-                <dt>Address</dt>
-                <dd>{gallery.address}</dd>
-              </div>
-            ) : null}
-            {gallery?.openingHours?.length ? (
-              <div>
-                <dt>Hours</dt>
-                <dd>
-                  {gallery.openingHours.map((h) => (
-                    <div key={h}>{h}</div>
-                  ))}
-                </dd>
-              </div>
-            ) : null}
+            ))}
           </dl>
         </section>
       ) : null}
 
       {moreAtGallery.length ? (
-        <section className="profile-section">
-          <p className="eyebrow">More at {gallery?.name || 'this gallery'}</p>
+        <section className="ex2__block">
+          <p className="ex2__label">More at {gallery?.name || 'this gallery'}</p>
           <RelatedGrid items={moreAtGallery} galleries={allGalleries} today={today} />
         </section>
       ) : null}
 
       {closingSoon.length ? (
-        <section className="profile-section">
-          <p className="eyebrow">Closing soon across Sydney</p>
+        <section className="ex2__block">
+          <p className="ex2__label">Closing soon across Sydney</p>
           <RelatedGrid items={closingSoon} galleries={allGalleries} today={today} />
         </section>
       ) : null}
