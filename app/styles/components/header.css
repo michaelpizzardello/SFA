@@ -17,6 +17,9 @@
   }
 
   .site-header__brand {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
     font: 500 20px / 1 var(--font-display), serif;
     color: var(--ink-900);
     white-space: nowrap;

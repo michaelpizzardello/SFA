@@ -1,4 +1,4 @@
-/* UNLAYERED, imported after everything except compat.css.
+/* UNLAYERED, imported last.
    LAW: every rule that targets Leaflet/markercluster DOM (.leaflet-*, .marker-cluster*)
    lives here and ONLY here. Leaflet's vendor CSS is unlayered and beats any layered rule,
    so re-skins must be equally unlayered and imported later to win.

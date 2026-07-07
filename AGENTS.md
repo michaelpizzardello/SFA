@@ -176,6 +176,7 @@ These corrections are based on observed in-progress implementation and are manda
 - If unclear, choose the most standard, conservative pattern.
 
 ## Mandatory Guides (No Exceptions)
+- `DESIGN_SPEC.md` (2026-07-07) now owns ALL design/IA authority — it supersedes the design/visual content of every guide below except `MAP_MINIMAL_SPEC.md` and `EXHIBITION_ENTRY_RULES.md`; the PROCESS gates in this file remain in force.
 - `DESIGN_LOCK.md` sets benchmark direction against Ocula/Artsy structure.
 - `STYLE_GUIDE.md` defines exact visual tokens, spacing, type, and component rules.
 - `DESIGN_GUIDE.md` defines exact IA, screen workflows, behavior contracts, and acceptance criteria.

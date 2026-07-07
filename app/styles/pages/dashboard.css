@@ -1,5 +1,6 @@
 /* @layer pages — back-of-house shell + dashboard (.dash-*), DESIGN_SPEC §5.9–§5.13.
-   The console route group consumes the same shell classes (§5.14: "same shell"). */
+   SANCTIONED namespace-law exception (§6): the console route group consumes the .dash-*
+   shell classes defined here (§5.14: "same shell") — cross-page by design, not a leak. */
 @layer pages {
   /* ── shell (§5.9): <1024 top bar with scrollable links; ≥1024 left sidebar ── */
   .dash-shell {
@@ -38,7 +39,10 @@
   }
   .dash-nav__links {
     display: flex;
-    flex: 1;
+    /* never squeeze below content — the util group wraps to a second row instead;
+       only when links alone exceed the row do they scroll (max-width cap) */
+    flex: 1 0 auto;
+    max-width: 100%;
     gap: var(--space-2);
     overflow-x: auto;
     scrollbar-width: none;

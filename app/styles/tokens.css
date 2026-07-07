@@ -1,5 +1,5 @@
 /* Layer order for the whole cascade — declared once, here only (DESIGN_SPEC §6).
-   Unlayered CSS (legacy pages/*, vendor-overrides.css, compat.css) beats every layer. */
+   Unlayered CSS (vendor-overrides.css only) beats every layer. */
 @layer base, layout, components, pages;
 
 /* Tokens (DESIGN_SPEC §2 + §3 role sizes). :root only — no rules, no font-family tokens:

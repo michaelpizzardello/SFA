@@ -1,3 +1,6 @@
+> **SUPERSEDED by /DESIGN_SPEC.md (2026-07-07) — kept as history.**
+> This file is no longer design/IA authority; where it conflicts with DESIGN_SPEC.md, DESIGN_SPEC.md wins.
+
 # Sydney Art Finder - Design Guide (Mandatory)
 
 This guide defines information architecture, screen behavior, and UX contracts.

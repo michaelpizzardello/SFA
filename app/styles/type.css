@@ -54,8 +54,7 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .u-title-work,
-  .title-work {
+  .u-title-work {
     font: italic 400 var(--t-card-title) / 1.35 var(--font-text), sans-serif;
     color: var(--ink-900);
   }

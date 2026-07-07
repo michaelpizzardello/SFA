@@ -127,7 +127,10 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
                 <Link className="gxi-row" href={`/gallery/${encodeURIComponent(gallery.slug)}`}>
                   <span className="gxi-row__name">{gallery.name}</span>
                   <span className="gxi-row__meta">
-                    {[gallery.precinct, gallery.suburb].filter(Boolean).join(' · ')}
+                    {[gallery.precinct, gallery.suburb]
+                      .filter(Boolean)
+                      .filter((v, i, a) => a.indexOf(v) === i)
+                      .join(' · ')}
                     {summary?.current ? ` · ${summary.current} on now` : ''}
                   </span>
                 </Link>

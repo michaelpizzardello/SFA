@@ -1,3 +1,6 @@
+> **SUPERSEDED by /DESIGN_SPEC.md (2026-07-07) — kept as history.**
+> This file is no longer design/IA authority; where it conflicts with DESIGN_SPEC.md, DESIGN_SPEC.md wins.
+
 # Sydney Art Finder - What's On UI Polish Spec (Mandatory)
 
 This spec defines the exact professional pattern for the `/whats-on` header, filters, and exhibition list.

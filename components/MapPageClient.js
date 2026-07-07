@@ -120,7 +120,15 @@ function getViewportHeight() {
     return 844
   }
 
-  return window.visualViewport?.height || window.innerHeight || 844
+  const raw = window.visualViewport?.height || window.innerHeight || 844
+  if (window.matchMedia('(min-width: 768px)').matches) {
+    return raw
+  }
+
+  // <768 the fixed map shell bottom-insets by the visible tab bar (§4.3, map.css);
+  // detents must size to the shell, not the viewport, or the full sheet overshoots.
+  const tabbar = document.querySelector('.tabbar')
+  return raw - (tabbar?.offsetHeight ?? 0)
 }
 
 function createDetentHeights(viewportHeight, topOverlayBottom = TOP_OVERLAY_FALLBACK_BOTTOM) {
@@ -1380,8 +1388,10 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
           </div>
           <h2 className="map-selection-name">{selectedGallery.name}</h2>
           <p className="map-selection-meta">
-            {selectedGallery.precinct}
-            {selectedGallery.suburb ? ` | ${selectedGallery.suburb}` : ''}
+            {[selectedGallery.precinct, selectedGallery.suburb]
+              .filter(Boolean)
+              .filter((v, i, a) => a.indexOf(v) === i)
+              .join(' · ')}
           </p>
           <p className="map-selection-meta">{selectedGallery.address}</p>
 

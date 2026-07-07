@@ -3,7 +3,7 @@
 import { useState } from 'react'
 
 // Native share with a copy-link fallback. Small client atom used on detail pages.
-export default function ShareButton({ title, className = 'btn btn--ghost' }) {
+export default function ShareButton({ title, className = 'btn btn--text' }) {
   const [copied, setCopied] = useState(false)
 
   function share() {

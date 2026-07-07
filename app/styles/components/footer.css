@@ -32,6 +32,9 @@
     justify-items: start;
   }
   .site-footer__wordmark {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
     font: 500 16px / 1 var(--font-display), serif;
     color: var(--ink-900);
   }

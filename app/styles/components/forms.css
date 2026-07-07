@@ -113,10 +113,6 @@
     font: 500 var(--t-card-text) / 1.4 var(--font-text), sans-serif;
     color: var(--ink-900);
   }
-  .field-group {
-    display: grid;
-    gap: var(--space-2);
-  }
   .field-hint {
     font: 400 var(--t-card-text) / 1.4 var(--font-text), sans-serif;
     color: var(--ink-500);
@@ -154,48 +150,5 @@
     min-height: 0;
     margin: 0;
     accent-color: var(--ink-900);
-  }
-
-  /* search primitive (SearchField): bordered input + leading magnifier */
-  .search {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: 100%;
-    min-height: 44px;
-    padding: 0 12px;
-    background: var(--paper);
-    border: 1px solid var(--hairline-strong);
-    border-radius: var(--radius-control);
-    transition: border-color var(--dur-1) var(--ease);
-  }
-  .search:hover {
-    border-color: var(--ink-500);
-  }
-  .search:focus-within {
-    border-color: var(--accent);
-  }
-  .search__icon {
-    display: flex;
-    flex-shrink: 0;
-    color: var(--ink-400);
-  }
-  .search:focus-within .search__icon {
-    color: var(--ink-900);
-  }
-  .search__input {
-    flex: 1;
-    min-width: 0;
-    border: 0;
-    background: transparent;
-    outline: none;
-    font: 400 var(--t-input) / 1.4 var(--font-text), sans-serif;
-    color: var(--ink-900);
-  }
-  .search__input::placeholder {
-    color: var(--ink-400);
-  }
-  .search__input::-webkit-search-cancel-button {
-    -webkit-appearance: none;
   }
 }

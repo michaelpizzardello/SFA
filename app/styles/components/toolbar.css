@@ -12,11 +12,7 @@
     margin-bottom: var(--space-4);
     background: var(--paper);
   }
-  .index-toolbar--slim {
-    margin-bottom: var(--space-4);
-  }
   /* search sits as one quiet control, not the centerpiece */
-  .index-toolbar .search,
   .index-toolbar .field {
     flex: 0 1 300px;
     max-width: 320px;
@@ -68,7 +64,6 @@
     .index-toolbar {
       position: static;
     }
-    .index-toolbar .search,
     .index-toolbar .field {
       flex-basis: 100%;
       max-width: none;

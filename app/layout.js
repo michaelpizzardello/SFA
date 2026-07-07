@@ -4,8 +4,8 @@ import 'leaflet/dist/leaflet.css'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 
-// Cascade (DESIGN_SPEC §6): layered tokens/base/layout/components, then the (still-unlayered)
-// legacy page CSS, then unlayered vendor-overrides + compat shim — imported last so they win.
+// Cascade (DESIGN_SPEC §6): layered tokens/base/layout/components/pages,
+// then unlayered vendor-overrides — imported last so Leaflet re-skins win.
 import './styles/tokens.css'
 import './styles/reset.css'
 import './styles/type.css'
@@ -37,9 +37,8 @@ import './styles/pages/saved.css'
 import './styles/pages/auth.css'
 import './styles/pages/dashboard.css'
 import './styles/pages/console.css'
-// Unlayered last words
+// Unlayered last word
 import './styles/vendor-overrides.css'
-import './styles/compat.css'
 
 import SiteNav from '../components/SiteNav'
 import SiteFooter from '../components/SiteFooter'
