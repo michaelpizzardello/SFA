@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { formatDateRange } from '../lib/utils/date'
 import { getExhibitionSlug } from '../lib/utils/exhibitions'
 import { splitTitle } from '../lib/utils/splitTitle'
+import CardImage from './CardImage'
 import ExhibitionCard from './ExhibitionCard'
 import FollowButton from './FollowButton'
 import GalleryTabs from './GalleryTabs'
@@ -101,7 +102,7 @@ export default function GalleryProfilePage({ gallery, groupedExhibitions }) {
 
         {cover ? (
           <div className="gxp-cover">
-            <img src={cover} alt="" />
+            <CardImage className="gxp-cover__img" src={cover} />
           </div>
         ) : null}
 

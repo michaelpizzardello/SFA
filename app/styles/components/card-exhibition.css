@@ -35,6 +35,7 @@
   }
   .ex__placeholder-label {
     position: relative;
+    margin: auto; /* centered in the tile (§4.6) */
     font: 400 var(--t-eyebrow) / 1 var(--font-mono), monospace;
     text-transform: uppercase;
     letter-spacing: 0.14em;

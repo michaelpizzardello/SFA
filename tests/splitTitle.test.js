@@ -25,14 +25,44 @@ describe('splitTitle', () => {
     })
   })
 
-  it('leaves a plain title alone when artist is empty (never splits unknown "X: Y")', () => {
-    expect(splitTitle('', 'Body Language: Ten Years')).toEqual({
-      artist: '',
-      title: 'Body Language: Ten Years'
+  it('parses the solo "Artist: Title" convention when artist is empty (first colon wins)', () => {
+    expect(splitTitle('', 'Billy Bain: By the River')).toEqual({
+      artist: 'Billy Bain',
+      title: 'By the River'
     })
-    expect(splitTitle(undefined, 'Quiet Rooms')).toEqual({
+    expect(splitTitle('', 'Edward Woodley: Onsite Group Exhibition: Beyond Nature')).toEqual({
+      artist: 'Edward Woodley',
+      title: 'Onsite Group Exhibition: Beyond Nature'
+    })
+  })
+
+  it('treats a pipe-separated title with no colon as a two-artist line without subtitle', () => {
+    expect(splitTitle('', 'Brett McMahon | Anton Forde')).toEqual({
+      artist: 'Brett McMahon | Anton Forde',
+      title: ''
+    })
+    expect(splitTitle('', 'Jordan Gogos | Kalisolaite ʻUhila | Tina Stefanou')).toEqual({
+      artist: 'Jordan Gogos | Kalisolaite ʻUhila | Tina Stefanou',
+      title: ''
+    })
+  })
+
+  it('leaves titles without the documented separators alone', () => {
+    expect(splitTitle('', 'Quiet Rooms')).toEqual({ artist: '', title: 'Quiet Rooms' })
+    expect(splitTitle('', 'ILLUMINATE / Studio ARTES')).toEqual({
       artist: '',
-      title: 'Quiet Rooms'
+      title: 'ILLUMINATE / Studio ARTES'
+    })
+    expect(splitTitle(undefined, 'Archibald, Wynne and Sulman Prizes 2026')).toEqual({
+      artist: '',
+      title: 'Archibald, Wynne and Sulman Prizes 2026'
+    })
+  })
+
+  it('normalizes embedded newlines before parsing', () => {
+    expect(splitTitle('', 'Edward Woodley: Onsite\nGroup Exhibition: Beyond Nature')).toEqual({
+      artist: 'Edward Woodley',
+      title: 'Onsite Group Exhibition: Beyond Nature'
     })
   })
 

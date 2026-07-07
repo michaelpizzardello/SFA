@@ -232,8 +232,19 @@ One markup serves grid and list (kept). Ladder (Ocula's exact order, ref_ocula-e
   from title case-insensitively (kills the double-print).
 - `artist` empty AND title matches `^Group Exhibition:\s*(.+)` → line 1 = "GROUP EXHIBITION",
   line 2 = italic remainder (documented convention — EXHIBITION_ENTRY_RULES).
-- Otherwise → no artist line; full title italic. Never split an unknown "X: Y" — honesty over
-  symmetry. Unit cases required before the masthead ships (§7 Stage A).
+- `artist` empty AND title is pipe-separated names with no colon (`A | B [| C…]`) → the whole
+  title is the artist line, NO subtitle (Ocula's two-artist grammar; EXHIBITION_ENTRY_RULES
+  two-artist convention).
+- `artist` empty AND title is `X: Y` with a ≤60-char prefix → X = artist line, Y = italic
+  title; the FIRST colon wins (`A: B: C` → artist A, title `B: C`).
+- Otherwise → no artist line; full title italic.
+- Decision (2026-07-07, supersedes "never split an unknown X: Y"): the `artist` field is empty
+  across live data while titles consistently follow the EXHIBITION_ENTRY_RULES naming
+  (`Artist: Title` solo · `Artist One | Artist Two` · `Group Exhibition: Title`), so the
+  original conservatism suppressed the UPPERCASE artist line — the core Ocula signature — on
+  effectively every card. Splitting on the documented conventions IS the honest read of this
+  dataset. Titles without those separators still never split. Unit cases in
+  tests/splitTitle.test.js cover all branches.
 
 Degradation: no image → precinct tile; no artist → 3-line ladder; no endDate → date fallback
 text; card never shows status (section grouping carries it) except the ≤7-day urgency line.
