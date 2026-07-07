@@ -4,15 +4,14 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import InstagramIcon from './icons/InstagramIcon'
 import { SAF_INSTAGRAM } from '../lib/site'
+import { isChromelessRoute } from '../lib/utils/chrome'
 
-// Public footer. Gallery access lives HERE (not the top header) — the public audience never signs in;
-// galleries do, occasionally. Auth-aware so the link reflects the actual state.
+// Public footer (light, §4.2) — rendered as a SIBLING of <main>. Gallery access lives HERE
+// (not the top header) — the public audience never signs in; galleries do, occasionally.
 // (Admin console is intentionally NOT here — it's internal tooling reached from the dashboard.)
 export default function SiteFooter({ signedIn = false }) {
   const pathname = usePathname()
-  const isAppRoute = /^\/(dashboard|login|forgot-password|reset-password|console)/.test(pathname)
-  const isMapRoute = pathname.startsWith('/map')
-  if (isAppRoute || isMapRoute) return null
+  if (isChromelessRoute(pathname) || pathname.startsWith('/map')) return null
 
   const year = new Date().getFullYear()
 

@@ -1,0 +1,103 @@
+/* Layer order for the whole cascade — declared once, here only (DESIGN_SPEC §6).
+   Unlayered CSS (legacy pages/*, vendor-overrides.css, compat.css) beats every layer. */
+@layer base, layout, components, pages;
+
+/* Tokens (DESIGN_SPEC §2 + §3 role sizes). :root only — no rules, no font-family tokens:
+   --font-display / --font-text / --font-mono are set DIRECTLY by next/font in app/layout.js. */
+:root {
+  /* Neutrals (cool ramp) */
+  --paper: #ffffff;
+  --band: #fafafa;
+  --surface-muted: #f7f7f7;
+  --placeholder: #ededed;
+  --hairline: #e5e5e5;
+  --hairline-strong: #cccccc;
+  --ink-900: #0d0d0d;
+  --ink-700: #444444;
+  --ink-500: #6e6e6e;
+  --ink-400: #999999; /* NON-TEXT only */
+  --ink-300: #cccccc;
+
+  /* Accent + status */
+  --accent: #1023D7;
+  --accent-hover: #0A1C7B;
+  --accent-press: #050E3E;
+  --accent-tint: #E6E7F5; /* ::selection + selected map-sheet row ONLY */
+  --on-accent: #ffffff;
+  --ok: #2f6b4f;
+  --danger: #b42318;
+  --scrim: rgba(0, 0, 0, 0.45);
+  --scrim-soft: rgba(0, 0, 0, 0.20);
+
+  /* Spacing (4px base) */
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px;
+  --space-6: 32px; --space-7: 40px; --space-8: 48px; --space-9: 64px; --space-10: 80px;
+  --space-11: 120px;
+
+  /* Layout */
+  --container: 1280px;
+  --container-narrow: 640px;
+  --gutter: clamp(16px, 4vw, 40px);
+  --grid-col-gap: 20px;
+  --grid-row-gap: 40px;
+  --header-h: 56px; /* media-swapped below — every sticky offset computes from this */
+  --tabbar-h: 56px;
+  --boh-nav-w: 220px;
+
+  /* Radii */
+  --radius-control: 2px;
+  --radius-pill: 999px; /* map floating controls ONLY */
+  --radius-sheet: 12px 12px 0 0;
+
+  /* Elevation (overlays only — never cards/images/tables/bands) */
+  --shadow-pop: 0 12px 40px -16px rgba(0, 0, 0, 0.22);
+  --shadow-sheet: 0 -8px 40px -16px rgba(0, 0, 0, 0.24);
+
+  /* z ledger — the only legal source of z-index values */
+  --z-toolbar: 20;
+  --z-map-ui: 30;
+  --z-boh-nav: 40;
+  --z-map-ctl: 45;
+  --z-search-scrim: 48;
+  --z-search: 49;
+  --z-header: 50;
+  --z-map-sheet: 50;
+  --z-tabbar: 60;
+  --z-map-card: 62;
+  --z-scrim: 70;
+  --z-sheet: 71;
+  --z-map-filter: 80;
+  --z-map-full: 90;
+  --z-skip: 100;
+
+  /* Motion */
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --dur-1: 120ms;
+  --dur-2: 200ms;
+  --dur-3: 320ms;
+
+  /* Type role sizes (§3 — the complete set; no other fixed sizes exist).
+     Utility register ≤20px, editorial register ≥28px; nothing between. */
+  --t-page-title: 11px;
+  --t-eyebrow: 11px;
+  --t-sup: 11px;
+  --t-mono: 12px;
+  --t-card-artist: 13px;
+  --t-card-title: 13px;
+  --t-card-text: 13px;
+  --t-ui: 13px;
+  --t-h3: 15px;
+  --t-body: 15px;
+  --t-serif: 16px;
+  --t-input: 16px;
+  --t-h2: 20px;
+  --t-masthead-sub: 20px;
+  --t-stat: 28px;
+  --t-masthead: clamp(28px, 5vw, 48px);
+}
+
+@media (min-width: 768px) {
+  :root {
+    --header-h: 64px;
+  }
+}

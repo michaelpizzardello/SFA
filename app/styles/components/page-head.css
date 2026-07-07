@@ -1,0 +1,43 @@
+/* @layer components — page heads (§4.18): public index h1 + back-of-house kicker/h1/action. */
+@layer components {
+  /* public index h1: "What's On", "Galleries", "Saved" */
+  .page-title {
+    font: 600 var(--t-page-title) / 1.5 var(--font-text), sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-900);
+    margin: var(--space-7) 0 var(--space-5);
+  }
+
+  /* back-of-house head: kicker → 20px h1 → one primary action right */
+  .page-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin: var(--space-7) 0 var(--space-6);
+  }
+  .page-head__main {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .page-head__kicker {
+    font: 500 var(--t-eyebrow) / 1 var(--font-mono), monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-500);
+  }
+  .page-head__title {
+    font: 500 var(--t-h2) / 1.3 var(--font-text), sans-serif;
+    color: var(--ink-900);
+  }
+  .page-head__sub {
+    font: 400 var(--t-mono) / 1.5 var(--font-mono), monospace;
+    color: var(--ink-500);
+    font-variant-numeric: tabular-nums;
+  }
+  .page-head__action {
+    margin-left: auto;
+  }
+}

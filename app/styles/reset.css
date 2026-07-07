@@ -1,0 +1,78 @@
+/* @layer base — reset, media defaults, a11y utilities. No component or page rules here. */
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    min-width: 320px;
+    overflow-x: clip;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink-900);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  img {
+    max-width: 100%;
+    display: block;
+  }
+
+  button {
+    font: inherit;
+  }
+
+  ::selection {
+    background: var(--accent-tint);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .skip-link {
+    position: absolute;
+    left: var(--space-3);
+    top: -60px;
+    z-index: var(--z-skip);
+    background: var(--ink-900);
+    color: var(--paper);
+    padding: 10px 16px;
+    border-radius: var(--radius-control);
+    font: 600 var(--t-ui) / 1 var(--font-text), sans-serif;
+    transition: top var(--dur-2) var(--ease);
+  }
+  .skip-link:focus-visible {
+    top: var(--space-3);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

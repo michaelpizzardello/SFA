@@ -9,8 +9,10 @@ function monogram(name) {
   return (words[0][0] + words[words.length - 1][0]).toUpperCase()
 }
 
+// §4.8: cover or monogram tile (never logoUrl — field dead across all galleries),
+// plain sentence-case name, mono "precinct · suburb", mono on-view line (omitted when neither).
 export default function GalleryCard({ gallery, summary }) {
-  const image = gallery.coverUrl || gallery.logoUrl
+  const image = gallery.coverUrl
   const sub = [gallery.precinct, gallery.suburb].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i).join(' · ')
   const onView = summary?.current
     ? `${summary.current} show${summary.current > 1 ? 's' : ''} on now`

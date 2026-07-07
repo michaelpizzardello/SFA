@@ -1,0 +1,25 @@
+/* @layer components — save star (§4.6.3). Base look only; each card positions it itself. */
+@layer components {
+  .card-save {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--ink-400);
+    cursor: pointer;
+    transition: color var(--dur-1) var(--ease);
+  }
+  .card-save svg {
+    width: 20px;
+    height: 20px;
+  }
+  .card-save:hover {
+    color: var(--ink-700);
+  }
+  .card-save.is-saved {
+    color: var(--accent);
+  }
+}

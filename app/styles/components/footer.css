@@ -1,0 +1,91 @@
+/* @layer components — public footer (§4.2). White, light; sibling of <main>. */
+@layer components {
+  .site-footer {
+    margin-top: var(--space-9);
+    background: var(--paper);
+    border-top: 1px solid var(--hairline-strong);
+    padding-top: var(--space-9);
+    padding-bottom: var(--space-7);
+  }
+
+  .site-footer__inner {
+    display: grid;
+    gap: var(--space-7);
+    padding-bottom: var(--space-8);
+  }
+  @media (min-width: 480px) {
+    .site-footer__inner {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (min-width: 768px) {
+    .site-footer__inner {
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: var(--space-8);
+    }
+  }
+
+  .site-footer__brand {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+    justify-items: start;
+  }
+  .site-footer__wordmark {
+    font: 500 16px / 1 var(--font-display), serif;
+    color: var(--ink-900);
+  }
+  .site-footer__tag {
+    font: 400 var(--t-card-text) / 1.4 var(--font-text), sans-serif;
+    color: var(--ink-500);
+    max-width: 32ch;
+  }
+  .site-footer__social {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    margin-left: -12px;
+    color: var(--ink-500);
+  }
+  .site-footer__social:hover {
+    color: var(--ink-900);
+  }
+
+  .site-footer__col {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+  }
+  .site-footer__label {
+    font: 500 var(--t-eyebrow) / 1 var(--font-mono), monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-500);
+    margin-bottom: var(--space-3);
+  }
+  .site-footer__col a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    font: 400 var(--t-card-text) / 1 var(--font-text), sans-serif;
+    color: var(--ink-700);
+  }
+  .site-footer__col a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .site-footer__base {
+    display: flex;
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--hairline);
+  }
+
+  @media (max-width: 767px) {
+    /* clear the fixed mobile tab bar */
+    .site-footer {
+      padding-bottom: calc(var(--space-7) + var(--tabbar-h) + env(safe-area-inset-bottom));
+    }
+  }
+}

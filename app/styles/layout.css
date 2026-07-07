@@ -1,99 +1,176 @@
-/* Shell, container, grids, section heads, footer */
-.shell {
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-}
-.shell-main {
-  flex: 1;
-  width: 100%;
-  /* the footer (dark band) is the last child, so no padding below it — avoids a white strip
-     under the footer. Mobile tab-bar clearance is handled on the footer itself. */
-}
+/* @layer layout — structural primitives, each defined ONCE here (DESIGN_SPEC §6):
+   .shell .container(--narrow) .section .band .section-head .card-grid .ledger .stat-row
+   .index-list .date-group .results-meta .empty-state. Page files must not restyle these. */
+@layer layout {
+  .shell {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+  .shell-main {
+    flex: 1;
+    width: 100%;
+  }
 
-.container {
-  width: 100%;
-  max-width: var(--container);
-  margin-inline: auto;
-  padding-inline: var(--gutter);
-}
-.container-narrow { max-width: var(--container-narrow); }
+  .container {
+    width: 100%;
+    max-width: var(--container);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+  .container-narrow {
+    max-width: var(--container-narrow);
+  }
 
-.section {
-  margin-top: var(--space-9);
-}
-@media (min-width: 900px) {
-  .section { margin-top: var(--space-11); }
-}
+  .section {
+    margin-top: var(--space-9);
+  }
+  @media (min-width: 768px) {
+    .section {
+      margin-top: var(--space-11);
+    }
+  }
 
-.section-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: var(--space-4);
-  margin-bottom: var(--space-6);
-  padding-bottom: var(--space-3);
-  border-bottom: 1px solid var(--hairline);
-}
-.section-head .eyebrow { margin-bottom: 4px; }
+  /* band (§4.5) — full-bleed alternator; empty bands are never rendered */
+  .band {
+    background: var(--band);
+    border-top: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline);
+    padding-block: var(--space-9);
+  }
+  .band .section,
+  .band .section:first-child {
+    margin-top: 0;
+  }
 
-/* Image-forward card grid (Artsy gutters: tight cols, airy rows) */
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  column-gap: var(--grid-col-gap);
-  row-gap: var(--grid-row-gap);
-}
-@media (min-width: 600px) { .card-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (min-width: 1440px) { .card-grid { grid-template-columns: repeat(4, 1fr); } }
+  /* section-head (§4.4) — bare, no hairline; rhythm comes from bands */
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
+  }
+  .section-head h2 {
+    font: 500 var(--t-h2) / 1.3 var(--font-text), sans-serif;
+    color: var(--ink-900);
+  }
 
-.results-meta {
-  font: 400 var(--t-meta) / var(--lh-meta) var(--font-mono), monospace;
-  color: var(--ink-500);
-}
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: var(--grid-col-gap);
+    row-gap: var(--grid-row-gap);
+  }
+  @media (min-width: 768px) {
+    .card-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (min-width: 1280px) {
+    .card-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
 
-.empty-state {
-  padding: var(--space-9) 0;
-  color: var(--ink-500);
-  font: italic var(--fw-lead) var(--t-lead) / var(--lh-lead) var(--font-display), serif;
-}
+  /* ledger (§5.5) — the spec-sheet def-list */
+  .ledger {
+    margin: 0;
+    border-top: 2px solid var(--ink-900);
+  }
+  .ledger > div {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: var(--space-4);
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .ledger dt {
+    font: 500 var(--t-eyebrow) / 1.5 var(--font-mono), monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-500);
+  }
+  .ledger dd {
+    margin: 0;
+    font: 400 var(--t-card-text) / 1.5 var(--font-mono), monospace;
+    color: var(--ink-900);
+    font-variant-numeric: tabular-nums;
+  }
+  .ledger__line {
+    display: block;
+  }
+  @media (max-width: 479px) {
+    .ledger > div {
+      grid-template-columns: 1fr;
+      gap: var(--space-1);
+    }
+  }
 
-/* Footer (dark band) — gallery access lives here, not the top header */
-.site-footer {
-  margin-top: var(--space-9);
-  background: var(--ink-section);
-  color: var(--on-section);
+  /* stat row (§4.19) — hairline-ruled grid; 1px gaps painted by the --hairline background.
+     Column count set by the consumer via --stat-cols. */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(var(--stat-cols, 2), 1fr);
+    gap: 1px;
+    background: var(--hairline);
+    border-top: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline);
+  }
+  .stat-cell {
+    background: var(--paper);
+    padding: var(--space-5) var(--space-4);
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+  }
+  a.stat-cell:hover {
+    background: var(--surface-muted);
+  }
+  .stat-cell__count {
+    font: 400 var(--t-stat) / 1.1 var(--font-mono), monospace;
+    color: var(--ink-900);
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-cell__label {
+    font: 500 var(--t-eyebrow) / 1 var(--font-mono), monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-500);
+  }
+
+  .index-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .index-list > li {
+    margin: 0;
+  }
+
+  .date-group {
+    font: 500 var(--t-eyebrow) / 1 var(--font-mono), monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-500);
+    margin: var(--space-7) 0 var(--space-2);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--hairline-strong);
+  }
+
+  .results-meta {
+    font: 400 var(--t-mono) / 1.5 var(--font-mono), monospace;
+    color: var(--ink-500);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* empty state (§4.16) — ONE recipe: quiet sentence + one reset control */
+  .empty-state {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-4);
+    padding: var(--space-9) 0;
+    font: 400 var(--t-body) / 1.55 var(--font-text), sans-serif;
+    color: var(--ink-500);
+  }
 }
-/* clear the fixed mobile tab bar so the footer's last row isn't hidden behind it */
-@media (max-width: 899px) {
-  .site-footer__base { padding-bottom: calc(var(--space-5) + var(--mobile-tabbar-height)); }
-}
-.site-footer__inner {
-  display: grid;
-  gap: var(--space-7);
-  padding-block: var(--space-9);
-}
-@media (min-width: 700px) {
-  .site-footer__inner { grid-template-columns: 1.6fr 1fr 1fr; gap: var(--space-8); }
-}
-.site-footer__brand { display: grid; gap: var(--space-3); align-content: start; }
-.site-footer__wordmark { font: 500 1.25rem var(--font-display), serif; color: var(--on-section); }
-.site-footer__tag { font: 400 var(--t-small) var(--font-text), sans-serif; color: var(--on-section-muted); max-width: 32ch; }
-.site-footer__col { display: grid; gap: var(--space-3); align-content: start; }
-.site-footer__label {
-  font: 500 var(--t-eyebrow) / 1 var(--font-mono), monospace;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--on-section-muted);
-  margin: 0;
-}
-.site-footer a { color: var(--on-section); font: 400 var(--t-small) var(--font-text), sans-serif; }
-.site-footer a:hover { text-decoration: underline; text-underline-offset: 3px; }
-.site-footer__social { display: inline-flex; color: var(--on-section-muted); margin-top: var(--space-1); }
-.site-footer__social:hover { color: var(--on-section); }
-.site-footer__base {
-  display: flex;
-  padding-block: var(--space-5);
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-}
-.site-footer__base .meta { color: var(--on-section-muted); }

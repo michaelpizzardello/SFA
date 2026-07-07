@@ -20,7 +20,7 @@ export default function SaveButton({ kind, slug, label = '', className = 'card-s
         toggle(slug)
       }}
     >
-      <StarIcon filled={saved} />
+      <StarIcon filled={saved} size={20} />
     </button>
   )
 }

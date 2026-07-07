@@ -1,39 +1,74 @@
-/* GalleryCard — monogram tile when no cover (not a circle: a square plate). */
-.gal { position: relative; }
-.gal__link { display: flex; flex-direction: column; gap: var(--space-3); color: inherit; text-decoration: none; }
-.gal__media {
-  position: relative;
-  aspect-ratio: 3 / 2;
-  background: var(--placeholder);
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-}
-/* no-cover plate: a designed tile, not a missing-image box */
-.gal__media--empty { background: var(--surface-muted); }
-.gal__img {
-  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
-  opacity: 0; transition: opacity var(--dur-slow) var(--ease);
-}
-.gal__img.loaded { opacity: 1; }
-.gal__monogram {
-  font: 500 clamp(2.5rem, 6vw, 3.5rem) / 1 var(--font-display), serif;
-  color: var(--ink-400);
-  letter-spacing: 0.01em;
-}
-.gal__body { display: grid; gap: 2px; padding-top: 2px; }
-.gal__name {
-  font: 600 0.875rem / 1.3 var(--font-text), sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--ink-900);
-  margin: 0;
-}
-.gal__onview { font: 400 var(--t-meta) / var(--lh-meta) var(--font-mono), monospace; color: var(--ink-700); margin: 0; }
-.gal__onview--soon { color: var(--ink-500); }
-.gal:hover .gal__name { text-decoration: underline; text-underline-offset: 3px; }
-.gal__meta {
-  font: 400 var(--t-meta) / var(--lh-meta) var(--font-mono), monospace;
-  color: var(--ink-500);
-  margin: 0;
+/* @layer components — GalleryCard (§4.8) + monogram tile (§4.9).
+   Gallery names are plain sentence case, never uppercase (uppercase = artist register). */
+@layer components {
+  .gal {
+    position: relative;
+  }
+  .gal__link {
+    display: flex;
+    flex-direction: column;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .gal__media {
+    position: relative;
+    aspect-ratio: 3 / 2;
+    background: var(--placeholder);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+  .gal__media--empty {
+    background: var(--surface-muted);
+  }
+  /* inside a band the tile swaps to --placeholder to stay distinct from the band fill */
+  .band .gal__media--empty {
+    background: var(--placeholder);
+  }
+  .gal__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity var(--dur-3) var(--ease);
+  }
+  .gal__img.loaded {
+    opacity: 1;
+  }
+  .gal__monogram {
+    font: 400 var(--t-stat) / 1 var(--font-display), serif;
+    letter-spacing: 0.05em;
+    color: var(--ink-400);
+  }
+
+  .gal__body {
+    display: grid;
+    gap: 4px;
+    padding-top: 10px;
+    padding-right: 40px; /* reserves the save-star hit area */
+  }
+  .gal__name {
+    font: 500 var(--t-card-text) / 1.35 var(--font-text), sans-serif;
+    color: var(--ink-900);
+  }
+  .gal__meta,
+  .gal__onview {
+    font: 400 var(--t-mono) / 1.5 var(--font-mono), monospace;
+    color: var(--ink-500);
+    font-variant-numeric: tabular-nums;
+  }
+  .gal:hover .gal__name {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .gal .card-save {
+    position: absolute;
+    top: 0;
+    right: -8px;
+    margin-top: calc(66.667% - 6px);
+  }
 }

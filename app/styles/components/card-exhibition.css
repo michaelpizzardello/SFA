@@ -1,67 +1,130 @@
-/* ExhibitionCard — one markup serves grid-card AND list-row.
-   Title-first (locked guide + real schema). Single --placeholder tile; no per-entity tints. */
-.ex { position: relative; }
-.ex__link {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  color: inherit;
-  text-decoration: none;
-}
-.ex__media {
-  position: relative;
-  aspect-ratio: 3 / 2;
-  background: var(--placeholder);
-  overflow: hidden;
-  display: flex;
-  align-items: flex-end;
-  padding: var(--space-3);
-}
-.ex__img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  transition: opacity var(--dur-slow) var(--ease);
-}
-.ex__img.loaded { opacity: 1; }
-.ex__placeholder-label {
-  position: relative;
-  font: 400 var(--t-eyebrow) / 1 var(--font-mono), monospace;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--ink-400);
-}
-.ex__body { display: grid; gap: 3px; }
-.ex__tag { margin-bottom: 5px; }
-.ex__title { margin: 0; }
-.ex__artist { font: 500 var(--t-card-name) var(--font-text), sans-serif; color: var(--ink-700); margin: 0; }
-.ex__gallery { font: 400 var(--t-card-name) var(--font-text), sans-serif; color: var(--ink-700); margin: 0; }
-.ex__meta { margin: 0; }
-.ex:hover .ex__title { text-decoration: underline; text-underline-offset: 3px; }
-
-/* LIST VIEW: hide media, pure type; mono date floats right at md+ */
-.index-list { list-style: none; margin: 0; padding: 0; }
-.index-list > li { margin: 0; }
-.index-list .ex {
-  padding: var(--space-5) 0;
-  border-bottom: 1px solid var(--hairline);
-}
-.index-list .ex__link { gap: 4px; }
-.index-list .ex__media { display: none; }
-.index-list .card-save { display: none; }
-@media (min-width: 900px) {
-  .index-list .ex__body {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    column-gap: var(--space-6);
-    align-items: baseline;
+/* @layer components — ExhibitionCard (§4.6 grid / §4.7 list row). One markup, two modes.
+   Ladder: urgency → ARTIST → italic title → gallery → mono dates → mono location.
+   This file also places .card-save inside the card (the card owns its star's position). */
+@layer components {
+  .ex {
+    position: relative;
   }
-  .index-list .ex__tag { grid-column: 1 / -1; }
-  .index-list .ex__title { grid-column: 1; font-size: 1.25rem; }
-  .index-list .ex__artist,
-  .index-list .ex__gallery { grid-column: 1; }
-  .index-list .ex__meta { grid-column: 2; grid-row: 2; text-align: right; white-space: nowrap; }
+  .ex__link {
+    display: flex;
+    flex-direction: column;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .ex__media {
+    position: relative;
+    aspect-ratio: 3 / 2;
+    background: var(--placeholder);
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    padding: var(--space-3);
+  }
+  .ex__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity var(--dur-3) var(--ease);
+  }
+  .ex__img.loaded {
+    opacity: 1;
+  }
+  .ex__placeholder-label {
+    position: relative;
+    font: 400 var(--t-eyebrow) / 1 var(--font-mono), monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-400);
+  }
+
+  .ex__body {
+    display: grid;
+    gap: 4px;
+    padding-top: 10px;
+    padding-right: 40px; /* reserves the save-star hit area */
+  }
+  .ex__urgency {
+    font: 500 var(--t-eyebrow) / 1.5 var(--font-mono), monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-900); /* a static fact, not an interaction — ink, never accent */
+  }
+  .ex__artist {
+    font: 500 var(--t-card-artist) / 1.35 var(--font-text), sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ink-900);
+  }
+  .ex__title {
+    font: italic 400 var(--t-card-title) / 1.35 var(--font-text), sans-serif;
+    color: var(--ink-900);
+  }
+  .ex__gallery {
+    font: 400 var(--t-card-text) / 1.4 var(--font-text), sans-serif;
+    color: var(--ink-700);
+  }
+  .ex__dates,
+  .ex__location {
+    font: 400 var(--t-mono) / 1.5 var(--font-mono), monospace;
+    color: var(--ink-500);
+    font-variant-numeric: tabular-nums;
+  }
+  .ex:hover .ex__title {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* save star: sibling of the link, top-right of the text block (media is 3:2, so the
+     text block starts at 66.667% of the card width — margin % resolves against width) */
+  .ex .card-save {
+    position: absolute;
+    top: 0;
+    right: -8px;
+    margin-top: calc(66.667% - 6px);
+  }
+
+  /* ---- list row (§4.7): media + star hidden; ≥768 two columns, facts right ---- */
+  .index-list .ex {
+    padding: var(--space-5) 0;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .index-list .ex__media,
+  .index-list .card-save {
+    display: none;
+  }
+  .index-list .ex__body {
+    padding: 0;
+  }
+  @media (min-width: 768px) {
+    .index-list .ex__body {
+      grid-template-columns: 1fr auto;
+      column-gap: var(--space-6);
+      align-items: baseline;
+    }
+    .index-list .ex__urgency,
+    .index-list .ex__artist,
+    .index-list .ex__title,
+    .index-list .ex__gallery {
+      grid-column: 1;
+    }
+    .index-list .ex__title {
+      font-size: 15px;
+    }
+    .index-list .ex__dates {
+      grid-column: 2;
+      grid-row: 1;
+      text-align: right;
+      white-space: nowrap;
+    }
+    .index-list .ex__location {
+      grid-column: 2;
+      grid-row: 2;
+      text-align: right;
+      white-space: nowrap;
+    }
+  }
 }

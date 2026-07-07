@@ -1,0 +1,85 @@
+/* @layer components — back-of-house ledger table (§4.17). Ledger rows, not boxed tables.
+   Column template is supplied by the page layer via --table-cols on .table. */
+@layer components {
+  .table {
+    width: 100%;
+  }
+  .table__head,
+  .table__row {
+    display: grid;
+    grid-template-columns: var(--table-cols, 1fr);
+    gap: var(--space-4);
+    align-items: center;
+  }
+  .table__head {
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--hairline-strong);
+    font: 500 var(--t-eyebrow) / 1 var(--font-mono), monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-500);
+  }
+  .table__row {
+    min-height: 56px;
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--hairline);
+    transition: background var(--dur-1) var(--ease);
+  }
+  .table__row:hover {
+    background: var(--surface-muted);
+  }
+
+  .table__thumb {
+    width: 64px;
+    aspect-ratio: 3 / 2;
+    background: var(--placeholder);
+    object-fit: cover;
+  }
+  .table__primary {
+    font: 500 var(--t-card-text) / 1.4 var(--font-text), sans-serif;
+    color: var(--ink-900);
+  }
+  .table__primary--work {
+    font: italic 400 var(--t-card-text) / 1.4 var(--font-text), sans-serif;
+  }
+  .table__fact {
+    font: 400 var(--t-mono) / 1.5 var(--font-mono), monospace;
+    color: var(--ink-500);
+    font-variant-numeric: tabular-nums;
+  }
+  /* status is a word — ink differentiation only, never hue */
+  .table__status {
+    font: 500 var(--t-eyebrow) / 1 var(--font-mono), monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-900);
+  }
+  .table__status--muted {
+    color: var(--ink-500);
+  }
+  .table__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    justify-self: end;
+  }
+
+  @media (max-width: 480px) {
+    /* rows re-stack: thumb left, meta under title, actions row below */
+    .table__head {
+      display: none;
+    }
+    .table__row {
+      grid-template-columns: auto 1fr;
+      row-gap: var(--space-1);
+      padding: var(--space-3) 0;
+    }
+    .table__thumb {
+      grid-row: 1 / span 2;
+    }
+    .table__actions {
+      grid-column: 1 / -1;
+      justify-self: start;
+    }
+  }
+}

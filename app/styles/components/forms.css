@@ -1,104 +1,201 @@
-/* Fields / inputs.
+/* @layer components — fields (§4.11) + the search primitive.
    Two supported shapes:
    (a) bare control:  <input class="field"> / <select class="field"> / <textarea class="field">
-   (b) label wrapper: <label class="field"><span>Label</span><input/></label>   (auth + dashboard) */
+   (b) label wrapper: <label class="field"><span>Label</span><input/></label> */
+@layer components {
+  input.field,
+  select.field,
+  textarea.field,
+  .field > input,
+  .field > select,
+  .field > textarea {
+    width: 100%;
+    min-height: 44px;
+    padding: 0 12px;
+    font: 400 var(--t-input) / 1.4 var(--font-text), sans-serif;
+    color: var(--ink-900);
+    background: var(--paper);
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--radius-control);
+    transition: border-color var(--dur-1) var(--ease);
+  }
+  textarea.field,
+  .field > textarea {
+    padding: 10px 12px;
+    min-height: 120px;
+    line-height: 1.5;
+    resize: vertical;
+  }
+  select.field,
+  .field > select {
+    appearance: none;
+    padding-right: 40px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%23444444' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+  }
 
-/* shared box styling for any actual control */
-input.field,
-select.field,
-textarea.field,
-.field > input,
-.field > select,
-.field > textarea {
-  width: 100%;
-  min-height: 44px;
-  padding: 0 14px;
-  font: 400 var(--t-body) var(--font-text), sans-serif;
-  color: var(--ink-900);
-  background: var(--surface);
-  border: 1px solid var(--hairline-strong);
-  border-radius: var(--radius-control);
+  input.field::placeholder,
+  .field > input::placeholder,
+  textarea.field::placeholder,
+  .field > textarea::placeholder {
+    color: var(--ink-400);
+  }
+
+  input.field:hover,
+  select.field:hover,
+  textarea.field:hover,
+  .field > input:hover,
+  .field > select:hover,
+  .field > textarea:hover {
+    border-color: var(--ink-500);
+  }
+
+  input.field:focus-visible,
+  select.field:focus-visible,
+  textarea.field:focus-visible,
+  .field > input:focus-visible,
+  .field > select:focus-visible,
+  .field > textarea:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+    border-color: var(--accent);
+  }
+
+  input.field:disabled,
+  select.field:disabled,
+  textarea.field:disabled,
+  .field > input:disabled,
+  .field > select:disabled,
+  .field > textarea:disabled {
+    background: var(--surface-muted);
+  }
+
+  /* label-wrapper variant — real label ABOVE, 6px gap */
+  label.field {
+    display: grid;
+    gap: 6px;
+  }
+  label.field > span {
+    font: 500 var(--t-card-text) / 1.4 var(--font-text), sans-serif;
+    color: var(--ink-900);
+  }
+
+  /* underline-only variant — reserved for search overlay + toolbar search */
+  .field--line,
+  .field--line > input {
+    border: 0;
+    border-bottom: 1px solid var(--hairline-strong);
+    border-radius: 0;
+    padding-inline: 0;
+    background: transparent;
+  }
+  .field--line:hover,
+  .field--line > input:hover {
+    border-bottom-color: var(--ink-500);
+  }
+  .field--line:focus-visible,
+  .field--line > input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-bottom-color: var(--accent);
+  }
+
+  .field--invalid,
+  .field--invalid > input {
+    border-color: var(--danger);
+  }
+
+  .field-label {
+    display: block;
+    margin-bottom: 6px;
+    font: 500 var(--t-card-text) / 1.4 var(--font-text), sans-serif;
+    color: var(--ink-900);
+  }
+  .field-group {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .field-hint {
+    font: 400 var(--t-card-text) / 1.4 var(--font-text), sans-serif;
+    color: var(--ink-500);
+  }
+  .field-error {
+    font: 400 var(--t-card-text) / 1.4 var(--font-text), sans-serif;
+    color: var(--danger);
+  }
+
+  .form-stack {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .form-grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+  @media (min-width: 480px) {
+    .form-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font: 500 var(--t-card-text) / 1.4 var(--font-text), sans-serif;
+    color: var(--ink-900);
+    min-height: 44px;
+  }
+  .checkbox-row input {
+    width: 18px;
+    height: 18px;
+    min-height: 0;
+    margin: 0;
+    accent-color: var(--ink-900);
+  }
+
+  /* search primitive (SearchField): bordered input + leading magnifier */
+  .search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 44px;
+    padding: 0 12px;
+    background: var(--paper);
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--radius-control);
+    transition: border-color var(--dur-1) var(--ease);
+  }
+  .search:hover {
+    border-color: var(--ink-500);
+  }
+  .search:focus-within {
+    border-color: var(--accent);
+  }
+  .search__icon {
+    display: flex;
+    flex-shrink: 0;
+    color: var(--ink-400);
+  }
+  .search:focus-within .search__icon {
+    color: var(--ink-900);
+  }
+  .search__input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    outline: none;
+    font: 400 var(--t-input) / 1.4 var(--font-text), sans-serif;
+    color: var(--ink-900);
+  }
+  .search__input::placeholder {
+    color: var(--ink-400);
+  }
+  .search__input::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+  }
 }
-textarea.field,
-.field > textarea { padding: 10px 14px; min-height: 120px; line-height: 1.5; resize: vertical; }
-
-input.field::placeholder,
-.field > input::placeholder { color: var(--ink-400); }
-
-input.field:focus-visible,
-select.field:focus-visible,
-textarea.field:focus-visible,
-.field > input:focus-visible,
-.field > select:focus-visible,
-.field > textarea:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 1px;
-  border-color: var(--accent);
-}
-
-/* label-wrapper variant */
-label.field { display: grid; gap: 6px; }
-label.field > span {
-  font: 500 var(--t-small) var(--font-text), sans-serif;
-  color: var(--ink-700);
-}
-
-/* editorial underline variant (inputs only) */
-.field--line,
-.field--line > input {
-  border: 0; border-bottom: 1px solid var(--hairline-strong);
-  border-radius: 0; padding-inline: 0; background: transparent;
-}
-.field--line:focus-visible,
-.field--line > input:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-  border-bottom-color: var(--accent);
-}
-
-.field--invalid,
-.field--invalid > input { border-color: var(--danger); }
-
-.field-label {
-  display: block;
-  margin-bottom: 6px;
-  font: 500 var(--t-small) var(--font-text), sans-serif;
-  color: var(--ink-700);
-}
-.field-group { display: grid; gap: var(--space-2); }
-.field-hint { font: 400 var(--t-small) var(--font-text), sans-serif; color: var(--ink-500); }
-.field-error { font: 400 var(--t-small) var(--font-text), sans-serif; color: var(--danger); }
-.form-stack { display: grid; gap: var(--space-4); }
-.form-grid { display: grid; gap: var(--space-4); }
-@media (min-width: 600px) { .form-grid { grid-template-columns: 1fr 1fr; } }
-
-.checkbox-row { display: flex; align-items: center; gap: var(--space-2); font-weight: 500; }
-.checkbox-row input { width: auto; min-height: 0; }
-
-/* Search field — clean compact bordered input + leading magnifier (Ocula/Artsy), not a grey pill */
-.search {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  min-height: 40px;
-  padding: 0 12px;
-  background: var(--surface);
-  border: 1px solid var(--hairline-strong);
-  border-radius: var(--radius-control);
-  transition: border-color var(--dur) var(--ease);
-}
-.search:focus-within { border-color: var(--ink-900); }
-.search__icon { display: flex; flex-shrink: 0; color: var(--ink-400); }
-.search:focus-within .search__icon { color: var(--ink-900); }
-.search__input {
-  flex: 1;
-  min-width: 0;
-  border: 0;
-  background: transparent;
-  outline: none;
-  font: 400 0.9375rem var(--font-text), sans-serif;
-  color: var(--ink-900);
-}
-.search__input::placeholder { color: var(--ink-400); }
-.search__input::-webkit-search-cancel-button { -webkit-appearance: none; }

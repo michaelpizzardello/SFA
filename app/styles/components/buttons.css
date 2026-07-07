@@ -1,59 +1,97 @@
-/* Buttons — filled reserved for forms/CTAs; the bare arrow link is the dominant affordance. */
-.btn {
-  font: 600 0.9375rem / 1 var(--font-text), sans-serif;
-  min-height: 44px;
-  padding: 0 18px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  border: 1px solid transparent;
-  border-radius: var(--radius-control);
-  cursor: pointer;
-  text-decoration: none;
-  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+/* @layer components — buttons (§4.10). One language, public + BOH; every variant hovers
+   toward blue. Text is THE default control; outline is rare (one per screen max). */
+@layer components {
+  .btn {
+    font: 500 var(--t-ui) / 1 var(--font-text), sans-serif;
+    min-height: 44px;
+    padding: 0 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-control);
+    background: none;
+    color: var(--ink-900);
+    cursor: pointer;
+    text-decoration: none;
+    transition: background var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease),
+      color var(--dur-1) var(--ease);
+  }
+
+  .btn--primary {
+    background: var(--ink-900);
+    border-color: var(--ink-900);
+    color: var(--on-accent);
+  }
+  .btn--primary:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .btn--primary:active {
+    background: var(--accent-press);
+    border-color: var(--accent-press);
+  }
+  .btn--primary:disabled {
+    background: var(--ink-300);
+    border-color: var(--ink-300);
+    pointer-events: none;
+  }
+
+  .btn--outline {
+    background: transparent;
+    border-color: var(--ink-900);
+    color: var(--ink-900);
+  }
+  .btn--outline:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .btn--outline:active {
+    border-color: var(--accent-press);
+    color: var(--accent-press);
+  }
+  .btn--outline:disabled {
+    border-color: var(--ink-300);
+    color: var(--ink-300);
+    pointer-events: none;
+  }
+
+  .btn--text {
+    padding: 0 var(--space-2);
+    border: 0;
+    color: var(--ink-700);
+  }
+  .btn--text:hover {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .btn--text:active {
+    color: var(--accent-press);
+  }
+
+  .btn--danger-text {
+    padding: 0 var(--space-2);
+    border: 0;
+    color: var(--danger);
+  }
+  .btn--danger-text:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .btn--block {
+    width: 100%;
+  }
+
+  .btn--icon {
+    width: 44px;
+    padding: 0;
+    border: 0;
+    color: var(--ink-700);
+  }
+  .btn--icon:hover {
+    color: var(--ink-900);
+  }
 }
-.btn--primary { background: var(--accent); color: var(--on-accent); }
-.btn--primary:hover { background: var(--accent-hover); }
-.btn--primary:active { background: var(--accent-press); }
-.btn--primary:disabled { background: var(--ink-300); cursor: default; }
-
-.btn--ghost { background: transparent; color: var(--ink-900); border-color: var(--hairline-strong); }
-.btn--ghost:hover { border-color: var(--ink-900); }
-
-.btn--text {
-  min-height: 0; padding: 0; border: 0; background: none;
-  color: var(--accent); font: 600 0.9375rem / 1 var(--font-text), sans-serif; cursor: pointer;
-}
-.btn--text:hover { text-decoration: underline; text-underline-offset: 3px; }
-
-.btn--block { width: 100%; }
-
-/* save/favourite toggle, absolutely placed over a card image */
-.card-save {
-  position: absolute;
-  top: var(--space-3);
-  right: var(--space-3);
-  z-index: 2;
-  width: 34px;
-  height: 34px;
-  display: grid;
-  place-items: center;
-  border: 0;
-  border-radius: var(--radius-pill);
-  cursor: pointer;
-  background: rgba(255, 255, 255, 0.92);
-  color: var(--ink-700);
-  box-shadow: 0 1px 4px rgba(20, 16, 12, 0.16);
-  transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
-}
-.card-save:hover { color: var(--ink-900); background: #fff; }
-.card-save.is-saved { color: var(--accent); }
-
-/* compact icon button (filter triggers etc.) */
-.icon-btn {
-  width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center;
-  border: 1px solid var(--hairline-strong); border-radius: var(--radius-control);
-  background: var(--surface); color: var(--ink-900); cursor: pointer;
-}
-.icon-btn:hover { border-color: var(--ink-900); }
