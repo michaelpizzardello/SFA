@@ -7,7 +7,7 @@ export default function ResetPasswordForm() {
   const [state, formAction, pending] = useActionState(updatePasswordAction, {})
 
   return (
-    <form action={formAction} className="admin-form-stack">
+    <form action={formAction} className="form-stack">
       <label className="field">
         <span>New password</span>
         <input name="password" type="password" required autoComplete="new-password" minLength={8} />
@@ -16,8 +16,10 @@ export default function ResetPasswordForm() {
         <span>Confirm password</span>
         <input name="confirm" type="password" required autoComplete="new-password" minLength={8} />
       </label>
-      {state?.error ? <p className="admin-error">{state.error}</p> : null}
-      <button className="button button-primary" type="submit" disabled={pending}>
+      <div role="status" aria-live="polite">
+        {state?.error ? <p className="field-error">{state.error}</p> : null}
+      </div>
+      <button className="btn btn--primary btn--block" type="submit" disabled={pending}>
         {pending ? 'Saving…' : 'Set password'}
       </button>
     </form>

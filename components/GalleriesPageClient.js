@@ -30,14 +30,16 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
     () => filterGalleries(galleries, { search, precinct, sort }),
     [galleries, precinct, search, sort]
   )
-  const rows = useMemo(() => {
+  const { rows, onNowCount } = useMemo(() => {
     const base = getGalleryDirectoryData(filteredGalleries, exhibitions)
-    const scoped = onlyOnNow ? base.filter((row) => (row.summary?.current || 0) > 0) : base
+    const withCurrent = base.filter((row) => (row.summary?.current || 0) > 0)
+    const scoped = onlyOnNow ? withCurrent : base
     // lean the index toward "what can I see now": galleries with a current show float up (stable, so
     // the chosen A–Z / precinct order is preserved within each group)
-    return [...scoped].sort(
+    const sorted = [...scoped].sort(
       (a, b) => Number((b.summary?.current || 0) > 0) - Number((a.summary?.current || 0) > 0)
     )
+    return { rows: sorted, onNowCount: withCurrent.length }
   }, [exhibitions, filteredGalleries, onlyOnNow])
 
   useEffect(() => {
@@ -59,10 +61,8 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
   if (search.trim()) applied.push({ key: 'search', label: `“${search.trim()}”` })
 
   return (
-    <div className="container">
-      <header className="galleries-head">
-        <h1>Galleries</h1>
-      </header>
+    <div className="container gxi">
+      <h1 className="page-title">Galleries</h1>
 
       <div className="index-toolbar">
         <SearchField
@@ -73,11 +73,11 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
         />
         <button
           type="button"
-          className={`chip${onlyOnNow ? ' chip--active' : ''}`}
+          className="text-tab"
           aria-pressed={onlyOnNow}
           onClick={() => setOnlyOnNow((v) => !v)}
         >
-          On now
+          On now<sup>{onNowCount}</sup>
         </button>
         <Link className="toolbar-control" href={precinct !== 'all' ? `/map?precinct=${encodeURIComponent(precinct)}` : '/map'}>
           Map
@@ -95,19 +95,21 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
         </div>
       </div>
 
-      <div className="applied-row">
+      <div className="gxi-applied">
         <span className="results-meta">{rows.length} galleries</span>
         {applied.map((f) => (
-          <span key={f.key} className="chip chip--applied">
-            <span className="chip__label">{f.label}</span>
-            <button
-              type="button"
-              aria-label={`Remove ${f.label}`}
-              onClick={() => (f.key === 'precinct' ? setPrecinct('all') : setSearch(''))}
-            >
-              ×
-            </button>
-          </span>
+          <button
+            key={f.key}
+            type="button"
+            className="applied-token"
+            aria-label={`Remove ${f.label}`}
+            onClick={() => (f.key === 'precinct' ? setPrecinct('all') : setSearch(''))}
+          >
+            <span className="applied-token__label">{f.label}</span>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" aria-hidden="true">
+              <path d="M4 4l8 8M12 4L4 12" />
+            </svg>
+          </button>
         ))}
       </div>
 
@@ -119,12 +121,12 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
             ))}
           </div>
         ) : (
-          <ul className="gal-list">
+          <ul className="gxi-list">
             {rows.map(({ gallery, summary }) => (
               <li key={gallery.id}>
-                <Link className="gal-row" href={`/gallery/${encodeURIComponent(gallery.slug)}`}>
-                  <span className="gal-row__name">{gallery.name}</span>
-                  <span className="gal-row__meta">
+                <Link className="gxi-row" href={`/gallery/${encodeURIComponent(gallery.slug)}`}>
+                  <span className="gxi-row__name">{gallery.name}</span>
+                  <span className="gxi-row__meta">
                     {[gallery.precinct, gallery.suburb].filter(Boolean).join(' · ')}
                     {summary?.current ? ` · ${summary.current} on now` : ''}
                   </span>
@@ -144,14 +146,14 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
             <div className="sheet__handle" />
             <div className="sheet__head">
               <h2>Filters</h2>
-              <button type="button" className="btn--text" onClick={() => setFiltersOpen(false)}>
+              <button type="button" className="btn btn--text" onClick={() => setFiltersOpen(false)}>
                 Close
               </button>
             </div>
             <div className="sheet__body">
-              <div className="field-group">
-                <span className="field-label">Precinct</span>
-                <select className="field" value={precinct} onChange={(e) => setPrecinct(e.target.value)}>
+              <label className="field">
+                <span>Precinct</span>
+                <select value={precinct} onChange={(e) => setPrecinct(e.target.value)}>
                   <option value="all">All precincts</option>
                   {precinctOptions.map((p) => (
                     <option key={p} value={p}>
@@ -159,14 +161,14 @@ export default function GalleriesPageClient({ galleries, exhibitions, initialFil
                     </option>
                   ))}
                 </select>
-              </div>
-              <div className="field-group">
-                <span className="field-label">Sort</span>
-                <select className="field" value={sort} onChange={(e) => setSort(e.target.value)}>
+              </label>
+              <label className="field">
+                <span>Sort</span>
+                <select value={sort} onChange={(e) => setSort(e.target.value)}>
                   <option value="alphabetical">A–Z</option>
                   <option value="precinct">By precinct</option>
                 </select>
-              </div>
+              </label>
             </div>
             <div className="sheet__foot">
               <button type="button" className="btn btn--primary btn--block" onClick={() => setFiltersOpen(false)}>

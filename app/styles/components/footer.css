@@ -67,7 +67,7 @@
   .site-footer__col a {
     display: inline-flex;
     align-items: center;
-    min-height: 32px;
+    min-height: 44px;
     font: 400 var(--t-card-text) / 1 var(--font-text), sans-serif;
     color: var(--ink-700);
   }

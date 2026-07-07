@@ -45,7 +45,9 @@ export default function HomePage({ galleries, exhibitions }) {
   const openingThisWeek = upcoming.filter((r) => matchesWindow(r.exhibition, 'opening-this-week', today))
   const openingRows = (openingThisWeek.length ? openingThisWeek : upcoming).slice(0, 8)
   const openingTitle = openingThisWeek.length ? 'Opening this week' : 'Opening soon'
-  const openingHref = openingThisWeek.length ? windowHref('opening-this-week') : '/whats-on?when=opening-this-week'
+  // Fallback rows are generic upcoming shows, so the fallback link goes to the full listing —
+  // never the (empty) opening-this-week window (DESIGN_SPEC §5.1.5).
+  const openingHref = openingThisWeek.length ? windowHref('opening-this-week') : '/whats-on'
 
   const currentBySlug = new Set(current.map((r) => r.exhibition.gallerySlug))
   const galleryCards = [...galleries]
@@ -57,18 +59,18 @@ export default function HomePage({ galleries, exhibitions }) {
       {featured.length ? <HeroBanner slides={featured} /> : null}
       <div className="container">
         {!featured.length ? (
-          <section className="hero">
-            <p className="eyebrow">On in Sydney</p>
-            <h1 className="hero__statement">Every exhibition on in Sydney.</h1>
+          <section className="home-fallback">
+            <p className="u-eyebrow">On in Sydney</p>
+            <h1 className="home-fallback__statement">Every exhibition on in Sydney.</h1>
           </section>
         ) : null}
 
         {/* TIME SPINE — the structural hinge: four named windows, each a live count of the city */}
-        <nav className="home-windows" aria-label="Browse by when">
+        <nav className="stat-row home-windows" aria-label="Browse by when">
           {TIME_WINDOWS.map((w) => (
-            <Link key={w.slug} className="home-windows__item" href={windowHref(w.slug)}>
-              <span className="home-windows__count">{windowCounts[w.slug]}</span>
-              <span className="home-windows__label">{w.label}</span>
+            <Link key={w.slug} className="stat-cell" href={windowHref(w.slug)}>
+              <span className="stat-cell__count">{windowCounts[w.slug]}</span>
+              <span className="stat-cell__label">{w.label}</span>
             </Link>
           ))}
         </nav>
@@ -88,24 +90,30 @@ export default function HomePage({ galleries, exhibitions }) {
             </div>
           </section>
         ) : null}
+      </div>
 
-        {closingSoon.length ? (
-          <section className="section">
-            <header className="section-head">
-              <h2>Closing soon</h2>
-              <Link className="link-arrow" href={windowHref('closing-soon')}>
-                See all closing soon →
-              </Link>
-            </header>
-            <div className="card-grid">
-              {closingSoon.map(({ exhibition, gallery, status }) => (
-                <ExhibitionCard key={exhibition.id} exhibition={exhibition} gallery={gallery} status={status} />
-              ))}
-            </div>
-          </section>
-        ) : null}
+      {closingSoon.length ? (
+        <div className="band home-alt">
+          <div className="container">
+            <section className="section">
+              <header className="section-head">
+                <h2>Closing soon</h2>
+                <Link className="link-arrow" href={windowHref('closing-soon')}>
+                  See all closing soon →
+                </Link>
+              </header>
+              <div className="card-grid">
+                {closingSoon.map(({ exhibition, gallery, status }) => (
+                  <ExhibitionCard key={exhibition.id} exhibition={exhibition} gallery={gallery} status={status} />
+                ))}
+              </div>
+            </section>
+          </div>
+        </div>
+      ) : null}
 
-        {openingRows.length ? (
+      {openingRows.length ? (
+        <div className="container">
           <section className="section">
             <header className="section-head">
               <h2>{openingTitle}</h2>
@@ -113,37 +121,43 @@ export default function HomePage({ galleries, exhibitions }) {
                 All →
               </Link>
             </header>
-            <ul className="opening-list">
+            <ul className="home-opening">
               {openingRows.map(({ exhibition, gallery }) => (
                 <li key={exhibition.id}>
-                  <Link className="opening-row" href={`/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`}>
-                    <span className="opening-row__date">{formatDate(exhibition.startDate)}</span>
+                  <Link className="home-opening__row" href={`/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`}>
+                    <span className="home-opening__date">{formatDate(exhibition.startDate)}</span>
                     <span>
-                      <span className="opening-row__title">{exhibition.title}</span>
+                      <span className="home-opening__title">{exhibition.title}</span>
                       <br />
-                      <span className="opening-row__gallery">{gallery?.name || exhibition.galleryName}</span>
+                      <span className="home-opening__gallery">{gallery?.name || exhibition.galleryName}</span>
                     </span>
                   </Link>
                 </li>
               ))}
             </ul>
           </section>
-        ) : null}
+        </div>
+      ) : null}
 
-        <section className="section">
-          <header className="section-head">
-            <h2>Galleries</h2>
-            <Link className="link-arrow" href="/galleries">
-              All galleries →
-            </Link>
-          </header>
-          <div className="card-grid">
-            {galleryCards.map((gallery) => (
-              <GalleryCard key={gallery.id} gallery={gallery} />
-            ))}
+      {galleryCards.length ? (
+        <div className="band home-alt">
+          <div className="container">
+            <section className="section">
+              <header className="section-head">
+                <h2>Galleries</h2>
+                <Link className="link-arrow" href="/galleries">
+                  All galleries →
+                </Link>
+              </header>
+              <div className="card-grid">
+                {galleryCards.map((gallery) => (
+                  <GalleryCard key={gallery.id} gallery={gallery} />
+                ))}
+              </div>
+            </section>
           </div>
-        </section>
-      </div>
+        </div>
+      ) : null}
     </>
   )
 }

@@ -1,13 +1,5 @@
-import SearchIcon from './icons/SearchIcon'
-
-// Soft pill search field with a leading magnifier (Ocula/Artsy style). Spread input props in.
+// Underline search input (§4.11 .field--line — reserved for toolbars + search overlay).
+// Spread input props in; the caller supplies the accessible label.
 export default function SearchField({ className = '', ...inputProps }) {
-  return (
-    <span className={`search${className ? ` ${className}` : ''}`}>
-      <span className="search__icon" aria-hidden="true">
-        <SearchIcon />
-      </span>
-      <input className="search__input" type="search" {...inputProps} />
-    </span>
-  )
+  return <input className={`field field--line${className ? ` ${className}` : ''}`} type="search" {...inputProps} />
 }

@@ -1,2 +1,44 @@
-/* @layer pages — auth (.auth-*). Stage C fills this file.
-   Placeholder so the app/layout.js import chain is stable across stages. */
+/* @layer pages — auth (.auth-*), DESIGN_SPEC §5.8. Chromeless white page,
+   centered 400px column, NO card border — the white page is the card. */
+@layer pages {
+  .auth-shell {
+    min-height: 100dvh;
+    display: grid;
+    justify-items: center;
+    align-content: start;
+    padding: var(--space-10) var(--gutter) var(--space-9);
+    background: var(--paper);
+  }
+  .auth-col {
+    width: 100%;
+    max-width: 400px;
+    display: grid;
+    gap: var(--space-4);
+    justify-items: start;
+  }
+  .auth-brand {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font: 500 16px / 1.3 var(--font-display), serif;
+    letter-spacing: -0.01em;
+    color: var(--ink-900);
+  }
+  .auth-title {
+    font: 500 var(--t-h2) / 1.3 var(--font-text), sans-serif;
+    color: var(--ink-900);
+  }
+  .auth-copy {
+    font: 400 var(--t-card-text) / 1.5 var(--font-text), sans-serif;
+    color: var(--ink-500);
+  }
+  .auth-copy a {
+    color: var(--ink-700);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color var(--dur-1) var(--ease);
+  }
+  .auth-copy a:hover {
+    color: var(--accent);
+  }
+}

@@ -10,7 +10,7 @@ export default function FollowButton({ slug, label = '' }) {
   return (
     <button
       type="button"
-      className={`btn ${following ? 'btn--ghost' : 'btn--primary'}`}
+      className={`btn ${following ? 'btn--primary' : 'btn--outline'}`}
       aria-pressed={following}
       aria-label={`${following ? 'Following' : 'Follow'} ${label}`.trim()}
       onClick={() => toggle(slug)}

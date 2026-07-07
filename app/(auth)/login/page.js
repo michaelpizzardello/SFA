@@ -15,9 +15,9 @@ export default async function LoginPage({ searchParams }) {
 
   return (
     <>
-      <h1>Gallery sign in</h1>
-      <p className="section-copy">Sign in to manage your gallery profile and exhibitions.</p>
-      {params.error ? <p className="admin-error">We couldn&apos;t sign you in. Please try again.</p> : null}
+      <h1 className="auth-title">Gallery sign in</h1>
+      <p className="auth-copy">Sign in to manage your gallery profile and exhibitions.</p>
+      {params.error ? <p className="field-error">We couldn&apos;t sign you in. Please try again.</p> : null}
       <LoginForm redirectTo={redirectTo} />
     </>
   )

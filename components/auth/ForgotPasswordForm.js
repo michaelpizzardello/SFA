@@ -8,23 +8,25 @@ export default function ForgotPasswordForm() {
 
   if (state?.ok) {
     return (
-      <p className="section-copy">
+      <p className="auth-copy">
         If an account exists for that email, we&apos;ve sent a link to reset your password.
       </p>
     )
   }
 
   return (
-    <form action={formAction} className="admin-form-stack">
+    <form action={formAction} className="form-stack">
       <label className="field">
         <span>Email</span>
         <input name="email" type="email" required autoComplete="email" />
       </label>
-      {state?.error ? <p className="admin-error">{state.error}</p> : null}
-      <button className="button button-primary" type="submit" disabled={pending}>
+      <div role="status" aria-live="polite">
+        {state?.error ? <p className="field-error">{state.error}</p> : null}
+      </div>
+      <button className="btn btn--primary btn--block" type="submit" disabled={pending}>
         {pending ? 'Sending…' : 'Send reset link'}
       </button>
-      <a className="text-link" href="/login">
+      <a className="action-link" href="/login">
         Back to sign in
       </a>
     </form>

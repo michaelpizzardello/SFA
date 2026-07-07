@@ -1,2 +1,42 @@
-/* @layer pages — console (.con-*). Stage C fills this file.
-   Placeholder so the app/layout.js import chain is stable across stages. */
+/* @layer pages — super-admin console (.con-*), DESIGN_SPEC §5.14.
+   The shell itself comes from dashboard.css (.dash-*) — "same shell, brand 'SAF Console'". */
+@layer pages {
+  /* stat row: Galleries · Claimed · Live exhibitions · Hidden */
+  .con-stats {
+    --stat-cols: 2;
+  }
+  @media (min-width: 768px) {
+    .con-stats {
+      --stat-cols: 4;
+    }
+  }
+
+  /* invite form — 480px column */
+  .con-invite {
+    max-width: 480px;
+  }
+  .con-invite__title {
+    font: 600 var(--t-h3) / 1.35 var(--font-text), sans-serif;
+    color: var(--ink-900);
+  }
+  .con-invite__submit {
+    justify-self: start;
+  }
+  .con-ok {
+    font: 500 var(--t-card-text) / 1.4 var(--font-text), sans-serif;
+    color: var(--ok);
+  }
+
+  /* galleries / exhibitions tables: name-or-title | mono facts | status word | actions */
+  .con-table {
+    --table-cols: minmax(0, 1.1fr) minmax(0, 1fr) auto auto;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  @media (max-width: 480px) {
+    .con-table__name {
+      grid-column: 1 / -1;
+    }
+  }
+}

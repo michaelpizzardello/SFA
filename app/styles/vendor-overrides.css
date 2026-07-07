@@ -2,4 +2,149 @@
    LAW: every rule that targets Leaflet/markercluster DOM (.leaflet-*, .marker-cluster*)
    lives here and ONLY here. Leaflet's vendor CSS is unlayered and beats any layered rule,
    so re-skins must be equally unlayered and imported later to win.
-   Stage B4 moves the map re-skins here; until then this file is intentionally empty. */
+   Our own classnames painted INSIDE the Leaflet panes (.map-dot-*, .map-popup-*,
+   .user-location-*) also live here: their elements carry vendor classes (.leaflet-marker-icon,
+   .leaflet-popup-content p, .leaflet-container a) whose unlayered vendor rules would
+   otherwise beat any @layer rule of ours. */
+
+/* ---- container chrome ---- */
+.leaflet-container {
+  font-family: var(--font-text), sans-serif;
+}
+
+.leaflet-control-zoom.leaflet-bar {
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-control);
+  box-shadow: none;
+}
+.leaflet-control-zoom a {
+  color: var(--ink-700);
+  background: var(--paper);
+}
+
+/* ---- gallery markers: 10px ink dot / 1px white halo; selected 12px accent (§5.6) ---- */
+.map-dot-marker {
+  width: 152px;
+  height: 62px;
+  display: grid;
+  justify-items: center;
+  align-content: end;
+  pointer-events: auto;
+}
+.map-dot-label {
+  max-width: 144px;
+  margin-bottom: 6px;
+  font: 500 var(--t-eyebrow) / 1.25 var(--font-mono), monospace;
+  color: var(--ink-900);
+  text-align: center;
+  white-space: normal;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-shadow:
+    -1px -1px 0 var(--paper),
+    1px -1px 0 var(--paper),
+    -1px 1px 0 var(--paper),
+    1px 1px 0 var(--paper),
+    0 0 4px var(--paper);
+}
+.map-dot-node {
+  width: var(--dot-size, 10px);
+  height: var(--dot-size, 10px);
+  border-radius: 999px;
+  background: var(--ink-900);
+  box-shadow: 0 0 0 1px var(--paper);
+  transition: background-color var(--dur-1) var(--ease);
+}
+.map-dot-marker:hover .map-dot-node,
+.map-dot-marker.is-selected .map-dot-node {
+  background: var(--accent);
+}
+
+/* ---- user location ---- */
+.user-location-marker {
+  background: none;
+  border: 0;
+}
+.user-location-dot {
+  display: block;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--accent);
+  border: 3px solid var(--paper);
+  box-shadow: 0 0 0 1px var(--hairline-strong);
+}
+
+/* ---- clusters: white circle, 1px hairline-strong, mono ink count (§5.6) ---- */
+.marker-cluster-small,
+.marker-cluster-medium,
+.marker-cluster-large {
+  background: none;
+}
+.marker-cluster-small div,
+.marker-cluster-medium div,
+.marker-cluster-large div {
+  background: var(--paper);
+  border: 1px solid var(--hairline-strong);
+}
+.marker-cluster span {
+  font: 500 var(--t-mono) / 28px var(--font-mono), monospace;
+  color: var(--ink-900);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- popup: white, 1px hairline-strong, radius 2px, shadow-pop (§5.6) ---- */
+.leaflet-popup-content-wrapper {
+  background: var(--paper);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-control);
+  box-shadow: var(--shadow-pop);
+}
+.leaflet-popup-content {
+  margin: 0;
+  min-width: 200px;
+}
+.leaflet-popup-tip {
+  background: var(--paper);
+  border: 1px solid var(--hairline-strong);
+  box-shadow: none;
+}
+.leaflet-container a.leaflet-popup-close-button {
+  color: var(--ink-500);
+}
+.leaflet-container a.leaflet-popup-close-button:hover {
+  color: var(--ink-900);
+}
+
+.map-popup-callout {
+  padding: var(--space-4);
+  font-family: var(--font-text), sans-serif;
+}
+/* two classes out-specify Leaflet's own `.leaflet-popup-content p` margins */
+.map-popup-callout .map-popup-title {
+  margin: 0;
+  font: 500 var(--t-card-text) / 1.35 var(--font-text), sans-serif;
+  color: var(--ink-900);
+}
+.map-popup-callout .map-popup-meta {
+  margin: 2px 0 0;
+  font: 400 var(--t-mono) / 1.5 var(--font-mono), monospace;
+  color: var(--ink-500);
+  font-variant-numeric: tabular-nums;
+}
+.leaflet-container .map-popup-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: var(--space-1);
+  font: 500 var(--t-ui) / 1 var(--font-text), sans-serif;
+  color: var(--ink-700);
+  text-decoration: none;
+}
+.leaflet-container .map-popup-link:hover {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

@@ -4,9 +4,9 @@ import Link from 'next/link'
 // gives the page identity and a way back to the public site.
 export default function AuthLayout({ children }) {
   return (
-    <div className="admin-shell">
-      <div className="admin-card">
-        <Link className="admin-brand" href="/">
+    <div className="auth-shell">
+      <div className="auth-col">
+        <Link className="auth-brand" href="/">
           Sydney Art Finder
         </Link>
         {children}

@@ -19,9 +19,7 @@ export default function SavedPageClient({ exhibitions, galleries }) {
 
   return (
     <div className="container">
-      <header className="whats-on-head">
-        <h1>Saved</h1>
-      </header>
+      <h1 className="page-title">Saved</h1>
 
       {empty ? (
         <p className="empty-state">
@@ -30,7 +28,7 @@ export default function SavedPageClient({ exhibitions, galleries }) {
       ) : (
         <>
           {exItems.length ? (
-            <section className="section">
+            <section className="saved-section">
               <header className="section-head">
                 <h2>Exhibitions</h2>
               </header>
@@ -48,7 +46,7 @@ export default function SavedPageClient({ exhibitions, galleries }) {
           ) : null}
 
           {galItems.length ? (
-            <section className="section">
+            <section className="saved-section">
               <header className="section-head">
                 <h2>Galleries</h2>
               </header>

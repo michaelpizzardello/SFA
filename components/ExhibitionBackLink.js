@@ -35,7 +35,7 @@ export default function ExhibitionBackLink({ galleryName, galleryHref }) {
   }, [])
 
   return (
-    <Link className="back-link" href={href}>
+    <Link className="exl-back" href={href}>
       ← {label}
     </Link>
   )

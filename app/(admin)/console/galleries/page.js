@@ -8,32 +8,32 @@ export default async function ConsoleGalleriesPage() {
   const galleries = await getAllGalleries()
 
   return (
-    <section className="dashboard-panel">
-      <div className="section-head">
-        <h1>Galleries</h1>
-        <span className="results-meta">{galleries.length} total</span>
+    <section className="dash-panel">
+      <div className="page-head">
+        <div className="page-head__main">
+          <h1 className="page-head__title">Galleries</h1>
+          <p className="page-head__sub">{galleries.length} total</p>
+        </div>
       </div>
-      <ul className="dashboard-list">
+      <ul className="table con-table">
         {galleries.map((g) => (
-          <li key={g.id} className="dashboard-row">
-            <div className="dashboard-row-main">
-              <p className="dashboard-row-title">{g.name}</p>
-              <p className="row-meta">
-                {g.precinct}
-                {g.is_claimed ? ' · claimed' : ' · unclaimed'}
-              </p>
-            </div>
-            <div className="dashboard-row-actions">
-              <span className={`status-tag ${g.hidden_by_admin ? 'status-past' : 'status-current'}`}>
-                {g.hidden_by_admin ? 'Hidden' : 'Visible'}
-              </span>
-              <Link className="text-link" href={`/gallery/${g.slug}`}>
+          <li className="table__row" key={g.id}>
+            <p className="table__primary con-table__name">{g.name}</p>
+            <p className="table__fact">
+              {g.precinct}
+              {g.is_claimed ? ' · claimed' : ' · unclaimed'}
+            </p>
+            <span className={`table__status${g.hidden_by_admin ? ' table__status--muted' : ''}`}>
+              {g.hidden_by_admin ? 'Hidden' : 'Visible'}
+            </span>
+            <div className="table__actions">
+              <Link className="btn btn--text" href={`/gallery/${g.slug}`}>
                 View
               </Link>
               <form action={setGalleryHiddenAction}>
                 <input type="hidden" name="id" value={g.id} />
                 <input type="hidden" name="hidden" value={(!g.hidden_by_admin).toString()} />
-                <button className={`text-link-button ${g.hidden_by_admin ? '' : 'text-link-danger'}`} type="submit">
+                <button className={`btn ${g.hidden_by_admin ? 'btn--text' : 'btn--danger-text'}`} type="submit">
                   {g.hidden_by_admin ? 'Unhide' : 'Hide'}
                 </button>
               </form>

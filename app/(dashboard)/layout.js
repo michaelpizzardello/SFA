@@ -10,9 +10,9 @@ export const metadata = {
 export default async function DashboardLayout({ children }) {
   const { isSuperAdmin } = await getAuthContext()
   return (
-    <div className="dashboard-shell">
+    <div className="dash-shell">
       <DashboardNav isSuperAdmin={isSuperAdmin} />
-      <div className="dashboard-main">{children}</div>
+      <div className="dash-main">{children}</div>
     </div>
   )
 }

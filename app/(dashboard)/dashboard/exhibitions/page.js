@@ -9,8 +9,8 @@ export default async function DashboardExhibitionsPage() {
   const { galleries } = await getOwnedGalleries()
   if (!galleries.length) {
     return (
-      <section className="dashboard-panel">
-        <p className="section-copy">No gallery is linked to your account yet.</p>
+      <section className="dash-panel">
+        <p className="empty-state">No gallery is linked to your account yet.</p>
       </section>
     )
   }
@@ -20,60 +20,60 @@ export default async function DashboardExhibitionsPage() {
   const publishedCount = exhibitions.filter((e) => e.published).length
 
   return (
-    <section className="dashboard-panel">
+    <section className="dash-panel">
       <div className="page-head">
-        <div className="page-head__title">
-          <h1>Exhibitions</h1>
+        <div className="page-head__main">
+          <h1 className="page-head__title">Exhibitions</h1>
           {exhibitions.length ? (
-            <span className="page-head__sub">
+            <p className="page-head__sub">
               {exhibitions.length} total · {publishedCount} published
-            </span>
+            </p>
           ) : null}
         </div>
-        <Link className="button button-primary" href="/dashboard/exhibitions/new">
+        <Link className="btn btn--primary page-head__action" href="/dashboard/exhibitions/new">
           Add exhibition
         </Link>
       </div>
 
       {exhibitions.length ? (
-        <ul className="dash-rows">
+        <ul className="table dash-extable">
           {exhibitions.map((e) => (
-            <li key={e.id}>
-              <div className="dash-row">
-                <div className="dash-row__media">
-                  {e.image_url ? <img src={e.image_url} alt="" /> : null}
-                </div>
-                <div className="dash-row__main">
-                  <p className="dash-row__title">{e.exhibition_name}</p>
-                  <p className="row-meta">
-                    {e.artist ? `${e.artist} · ` : ''}
-                    {formatDate(e.start_date)}
-                    {e.end_date ? ` – ${formatDate(e.end_date)}` : ''}
-                  </p>
-                </div>
-                <span className={`badge ${e.published ? 'badge--published' : 'badge--draft'}`}>
-                  {e.published ? 'Published' : 'Draft'}
-                </span>
-                <div className="dash-row__actions">
-                  <Link className="text-link" href={`/dashboard/exhibitions/${e.id}`}>
-                    Edit
-                  </Link>
-                  <form action={togglePublishAction}>
-                    <input type="hidden" name="id" value={e.id} />
-                    <input type="hidden" name="published" value={(!e.published).toString()} />
-                    <button className="text-link-button" type="submit">
-                      {e.published ? 'Unpublish' : 'Publish'}
-                    </button>
-                  </form>
-                </div>
+            <li className="table__row" key={e.id}>
+              {e.image_url ? (
+                <img className="table__thumb" src={e.image_url} alt="" />
+              ) : (
+                <div className="table__thumb" aria-hidden="true" />
+              )}
+              <div className="dash-extable__main">
+                <p className="table__primary table__primary--work">{e.exhibition_name}</p>
+                <p className="table__fact">
+                  {e.artist ? `${e.artist} · ` : ''}
+                  {formatDate(e.start_date)}
+                  {e.end_date ? ` – ${formatDate(e.end_date)}` : ''}
+                </p>
+              </div>
+              <span className={`table__status${e.published ? '' : ' table__status--muted'}`}>
+                {e.published ? 'Published' : 'Draft'}
+              </span>
+              <div className="table__actions">
+                <Link className="btn btn--text" href={`/dashboard/exhibitions/${e.id}`}>
+                  Edit
+                </Link>
+                <form action={togglePublishAction}>
+                  <input type="hidden" name="id" value={e.id} />
+                  <input type="hidden" name="published" value={(!e.published).toString()} />
+                  <button className="btn btn--text" type="submit">
+                    {e.published ? 'Unpublish' : 'Publish'}
+                  </button>
+                </form>
               </div>
             </li>
           ))}
         </ul>
       ) : (
-        <div className="dash-empty">
+        <div className="empty-state">
           <p>No exhibitions yet. Add your first one so it appears on Sydney Art Finder.</p>
-          <Link className="button button-primary" href="/dashboard/exhibitions/new">
+          <Link className="btn btn--primary" href="/dashboard/exhibitions/new">
             Add exhibition
           </Link>
         </div>

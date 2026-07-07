@@ -1,4 +1,7 @@
 import Link from 'next/link'
+import { formatDateRange } from '../lib/utils/date'
+import { getExhibitionSlug } from '../lib/utils/exhibitions'
+import { splitTitle } from '../lib/utils/splitTitle'
 import ExhibitionCard from './ExhibitionCard'
 import FollowButton from './FollowButton'
 import GalleryTabs from './GalleryTabs'
@@ -18,11 +21,33 @@ function instagramHandle(value) {
 
 function ExGrid({ exhibitions, gallery }) {
   return (
-    <div className="card-grid">
+    <div className="gxp-grid">
       {exhibitions.map((exhibition) => (
         <ExhibitionCard key={exhibition.id} exhibition={exhibition} gallery={gallery} />
       ))}
     </div>
+  )
+}
+
+// Past shows are reference data — ledger rows, not cards (§5.4)
+function PastRows({ exhibitions }) {
+  return (
+    <ul className="gxp-past">
+      {exhibitions.map((exhibition) => {
+        const { artist, title } = splitTitle(exhibition.artist, exhibition.title)
+        return (
+          <li key={exhibition.id}>
+            <Link className="gxp-past-row" href={`/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`}>
+              <span className="gxp-past-row__main">
+                {artist ? <span className="gxp-past-row__artist">{artist}</span> : null}
+                <span className="gxp-past-row__title">{title}</span>
+              </span>
+              <span className="gxp-past-row__dates">{formatDateRange(exhibition.startDate, exhibition.endDate)}</span>
+            </Link>
+          </li>
+        )
+      })}
+    </ul>
   )
 }
 
@@ -68,95 +93,106 @@ export default function GalleryProfilePage({ gallery, groupedExhibitions }) {
   ].filter(Boolean)
 
   return (
-    <div className="container profile gallery-profile">
-      <Link className="back-link" href="/galleries">
-        ← Galleries
-      </Link>
+    <div className="gxp">
+      <div className="container">
+        <Link className="gxp-back" href="/galleries">
+          ← Galleries
+        </Link>
 
-      {cover ? (
-        <div className="profile-cover">
-          <img src={cover} alt="" />
-        </div>
-      ) : null}
-
-      <header className="gallery-hero">
-        <div className="gallery-hero__id">
-          {gallery.logoUrl ? <img className="gallery-hero__logo" src={gallery.logoUrl} alt="" /> : null}
-          <div className="gallery-hero__head">
-            <h1>{gallery.name}</h1>
-            {locationLine ? <p className="gallery-hero__loc">{locationLine}</p> : null}
+        {cover ? (
+          <div className="gxp-cover">
+            <img src={cover} alt="" />
           </div>
-        </div>
-        <div className="gallery-hero__actions">
-          <FollowButton slug={gallery.slug} label={gallery.name} />
-          <ShareButton title={gallery.name} />
-        </div>
-      </header>
+        ) : null}
 
-      {tabs.length >= 2 ? <GalleryTabs tabs={tabs} /> : null}
+        <header className="gxp-lockup">
+          <div className="gxp-lockup__id">
+            <h1 className="gxp-name">{gallery.name}</h1>
+            {locationLine ? <p className="gxp-loc">{locationLine}</p> : null}
+          </div>
+          <div className="gxp-lockup__actions">
+            <FollowButton slug={gallery.slug} label={gallery.name} />
+            <ShareButton title={gallery.name} className="btn btn--text" />
+          </div>
+        </header>
 
-      {current.length ? (
-        <section id="exhibitions" className="profile-section">
-          <h2>On now</h2>
-          <ExGrid exhibitions={current} gallery={gallery} />
-        </section>
-      ) : null}
+        {tabs.length >= 2 ? <GalleryTabs tabs={tabs} /> : null}
 
-      {upcoming.length ? (
-        <section className="profile-section" id={current.length ? undefined : 'exhibitions'}>
-          <h2>Opening soon</h2>
-          <ExGrid exhibitions={upcoming} gallery={gallery} />
-        </section>
-      ) : null}
+        {current.length ? (
+          <section id="exhibitions" className="gxp-section">
+            <header className="section-head">
+              <h2>On now</h2>
+            </header>
+            <ExGrid exhibitions={current} gallery={gallery} />
+          </section>
+        ) : null}
 
-      {past.length ? (
-        <section className="profile-section" id={current.length || upcoming.length ? undefined : 'exhibitions'}>
-          <h2>Past</h2>
-          <ExGrid exhibitions={past} gallery={gallery} />
-        </section>
-      ) : null}
+        {upcoming.length ? (
+          <section className="gxp-section" id={current.length ? undefined : 'exhibitions'}>
+            <header className="section-head">
+              <h2>Opening soon</h2>
+            </header>
+            <ExGrid exhibitions={upcoming} gallery={gallery} />
+          </section>
+        ) : null}
 
-      {gallery.about ? (
-        <section id="about" className="profile-section profile-about">
-          <h2>About</h2>
-          <p>{gallery.about}</p>
-        </section>
-      ) : null}
+        {past.length ? (
+          <section className="gxp-section" id={current.length || upcoming.length ? undefined : 'exhibitions'}>
+            <header className="section-head">
+              <h2>Past</h2>
+            </header>
+            <PastRows exhibitions={past} />
+          </section>
+        ) : null}
+
+        {gallery.about ? (
+          <section id="about" className="gxp-section gxp-about">
+            <header className="section-head">
+              <h2>About</h2>
+            </header>
+            <p className="u-serif">{gallery.about}</p>
+          </section>
+        ) : null}
+
+        {!hasExhibitions ? (
+          <section className="gxp-section">
+            <p className="text-muted">No exhibitions listed yet.</p>
+          </section>
+        ) : null}
+      </div>
 
       {hasVisit ? (
-        <section id="visit" className="profile-section gallery-visit">
-          <h2>Visit</h2>
-          <div className="gallery-visit__cols">
-            {gallery.openingHours?.length ? (
-              <div className="gallery-visit__hours">
-                <p className="eyebrow">Hours</p>
-                {gallery.openingHours.map((h) => (
-                  <p key={h} className="gallery-visit__hour">{h}</p>
-                ))}
-              </div>
-            ) : null}
-            {contact.length ? (
-              <dl className="def-list">
-                {contact.map((row) => (
-                  <div key={row.label}>
-                    <dt>{row.label}</dt>
-                    <dd>{row.value}</dd>
-                  </div>
-                ))}
-              </dl>
+        <section id="visit" className="band gxp-visit">
+          <div className="container">
+            <header className="section-head">
+              <h2>Visit</h2>
+            </header>
+            <div className="gxp-visit-cols">
+              {gallery.openingHours?.length ? (
+                <div className="gxp-hours">
+                  <p className="u-eyebrow">Hours</p>
+                  {gallery.openingHours.map((h) => (
+                    <p key={h} className="gxp-hour">{h}</p>
+                  ))}
+                </div>
+              ) : null}
+              {contact.length ? (
+                <dl className="gxp-def">
+                  {contact.map((row) => (
+                    <div key={row.label}>
+                      <dt>{row.label}</dt>
+                      <dd>{row.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : null}
+            </div>
+            {gallery.address ? (
+              <a className="btn btn--outline gxp-directions" href={directionsHref} target="_blank" rel="noreferrer">
+                Get directions
+              </a>
             ) : null}
           </div>
-          {gallery.address ? (
-            <a className="btn btn--ghost gallery-visit__directions" href={directionsHref} target="_blank" rel="noreferrer">
-              Get directions
-            </a>
-          ) : null}
-        </section>
-      ) : null}
-
-      {!hasExhibitions ? (
-        <section className="profile-section">
-          <p className="text-muted">No exhibitions listed yet.</p>
         </section>
       ) : null}
     </div>

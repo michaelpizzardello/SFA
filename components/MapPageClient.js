@@ -1222,12 +1222,14 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
 
   if (mapError) {
     return (
-      <section className="page-block">
-        <h1>Map unavailable</h1>
-        <p className="section-copy">The map failed to load right now.</p>
-        <Link className="text-link" href="/galleries">
-          Open gallery list view
-        </Link>
+      <section className="container section">
+        <h1 className="u-page-title">Map unavailable</h1>
+        <div className="empty-state">
+          <p>The map failed to load right now.</p>
+          <Link className="action-link" href="/galleries">
+            Open gallery list view
+          </Link>
+        </div>
       </section>
     )
   }
@@ -1236,7 +1238,9 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
     <section className="map-page map-fullscreen" aria-label="Sydney gallery map">
       <div className="map-top-overlay" ref={topOverlayRef}>
         <div className="map-top-overlay__row">
-          <BackLinkButton fallbackHref="/galleries" label="Back" />
+          <span className="map-back">
+            <BackLinkButton fallbackHref="/galleries" label="Back" />
+          </span>
           <SearchField
             className="map-search-field"
             placeholder={exhibitionMode ? 'Search exhibitions' : 'Search galleries'}
@@ -1246,7 +1250,7 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
           />
           <button
             type="button"
-            className="button button-secondary icon-button filter-icon-button map-filter-trigger"
+            className="btn btn--icon map-filter-trigger"
             aria-label="Open filters"
             onClick={() => setFiltersOpen(true)}
           >
@@ -1260,7 +1264,7 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
             <button
               key={option.slug}
               type="button"
-              className={`map-window-bar__item${when === option.slug ? ' is-active' : ''}`}
+              className={`text-tab${when === option.slug ? ' is-active' : ''}`}
               aria-pressed={when === option.slug}
               onClick={() => selectWindow(option.slug)}
             >
@@ -1271,21 +1275,21 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
       </div>
 
       {filtersOpen ? (
-        <div className="filter-sheet-overlay" role="presentation" onClick={() => setFiltersOpen(false)}>
+        <div className="scrim map-filter-scrim" role="presentation" onClick={() => setFiltersOpen(false)}>
           <section
-            className="filter-sheet"
+            className="sheet"
             role="dialog"
             aria-modal="true"
             aria-label="Map filters"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="filter-sheet-head">
+            <div className="sheet__head">
               <h2>Map filters</h2>
-              <button type="button" className="text-link text-link-button" onClick={() => setFiltersOpen(false)}>
+              <button type="button" className="btn btn--text" onClick={() => setFiltersOpen(false)}>
                 Close
               </button>
             </div>
-            <div className="filter-sheet-body">
+            <div className="sheet__body">
               <label className="field">
                 <span>Precinct</span>
                 <select value={precinct} onChange={(event) => setPrecinct(event.target.value)}>
@@ -1301,28 +1305,28 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
               <div className="map-secondary-actions">
                 <button
                   type="button"
-                  className="text-link text-link-button"
+                  className="btn btn--text"
                   onClick={centerOnUserLocation}
                   disabled={isLocatingUser}
                 >
                   {isLocatingUser ? 'Locating…' : 'Use current location'}
                 </button>
                 {areaEnabled ? (
-                  <button type="button" className="text-link text-link-button" onClick={clearAreaFilter}>
+                  <button type="button" className="btn btn--text" onClick={clearAreaFilter}>
                     Clear area filter
                   </button>
                 ) : null}
-                <button type="button" className="text-link text-link-button" onClick={resetView}>
+                <button type="button" className="btn btn--text" onClick={resetView}>
                   Reset map view
                 </button>
               </div>
-              {locationError ? <p className="results-meta">{locationError}</p> : null}
+              {locationError ? <p className="field-error">{locationError}</p> : null}
             </div>
           </section>
         </div>
       ) : null}
 
-      <div className="map-canvas map-canvas-full" ref={mapContainerRef} role="region" aria-label="Sydney gallery map" />
+      <div className="map-canvas-full" ref={mapContainerRef} role="region" aria-label="Sydney gallery map" />
 
       <div className="map-locate-control">
         <button
@@ -1342,7 +1346,7 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
       {mapMoved ? (
         <button
           type="button"
-          className="button button-secondary map-search-area-button map-search-area-cta"
+          className="map-search-area-button map-search-area-cta"
           onClick={applyCurrentViewport}
         >
           Search this area
@@ -1374,12 +1378,12 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
               ×
             </button>
           </div>
-          <h2 className="item-title">{selectedGallery.name}</h2>
-          <p className="item-meta">
+          <h2 className="map-selection-name">{selectedGallery.name}</h2>
+          <p className="map-selection-meta">
             {selectedGallery.precinct}
             {selectedGallery.suburb ? ` | ${selectedGallery.suburb}` : ''}
           </p>
-          <p className="item-meta">{selectedGallery.address}</p>
+          <p className="map-selection-meta">{selectedGallery.address}</p>
 
           {selectedGalleryExhibitions.length ? (
             <ul className="map-selection-shows">
@@ -1389,7 +1393,7 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
                     className="map-selection-show"
                     href={`/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`}
                   >
-                    <span className={`tag tag--${status} map-selection-show__tag`}>
+                    <span className={`map-selection-show__status${status === 'current' ? ' is-current' : ''}`}>
                       {status === 'current' ? 'On now' : 'Opening soon'}
                     </span>
                     <span className="map-selection-show__title">{exhibition.title}</span>
@@ -1401,10 +1405,10 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
               ))}
             </ul>
           ) : (
-            <p className="item-meta map-selection-empty">No current or upcoming exhibitions.</p>
+            <p className="map-selection-empty">No current or upcoming exhibitions.</p>
           )}
 
-          <Link className="button button-primary" href={`/gallery/${encodeURIComponent(selectedGallery.slug)}`}>
+          <Link className="btn btn--primary" href={`/gallery/${encodeURIComponent(selectedGallery.slug)}`}>
             View gallery
           </Link>
         </article>
@@ -1461,19 +1465,20 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
           onTouchEnd={handleListTouchEnd}
           onTouchCancel={handleListTouchCancel}
         >
-          <div className="active-filters" aria-label="Applied filters">
+          <div className="map-applied-row" aria-label="Applied filters">
             {activeFilters.map((filter) =>
               filter.removable ? (
                 <button
                   key={filter.key}
                   type="button"
-                  className="filter-pill is-removable"
+                  className="applied-token"
                   onClick={() => clearFilter(filter.key)}
                 >
-                  {filter.label} ×
+                  <span className="applied-token__label">{filter.label}</span>
+                  <span aria-hidden="true">×</span>
                 </button>
               ) : (
-                <span className="filter-pill" key={filter.key}>
+                <span className="results-meta" key={filter.key}>
                   {filter.label}
                 </span>
               )
@@ -1481,7 +1486,7 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
           </div>
 
           {exhibitionMode && resultExhibitions.length ? (
-            <ul className="map-exhibition-list">
+            <ul className="map-sheet-list">
               {resultExhibitions.map((exhibition) => {
                 const gallery = getGalleryBySlug(galleries, exhibition.gallerySlug)
                 const galleryName = gallery?.name || exhibition.galleryName || 'Unknown gallery'
@@ -1490,47 +1495,43 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
                 const exhibitionSlug = getExhibitionSlug(exhibition)
 
                 return (
-                  <li key={exhibition.id} className="map-exhibition-item">
+                  <li key={exhibition.id} className="map-sheet-item">
                     <Link
-                      className="map-result-button map-exhibition-button"
+                      className="map-row"
                       href={`/exhibition/${encodeURIComponent(exhibitionSlug)}`}
                     >
-                      <div>
-                        <h2 className="item-title">{exhibition.title}</h2>
-                        <p className="item-meta">{formatDateRange(exhibition.startDate, exhibition.endDate)}</p>
-                        {exhibition.openingInformation ? (
-                          <p className="item-meta">{exhibition.openingInformation}</p>
-                        ) : null}
-                        <p className="item-meta map-result-gallery">
-                          <span>{galleryName}</span>
-                          <span>{galleryLocation}</span>
-                        </p>
-                      </div>
+                      <h2 className="map-row__title">{exhibition.title}</h2>
+                      <p className="map-row__meta">{formatDateRange(exhibition.startDate, exhibition.endDate)}</p>
+                      {exhibition.openingInformation ? (
+                        <p className="map-row__meta">{exhibition.openingInformation}</p>
+                      ) : null}
+                      <p className="map-row__gallery">
+                        <span>{galleryName}</span>
+                        <span>{galleryLocation}</span>
+                      </p>
                     </Link>
                   </li>
                 )
               })}
             </ul>
           ) : !exhibitionMode && resultGalleries.length ? (
-            <ul className="directory-list map-results-list">
+            <ul className="map-sheet-list">
               {resultGalleries.map((gallery) => (
-                <li key={gallery.id} className={`directory-item ${selectedSlug === gallery.slug ? 'is-selected' : ''}`}>
+                <li key={gallery.id} className={`map-sheet-item${selectedSlug === gallery.slug ? ' is-selected' : ''}`}>
                   <Link
-                    className="map-result-button"
+                    className="map-row"
                     href={`/gallery/${encodeURIComponent(gallery.slug)}`}
                   >
-                    <div>
-                      <p className="item-kicker">{gallery.precinct}</p>
-                      <h2 className="item-title">{gallery.name}</h2>
-                      <p className="item-meta">{gallery.address}</p>
-                    </div>
+                    <h2 className="map-row__name">{gallery.name}</h2>
+                    <p className="map-row__meta">{gallery.precinct}</p>
+                    <p className="map-row__meta">{gallery.address}</p>
                   </Link>
                 </li>
               ))}
             </ul>
           ) : (
             <div className="map-empty-state">
-              <p className="empty-copy">
+              <p>
                 {exhibitionMode ? 'No exhibitions match these filters.' : 'No galleries in this area.'}
               </p>
               <p className="results-meta">Try zooming out or clearing filters.</p>

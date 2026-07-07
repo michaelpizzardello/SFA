@@ -10,8 +10,8 @@ export default async function EditExhibitionPage({ params }) {
   const { galleries } = await getOwnedGalleries()
   if (!galleries.length) {
     return (
-      <section className="dashboard-panel">
-        <p className="section-copy">No gallery is linked to your account yet.</p>
+      <section className="dash-panel">
+        <p className="empty-state">No gallery is linked to your account yet.</p>
       </section>
     )
   }
@@ -25,7 +25,7 @@ export default async function EditExhibitionPage({ params }) {
   const gallery = galleries.find((g) => g.id === exhibition.gallery_id)
 
   return (
-    <section className="dashboard-panel">
+    <section className="dash-panel">
       <ExhibitionForm gallery={gallery} exhibition={exhibition} />
       <DeleteExhibitionButton id={exhibition.id} />
     </section>

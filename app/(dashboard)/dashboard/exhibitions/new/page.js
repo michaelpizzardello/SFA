@@ -7,13 +7,13 @@ export default async function NewExhibitionPage() {
   const { galleries } = await getOwnedGalleries()
   if (!galleries.length) {
     return (
-      <section className="dashboard-panel">
-        <p className="section-copy">No gallery is linked to your account yet.</p>
+      <section className="dash-panel">
+        <p className="empty-state">No gallery is linked to your account yet.</p>
       </section>
     )
   }
   return (
-    <section className="dashboard-panel">
+    <section className="dash-panel">
       <ExhibitionForm gallery={galleries[0]} />
     </section>
   )

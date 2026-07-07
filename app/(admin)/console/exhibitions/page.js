@@ -9,38 +9,34 @@ export default async function ConsoleExhibitionsPage() {
   const exhibitions = await getAllExhibitions()
 
   return (
-    <section className="dashboard-panel">
-      <div className="section-head">
-        <h1>Exhibitions</h1>
-        <span className="results-meta">{exhibitions.length} total</span>
+    <section className="dash-panel">
+      <div className="page-head">
+        <div className="page-head__main">
+          <h1 className="page-head__title">Exhibitions</h1>
+          <p className="page-head__sub">{exhibitions.length} total</p>
+        </div>
       </div>
-      <ul className="dashboard-list">
+      <ul className="table con-table">
         {exhibitions.map((e) => (
-          <li key={e.id} className="dashboard-row">
-            <div className="dashboard-row-main">
-              <p className="dashboard-row-title">{e.exhibition_name}</p>
-              <p className="row-meta">
-                {e.gallery_name} · {formatDate(e.start_date)}
-                {e.source && e.source !== 'manual' ? ` · ${e.source}` : ''}
-              </p>
-            </div>
-            <div className="dashboard-row-actions">
-              <span
-                className={`status-tag ${
-                  e.hidden_by_admin ? 'status-past' : e.published ? 'status-current' : 'status-upcoming'
-                }`}
-              >
-                {e.hidden_by_admin ? 'Hidden' : e.published ? 'Published' : 'Draft'}
-              </span>
+          <li className="table__row" key={e.id}>
+            <p className="table__primary table__primary--work con-table__name">{e.exhibition_name}</p>
+            <p className="table__fact">
+              {e.gallery_name} · {formatDate(e.start_date)}
+              {e.source && e.source !== 'manual' ? ` · ${e.source}` : ''}
+            </p>
+            <span className={`table__status${e.published && !e.hidden_by_admin ? '' : ' table__status--muted'}`}>
+              {e.hidden_by_admin ? 'Hidden' : e.published ? 'Published' : 'Draft'}
+            </span>
+            <div className="table__actions">
               {e.slug ? (
-                <Link className="text-link" href={`/exhibition/${e.slug}`}>
+                <Link className="btn btn--text" href={`/exhibition/${e.slug}`}>
                   View
                 </Link>
               ) : null}
               <form action={setExhibitionHiddenAction}>
                 <input type="hidden" name="id" value={e.id} />
                 <input type="hidden" name="hidden" value={(!e.hidden_by_admin).toString()} />
-                <button className={`text-link-button ${e.hidden_by_admin ? '' : 'text-link-danger'}`} type="submit">
+                <button className={`btn ${e.hidden_by_admin ? 'btn--text' : 'btn--danger-text'}`} type="submit">
                   {e.hidden_by_admin ? 'Unhide' : 'Hide'}
                 </button>
               </form>

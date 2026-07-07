@@ -10,15 +10,15 @@ export default async function ResetPasswordPage() {
 
   return (
     <>
-      <h1>Set your password</h1>
+      <h1 className="auth-title">Set your password</h1>
       {user ? (
         <>
-          <p className="section-copy">Choose a password for {user.email}.</p>
+          <p className="auth-copy">Choose a password for {user.email}.</p>
           <ResetPasswordForm />
         </>
       ) : (
-        <p className="section-copy">
-          This link is invalid or has expired. <a className="text-link" href="/forgot-password">Request a new one.</a>
+        <p className="auth-copy">
+          This link is invalid or has expired. <a href="/forgot-password">Request a new one.</a>
         </p>
       )}
     </>

@@ -10,27 +10,29 @@ export default async function ConsoleOverview() {
   const publishedEx = exhibitions.filter((e) => e.published && !e.hidden_by_admin).length
 
   return (
-    <section className="dashboard-panel">
-      <div className="section-head">
-        <h1>Overview</h1>
+    <section className="dash-panel">
+      <div className="page-head">
+        <div className="page-head__main">
+          <h1 className="page-head__title">Overview</h1>
+        </div>
       </div>
 
-      <div className="dashboard-stats">
-        <div className="dashboard-stat">
-          <span className="dashboard-stat-num">{galleries.length}</span>
-          <span className="dashboard-stat-label">Galleries</span>
+      <div className="stat-row con-stats">
+        <div className="stat-cell">
+          <span className="stat-cell__count">{galleries.length}</span>
+          <span className="stat-cell__label">Galleries</span>
         </div>
-        <div className="dashboard-stat">
-          <span className="dashboard-stat-num">{claimed}</span>
-          <span className="dashboard-stat-label">Claimed</span>
+        <div className="stat-cell">
+          <span className="stat-cell__count">{claimed}</span>
+          <span className="stat-cell__label">Claimed</span>
         </div>
-        <div className="dashboard-stat">
-          <span className="dashboard-stat-num">{publishedEx}</span>
-          <span className="dashboard-stat-label">Live exhibitions</span>
+        <div className="stat-cell">
+          <span className="stat-cell__count">{publishedEx}</span>
+          <span className="stat-cell__label">Live exhibitions</span>
         </div>
-        <div className="dashboard-stat">
-          <span className="dashboard-stat-num">{hiddenGalleries}</span>
-          <span className="dashboard-stat-label">Hidden</span>
+        <div className="stat-cell">
+          <span className="stat-cell__count">{hiddenGalleries}</span>
+          <span className="stat-cell__label">Hidden</span>
         </div>
       </div>
 

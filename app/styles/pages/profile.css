@@ -1,198 +1,238 @@
-/* Gallery + Exhibition profiles (shared) */
-.profile { padding-top: var(--space-6); }
-.back-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font: 500 var(--t-eyebrow) var(--font-mono), monospace;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--ink-500);
-  margin-bottom: var(--space-5);
-}
-.back-link:hover { color: var(--ink-900); }
+/* @layer pages — Gallery profile (§5.4, .gxp-*): mono back-link, 16:7 cover, masthead
+   lockup (Title case — gallery register, never uppercase), sticky text-tab scroll-spy,
+   3-up exhibition grids, past-as-ledger-rows, banded Visit. Tabs consume the shared
+   .text-tab; section heads consume .section-head; the h2 register is 20px. */
+@layer pages {
+  .gxp {
+    padding-top: var(--space-6);
+    padding-bottom: var(--space-10);
+  }
 
-/* type hero (works with no image) — held to a reading measure beneath the lead image */
-.profile-hero { display: grid; gap: var(--space-3); max-width: 880px; }
-.profile-hero h1 { font: var(--fw-h1) clamp(2rem, 5vw, 3.4rem) / 1.04 var(--font-display), serif; letter-spacing: -0.02em; }
-.profile-hero__title { font: italic 500 clamp(1.8rem, 4.5vw, 3rem) / 1.08 var(--font-display), serif; }
-.profile-hero__meta { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
-.profile-cover {
-  aspect-ratio: 16 / 7;
-  background: var(--placeholder);
-  overflow: hidden;
-  margin-bottom: var(--space-6);
-}
-.profile-cover img { width: 100%; height: 100%; object-fit: cover; }
+  .gxp-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    font: 500 var(--t-eyebrow) / 1 var(--font-mono), monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-500);
+    margin-bottom: var(--space-3);
+  }
+  .gxp-back:hover {
+    color: var(--ink-900);
+  }
 
-/* Gallery profile header (Ocula/Artsy pattern: logo + name lockup, compact location beneath,
-   then a primary Follow + one secondary action). Identity block on the left; actions can sit
-   beside it on desktop, stacked below on mobile. */
-.gallery-hero {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--space-4) var(--space-5);
-}
-.gallery-hero__id { display: flex; align-items: center; gap: var(--space-4); min-width: 0; flex: 1 1 280px; }
-.gallery-hero__logo { width: 56px; height: 56px; object-fit: contain; background: var(--surface-muted); border: 1px solid var(--hairline); flex: none; }
-.gallery-hero__head { display: grid; gap: var(--space-1); min-width: 0; }
-.gallery-hero h1 { font: var(--fw-h1) clamp(2rem, 5vw, 3.2rem) / 1.04 var(--font-display), serif; letter-spacing: -0.02em; }
-.gallery-hero__loc { margin: 0; font: 500 var(--t-meta) var(--font-mono), monospace; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-500); }
-.gallery-hero__actions { display: flex; gap: var(--space-3); flex-wrap: wrap; align-items: center; flex: 0 0 auto; }
+  .gxp-cover {
+    aspect-ratio: 16 / 7;
+    background: var(--placeholder);
+    overflow: hidden;
+    margin-bottom: var(--space-6);
+  }
+  .gxp-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
 
-/* Tab sub-nav — the wayfinding strip both Ocula and Artsy lead with. Scrolls horizontally on
-   mobile, sticks under the header, closed by a hairline so sections read as one document. */
-.gallery-tabs {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  display: flex;
-  gap: var(--space-5);
-  margin-top: var(--space-5);
-  padding: 0;
-  border-bottom: 1px solid var(--hairline);
-  background: var(--paper);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-/* tighten the section that immediately follows the tab strip so content reads as attached to it */
-.gallery-tabs + .profile-section { margin-top: var(--space-6); }
-.gallery-tabs::-webkit-scrollbar { display: none; }
-.gallery-tabs__tab {
-  flex: none;
-  padding: var(--space-3) 0;
-  font: 500 var(--t-small) var(--font-text), sans-serif;
-  color: var(--ink-500);
-  white-space: nowrap;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-}
-.gallery-tabs__tab:hover { color: var(--ink-900); }
-.gallery-tabs__tab.is-active { color: var(--ink-900); border-bottom-color: var(--ink-900); }
-/* anchored sections clear the sticky tab strip when jumped to */
-.gallery-profile [id] { scroll-margin-top: 64px; }
-.gallery-visit__directions { margin-top: var(--space-5); }
-/* on desktop the site header is sticky (60px); tabs stick just beneath it */
-@media (min-width: 900px) {
-  .gallery-tabs { top: 60px; }
-  .gallery-profile [id] { scroll-margin-top: 108px; }
-}
+  .gxp-lockup {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-4) var(--space-5);
+  }
+  .gxp-lockup__id {
+    display: grid;
+    gap: var(--space-2);
+    min-width: 0;
+    flex: 1 1 280px;
+  }
+  .gxp-name {
+    font: 400 var(--t-masthead) / 1.05 var(--font-text), sans-serif;
+    letter-spacing: -0.01em;
+    color: var(--ink-900);
+  }
+  .gxp-loc {
+    font: 400 var(--t-mono) / 1.5 var(--font-mono), monospace;
+    color: var(--ink-500);
+    font-variant-numeric: tabular-nums;
+  }
+  .gxp-lockup__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
 
-/* About measure */
-.profile-about { max-width: var(--container-narrow); }
-.profile-about p { font: var(--fw-lead) var(--t-lead) / var(--lh-lead) var(--font-display), serif; color: var(--ink-700); }
+  /* sticky section tabs — anchors are shared .text-tab; this owns only the strip.
+     Header is static <768, so the strip pins to the top edge there. */
+  .gxp-tabs {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-toolbar);
+    display: flex;
+    gap: var(--space-5);
+    margin-top: var(--space-5);
+    border-bottom: 1px solid var(--hairline);
+    background: var(--paper);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .gxp-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  /* anchored sections clear the sticky strip when jumped to */
+  .gxp [id] {
+    scroll-margin-top: 60px;
+  }
+  @media (min-width: 768px) {
+    .gxp-tabs {
+      top: var(--header-h);
+    }
+    .gxp [id] {
+      scroll-margin-top: calc(var(--header-h) + 56px);
+    }
+  }
 
-/* contact definition list */
-.def-list { display: grid; gap: var(--space-3); margin: 0; }
-.def-list > div { display: grid; grid-template-columns: 96px 1fr; gap: var(--space-2) var(--space-4); align-items: baseline; }
-.def-list dt { font: 500 var(--t-eyebrow) var(--font-mono), monospace; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-500); margin: 0; }
-.def-list dd { margin: 0; color: var(--ink-900); overflow-wrap: anywhere; }
-.def-list a { color: var(--accent); overflow-wrap: anywhere; }
-@media (max-width: 599px) {
-  .def-list > div { grid-template-columns: 1fr; gap: 2px; }
-}
+  .gxp-section {
+    margin-top: var(--space-8);
+  }
 
-.profile-section { margin-top: var(--space-8); }
-/* in-page section dividers = tiny grey eyebrows, not big black headings (the key Ocula/Artsy move) */
-.profile-section > h2 {
-  font: 500 var(--t-eyebrow) / var(--lh-eyebrow) var(--font-mono), monospace;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--ink-500);
-  margin-bottom: var(--space-5);
-}
-/* a section-label eyebrow (e.g. "Details") gets the same breathing room below it as an h2 label */
-.profile-section > .eyebrow { margin-bottom: var(--space-5); }
+  /* profile exhibition grids hold 3-up ≥768 — fuller at 1–3 shows than the 4-up index */
+  .gxp-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: var(--grid-col-gap);
+    row-gap: var(--grid-row-gap);
+  }
+  @media (min-width: 768px) {
+    .gxp-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
 
-/* quiet caption-style metadata block reads on the narrow measure, not the full 1240px */
-.profile-section:has(.def-list) { max-width: var(--container-narrow); }
+  /* past exhibitions — ledger rows, not cards (reference data; keeps the page short) */
+  .gxp-past {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .gxp-past-row {
+    display: grid;
+    gap: 2px;
+    padding: var(--space-4) 0;
+    border-bottom: 1px solid var(--hairline);
+    color: inherit;
+    text-decoration: none;
+  }
+  .gxp-past-row__main {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+  .gxp-past-row__artist {
+    font: 500 var(--t-card-artist) / 1.35 var(--font-text), sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ink-900);
+  }
+  .gxp-past-row__title {
+    font: italic 400 var(--t-card-title) / 1.35 var(--font-text), sans-serif;
+    color: var(--ink-900);
+  }
+  .gxp-past-row__dates {
+    font: 400 var(--t-mono) / 1.5 var(--font-mono), monospace;
+    color: var(--ink-500);
+    font-variant-numeric: tabular-nums;
+  }
+  .gxp-past-row:hover .gxp-past-row__title {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  @media (min-width: 768px) {
+    .gxp-past-row {
+      grid-template-columns: 1fr auto;
+      column-gap: var(--space-6);
+      align-items: baseline;
+    }
+    .gxp-past-row__title {
+      font-size: 15px;
+    }
+    .gxp-past-row__dates {
+      text-align: right;
+      white-space: nowrap;
+    }
+  }
 
-/* Visit block: hours beside contact details, both on a quiet narrow measure (Ocula/Artsy
-   put practical info last, compact, never sprawling across the full width). */
-.gallery-visit { max-width: var(--container-narrow); }
-.gallery-visit__cols { display: grid; gap: var(--space-6); }
-@media (min-width: 700px) {
-  .gallery-visit__cols { grid-template-columns: 1fr 1fr; gap: var(--space-8); align-items: start; }
-}
-.gallery-visit__hours .eyebrow { margin-bottom: var(--space-2); }
-.gallery-visit__hour { margin: 0; color: var(--ink-900); line-height: 1.6; }
+  .gxp-about {
+    max-width: 64ch;
+  }
 
-/* Exhibition detail — SINGLE column (Ocula/Artsy): the lead image sits on top, contained and
-   centred; the header sits beneath it at a reading measure. No two-column dead-space quadrant. */
-.exhibition-detail__top { display: grid; gap: var(--space-6); justify-items: start; }
-.exhibition-detail__top > .profile-hero { width: 100%; max-width: 880px; }
-.profile-hero__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-2); }
-.profile-opening { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: baseline; }
-.exhibition-image {
-  display: flex;
-  justify-content: flex-start;
-  width: 100%;
-}
-.exhibition-image img {
-  width: auto;
-  max-width: 100%;
-  max-height: 66vh;
-  height: auto;
-  object-fit: contain;
-  display: block;
-  background: var(--placeholder);
-}
+  /* Visit — banded (§4.5); 2-col ≥768: hours | contact def-list */
+  .gxp-visit {
+    margin-top: var(--space-9);
+  }
+  .gxp-visit-cols {
+    display: grid;
+    gap: var(--space-6);
+    max-width: 880px;
+  }
+  @media (min-width: 768px) {
+    .gxp-visit-cols {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-8);
+      align-items: start;
+    }
+  }
+  .gxp-hours {
+    display: grid;
+    gap: var(--space-2);
+    align-content: start;
+  }
+  .gxp-hour {
+    font: 400 var(--t-card-text) / 1.6 var(--font-mono), monospace;
+    color: var(--ink-900);
+    font-variant-numeric: tabular-nums;
+  }
 
-.profile-map { aspect-ratio: 4 / 3; background: var(--placeholder); }
+  .gxp-def {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+  }
+  .gxp-def > div {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: var(--space-1) var(--space-4);
+    align-items: baseline;
+  }
+  .gxp-def dt {
+    font: 500 var(--t-eyebrow) / 1.5 var(--font-mono), monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-500);
+  }
+  .gxp-def dd {
+    margin: 0;
+    font: 400 var(--t-card-text) / 1.5 var(--font-text), sans-serif;
+    color: var(--ink-900);
+    overflow-wrap: anywhere;
+  }
+  .gxp-def a:hover {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  @media (max-width: 479px) {
+    .gxp-def > div {
+      grid-template-columns: 1fr;
+      gap: 2px;
+    }
+  }
 
-/* ============================================================
-   Exhibition detail — editorial system: type-led masthead, framed plate,
-   ruled spec ledger. Hairline rules are the connective grammar. White only.
-   ============================================================ */
-.ex2 { padding-top: var(--space-5); padding-bottom: var(--space-10); }
-
-/* Masthead leads with TYPE — a ruled kicker, an oversized serif title */
-.ex2__masthead { display: grid; gap: var(--space-4); }
-.ex2__kicker {
-  display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-4);
-  padding-bottom: var(--space-3); border-bottom: 1px solid var(--ink-900);
-  font: 500 var(--t-eyebrow) var(--font-mono), monospace;
-  text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-500);
-}
-.ex2__title {
-  margin: var(--space-2) 0 0;
-  font: var(--fw-h1) clamp(2.6rem, 6.8vw, 5rem) / 0.98 var(--font-display), serif;
-  letter-spacing: -0.03em; max-width: 18ch;
-}
-.ex2__artist {
-  margin: 0;
-  font: italic 500 clamp(1.2rem, 2.4vw, 1.8rem) / 1.2 var(--font-display), serif;
-  color: var(--ink-700);
-}
-.ex2__byline { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); align-items: baseline; margin: var(--space-1) 0 0; }
-.ex2__dates { font: 500 var(--t-meta) var(--font-mono), monospace; letter-spacing: 0.04em; color: var(--ink-700); }
-.ex2__gallery { font: 500 var(--t-meta) var(--font-mono), monospace; letter-spacing: 0.04em; color: var(--accent); }
-.ex2__actions { display: flex; gap: var(--space-3); flex-wrap: wrap; margin-top: var(--space-4); }
-
-/* The plate — the work, contained (height-capped so a landscape never goes edge-to-edge) */
-.ex2__plate { margin: var(--space-8) 0 0; }
-.ex2__plate img { width: auto; max-width: 100%; max-height: 72vh; height: auto; display: block; background: var(--placeholder); }
-
-/* About — a serif lead at a reading measure */
-.ex2__about { margin-top: var(--space-9); max-width: 64ch; }
-.ex2__about p { margin: 0; font: var(--fw-lead) var(--t-lead) / var(--lh-lead) var(--font-display), serif; color: var(--ink-700); }
-
-/* Blocks (Details + related) sit under a quiet mono section label */
-.ex2__block { margin-top: var(--space-9); }
-.ex2__label { margin: 0 0 var(--space-5); font: 500 var(--t-eyebrow) var(--font-mono), monospace; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-500); }
-
-/* The ledger — a designed spec sheet: a strong top rule, hairline rows, mono tabular values */
-.ledger { max-width: 720px; margin: 0; border-top: 2px solid var(--ink-900); }
-.ledger > div {
-  display: grid; grid-template-columns: 150px 1fr; gap: var(--space-5);
-  padding: var(--space-4) 0; border-bottom: 1px solid var(--hairline); align-items: baseline;
-}
-.ledger dt { margin: 0; font: 500 var(--t-eyebrow) var(--font-mono), monospace; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-500); }
-.ledger dd { margin: 0; font: 400 0.9375rem var(--font-mono), monospace; color: var(--ink-900); line-height: 1.5; }
-.ledger dd a { color: var(--ink-900); }
-.ledger__line { display: block; }
-@media (max-width: 599px) {
-  .ledger > div { grid-template-columns: 1fr; gap: 2px; padding: var(--space-3) 0; }
+  .gxp-directions {
+    margin-top: var(--space-6);
+  }
 }

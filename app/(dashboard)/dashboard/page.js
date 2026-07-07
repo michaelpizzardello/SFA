@@ -8,9 +8,9 @@ export default async function DashboardOverview() {
 
   if (!galleries.length) {
     return (
-      <section className="dashboard-panel">
-        <h1>No gallery linked yet</h1>
-        <p className="section-copy">
+      <section className="dash-panel">
+        <h1 className="page-head__title">No gallery linked yet</h1>
+        <p className="empty-state">
           Your account ({user?.email}) isn&apos;t linked to a gallery yet. Ask the Sydney Art Finder team
           to connect your gallery, then refresh this page.
         </p>
@@ -24,7 +24,7 @@ export default async function DashboardOverview() {
 
   const checklist = []
   if (!gallery.about) checklist.push({ label: 'Add an About description', href: '/dashboard/profile' })
-  if (!gallery.cover_url && !gallery.logo_url) checklist.push({ label: 'Upload a logo or cover image', href: '/dashboard/profile' })
+  if (!gallery.cover_url && !gallery.logo_url) checklist.push({ label: 'Upload a cover image', href: '/dashboard/profile' })
   if (gallery.latitude == null || gallery.longitude == null) checklist.push({ label: 'Set your map location', href: '/dashboard/profile' })
   if (!exhibitions.length) checklist.push({ label: 'Add your first exhibition', href: '/dashboard/exhibitions/new' })
 
@@ -35,44 +35,42 @@ export default async function DashboardOverview() {
     : { href: '/dashboard/exhibitions/new', label: 'Add exhibition' }
 
   return (
-    <section className="dashboard-panel">
+    <section className="dash-panel">
       <div className="page-head">
-        <div className="page-head__title">
-          <p className="item-kicker">{gallery.precinct}</p>
-          <h1>{gallery.name}</h1>
+        <div className="page-head__main">
+          <p className="page-head__kicker">{gallery.precinct}</p>
+          <h1 className="page-head__title">{gallery.name}</h1>
         </div>
-        <Link className="button button-primary" href={primary.href}>
+        <Link className="btn btn--primary page-head__action" href={primary.href}>
           {primary.label}
         </Link>
       </div>
 
       {galleries.length > 1 ? (
-        <p className="form-hint">
+        <p className="dash-hint">
           You manage {galleries.length} galleries. This dashboard currently edits {gallery.name}.
         </p>
       ) : null}
 
-      <div className="dash-cards">
-        <div className="dash-card">
-          <span className="dash-card__label">Exhibitions</span>
-          <span className="dashboard-stat-num">{exhibitions.length}</span>
+      <div className="stat-row dash-stats">
+        <div className="stat-cell">
+          <span className="stat-cell__count">{exhibitions.length}</span>
+          <span className="stat-cell__label">Exhibitions</span>
         </div>
-        <div className="dash-card">
-          <span className="dash-card__label">Published</span>
-          <span className="dashboard-stat-num">{publishedCount}</span>
+        <div className="stat-cell">
+          <span className="stat-cell__count">{publishedCount}</span>
+          <span className="stat-cell__label">Published</span>
         </div>
-        <div className="dash-card">
-          <span className="dash-card__label">Profile</span>
-          <span className={`badge ${profileIncomplete ? 'badge--draft' : 'badge--published'}`}>
-            {profileIncomplete ? 'Needs setup' : 'Complete'}
-          </span>
+        <div className="stat-cell">
+          <span className="dash-stat-word">{profileIncomplete ? 'Needs setup' : 'Complete'}</span>
+          <span className="stat-cell__label">Profile</span>
         </div>
       </div>
 
       {checklist.length ? (
-        <div className="dash-card">
-          <span className="dash-card__label">Finish setting up</span>
-          <ul className="dashboard-checklist-list">
+        <div className="dash-checklist">
+          <h2 className="u-eyebrow">Finish setting up</h2>
+          <ul>
             {checklist.map((item) => (
               <li key={item.label}>
                 <Link href={item.href}>{item.label}</Link>
@@ -82,14 +80,14 @@ export default async function DashboardOverview() {
         </div>
       ) : null}
 
-      <div className="dashboard-quick-actions">
-        <Link className="button button-secondary" href="/dashboard/exhibitions">
+      <div className="dash-actions">
+        <Link className="action-link" href="/dashboard/exhibitions">
           Manage exhibitions
         </Link>
-        <Link className="button button-secondary" href="/dashboard/profile">
+        <Link className="action-link" href="/dashboard/profile">
           Edit profile
         </Link>
-        <Link className="text-link" href={`/gallery/${gallery.slug}`}>
+        <Link className="action-link" href={`/gallery/${gallery.slug}`}>
           View public page
         </Link>
       </div>

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { formatDateRange } from '../lib/utils/date'
 import { getExhibitionSlug } from '../lib/utils/exhibitions'
+import { splitTitle } from '../lib/utils/splitTitle'
 
 // Auto-rotating featured-exhibition banner (Ocula-style). Slides = [{exhibition, gallery}] with images.
 export default function HeroBanner({ slides }) {
@@ -37,7 +38,7 @@ export default function HeroBanner({ slides }) {
 
   return (
     <section
-      className="hero-banner"
+      className="home-hero"
       aria-roledescription="carousel"
       aria-label="Featured exhibitions"
       onMouseEnter={() => setPaused(true)}
@@ -49,20 +50,22 @@ export default function HeroBanner({ slides }) {
     >
       {slides.map(({ exhibition, gallery }, idx) => {
         const active = idx === safeIndex
+        const { artist, title } = splitTitle(exhibition.artist, exhibition.title)
         return (
           <Link
             key={exhibition.id}
             href={`/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`}
-            className={`hero-slide${active ? ' is-active' : ''}`}
+            className={`home-hero__slide${active ? ' is-active' : ''}`}
             aria-hidden={!active}
             tabIndex={active ? 0 : -1}
           >
-            <img className="hero-slide__img" src={exhibition.imageUrl} alt="" />
-            <span className="hero-slide__scrim" aria-hidden="true" />
-            <span className="hero-slide__body">
-              <span className="hero-slide__eyebrow">On now · Featured</span>
-              <span className="hero-slide__title">{exhibition.title}</span>
-              <span className="hero-slide__meta">
+            <img className="home-hero__img" src={exhibition.imageUrl} alt="" />
+            <span className="home-hero__scrim" aria-hidden="true" />
+            <span className="home-hero__body">
+              <span className="home-hero__eyebrow">On now</span>
+              {artist ? <span className="home-hero__artist">{artist}</span> : null}
+              <span className={`home-hero__title${artist ? '' : ' home-hero__title--solo'}`}>{title}</span>
+              <span className="home-hero__meta">
                 {(gallery?.name || exhibition.galleryName) + ' · ' + formatDateRange(exhibition.startDate, exhibition.endDate)}
               </span>
             </span>
@@ -71,7 +74,7 @@ export default function HeroBanner({ slides }) {
       })}
 
       {count > 1 ? (
-        <div className="hero-dots" role="tablist" aria-label="Choose featured exhibition">
+        <div className="home-hero__dots" role="tablist" aria-label="Choose featured exhibition">
           {slides.map((s, idx) => (
             <button
               key={s.exhibition.id}
@@ -79,7 +82,7 @@ export default function HeroBanner({ slides }) {
               role="tab"
               aria-selected={idx === safeIndex}
               aria-label={`Show featured exhibition ${idx + 1} of ${count}`}
-              className={`hero-dot${idx === safeIndex ? ' is-active' : ''}`}
+              className={`home-hero__dot${idx === safeIndex ? ' is-active' : ''}`}
               onClick={() => setIndex(idx)}
             />
           ))}

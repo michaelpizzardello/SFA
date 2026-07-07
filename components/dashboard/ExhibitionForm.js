@@ -10,15 +10,15 @@ export default function ExhibitionForm({ gallery, exhibition }) {
   const e = exhibition || {}
 
   return (
-    <form action={formAction} className="dashboard-form">
+    <form action={formAction} className="dash-form">
       <input type="hidden" name="galleryId" value={gallery.id} />
       <input type="hidden" name="gallerySlug" value={gallery.slug} />
       {exhibition ? <input type="hidden" name="id" value={exhibition.id} /> : null}
 
-      <Link className="dashboard-form-back" href="/dashboard/exhibitions">
+      <Link className="dash-form__back" href="/dashboard/exhibitions">
         ← Exhibitions
       </Link>
-      <h1>{exhibition ? 'Edit exhibition' : 'New exhibition'}</h1>
+      <h1 className="dash-form__title">{exhibition ? 'Edit exhibition' : 'New exhibition'}</h1>
 
       <label className="field">
         <span>Title</span>
@@ -29,7 +29,7 @@ export default function ExhibitionForm({ gallery, exhibition }) {
         <input name="artist" defaultValue={e.artist || ''} />
       </label>
 
-      <div className="dashboard-form-grid">
+      <div className="form-grid">
         <label className="field">
           <span>Start date</span>
           <input name="start_date" type="date" defaultValue={e.start_date || ''} required />
@@ -45,7 +45,7 @@ export default function ExhibitionForm({ gallery, exhibition }) {
         <input name="opening_information" defaultValue={e.opening_information || ''} placeholder="Opening Thu 24 June 6–8 PM" />
       </label>
 
-      <div className="dashboard-form-grid">
+      <div className="form-grid">
         <label className="field">
           <span>Cost</span>
           <input name="cost" defaultValue={e.cost || 'Free'} />
@@ -69,20 +69,20 @@ export default function ExhibitionForm({ gallery, exhibition }) {
         hint="Landscape works best (3:2). JPG, PNG or WebP."
       />
 
-      <label className="checkbox-field">
+      <label className="checkbox-row">
         <input type="checkbox" name="published" defaultChecked={exhibition ? Boolean(e.published) : true} />
         <span>Published (visible on the public site)</span>
       </label>
 
       <div role="status" aria-live="polite">
-        {state?.error ? <p className="admin-error">{state.error}</p> : null}
+        {state?.error ? <p className="field-error">{state.error}</p> : null}
       </div>
 
-      <div className="dashboard-form-actions">
-        <button className="button button-primary" type="submit" disabled={pending}>
+      <div className="dash-form-bar">
+        <button className="btn btn--primary" type="submit" disabled={pending}>
           {pending ? 'Saving…' : 'Save exhibition'}
         </button>
-        <Link className="text-link" href="/dashboard/exhibitions">
+        <Link className="btn btn--text" href="/dashboard/exhibitions">
           Cancel
         </Link>
       </div>

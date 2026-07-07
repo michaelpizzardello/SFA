@@ -1,2 +1,10 @@
-/* @layer pages — saved (.saved-*). Stage B2 fills this file.
-   Placeholder so the app/layout.js import chain is stable across stages. */
+/* @layer pages — Saved (.saved-*). Head, grids and empty state come from shared primitives
+   (.page-title, .section-head, .card-grid, .empty-state); this file owns the section rhythm. */
+@layer pages {
+  .saved-section {
+    margin-top: var(--space-8);
+  }
+  .saved-section:first-of-type {
+    margin-top: 0;
+  }
+}

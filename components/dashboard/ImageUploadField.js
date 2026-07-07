@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 // Uploads to /api/uploads (user-JWT, gallery-scoped) and stores the returned public URL in a hidden
 // input so the parent form submits it. Shows a live preview.
-export default function ImageUploadField({ name, galleryId, initialUrl = '', label, hint, variant }) {
+export default function ImageUploadField({ name, galleryId, initialUrl = '', label, hint }) {
   const [url, setUrl] = useState(initialUrl)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -30,16 +30,27 @@ export default function ImageUploadField({ name, galleryId, initialUrl = '', lab
   }
 
   return (
-    <div className="field">
-      <span className="field-label">{label}</span>
+    <div className="dash-upload">
+      <label className="field-label" htmlFor={`upload-${name}`}>
+        {label}
+      </label>
       <input type="hidden" name={name} value={url} />
-      {url ? <img src={url} alt="" className={`upload-preview${variant === 'logo' ? ' upload-preview--logo' : ''}`} /> : null}
-      <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" onChange={handleChange} disabled={busy} />
-      {hint ? <p className="form-hint">{hint}</p> : null}
-      {busy ? <p className="form-hint">Uploading…</p> : null}
-      {error ? <p className="admin-error">{error}</p> : null}
+      {url ? <img src={url} alt="" className="dash-upload__preview" /> : null}
+      <input
+        id={`upload-${name}`}
+        className="dash-upload__file"
+        type="file"
+        accept="image/png,image/jpeg,image/webp,image/gif"
+        onChange={handleChange}
+        disabled={busy}
+      />
+      {hint ? <p className="field-hint">{hint}</p> : null}
+      <div role="status" aria-live="polite">
+        {busy ? <p className="u-mono">Uploading…</p> : null}
+        {error ? <p className="field-error">{error}</p> : null}
+      </div>
       {url ? (
-        <button type="button" className="text-link text-link-button" onClick={() => setUrl('')}>
+        <button type="button" className="btn btn--danger-text" onClick={() => setUrl('')}>
           Remove image
         </button>
       ) : null}

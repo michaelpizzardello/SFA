@@ -8,9 +8,9 @@ export const metadata = {
 
 export default function ConsoleLayout({ children }) {
   return (
-    <div className="dashboard-shell">
+    <div className="dash-shell">
       <ConsoleNav />
-      <div className="dashboard-main">{children}</div>
+      <div className="dash-main">{children}</div>
     </div>
   )
 }
