@@ -22,14 +22,6 @@
     height: 100%;
   }
 
-  /* §4.3: the tab bar stays visible on /map — below the hinge the fixed shell
-     bottom-insets by the tab bar, so canvas, sheet, CTAs and cards all clear it. */
-  @media (max-width: 767px) {
-    .map-page.map-fullscreen {
-      bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
-    }
-  }
-
   /* ---- top overlay: flat white bar, hairline bottom ---- */
   .map-top-overlay {
     position: absolute;
@@ -415,10 +407,16 @@
   }
   .map-row {
     display: block;
+    width: 100%;
     min-height: 44px;
     padding: var(--space-4) var(--space-2);
+    border: 0;
+    background: none;
     color: inherit;
+    font: inherit;
+    text-align: left;
     text-decoration: none;
+    cursor: pointer;
   }
   .map-row:hover .map-row__title,
   .map-row:hover .map-row__name {

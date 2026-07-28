@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { formatDateRange, todayISOInSydney } from '../lib/utils/date'
 import { getExhibitionSlug } from '../lib/utils/exhibitions'
+import { addReturnContext } from '../lib/utils/navigation'
 import { splitTitle } from '../lib/utils/splitTitle'
 import CardImage from './CardImage'
 import SaveButton from './SaveButton'
@@ -25,8 +26,12 @@ function resolveUrgency(exhibition, status) {
 }
 
 // Ladder (§4.6): urgency → ARTIST → italic title → gallery → mono dates → mono location.
-export default function ExhibitionCard({ exhibition, gallery, status }) {
-  const href = `/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`
+export default function ExhibitionCard({ exhibition, gallery, status, returnHref, returnLabel }) {
+  const href = addReturnContext(
+    `/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`,
+    returnHref,
+    returnLabel
+  )
   const galleryName = gallery?.name || exhibition.galleryName || ''
   const precinct = gallery?.precinct || exhibition.location || ''
   const range = formatDateRange(exhibition.startDate, exhibition.endDate)

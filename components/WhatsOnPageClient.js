@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { formatDate, todayISOInSydney } from '../lib/utils/date'
@@ -25,13 +25,59 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
   const [search, setSearch] = useState(initialFilters.search || '')
   // Image-forward by default now that exhibitions carry covers; list is the toggle.
   const [view, setView] = useState('grid')
+  const [precinctRailEdges, setPrecinctRailEdges] = useState({ left: false, right: false })
 
   const pathname = usePathname()
   const router = useRouter()
   const searchParams = useSearchParams()
+  const searchParamsKey = searchParams.toString()
+  const syncingFromUrl = useRef(false)
+  const precinctRailRef = useRef(null)
   const today = todayISOInSydney()
 
   const precinctOptions = useMemo(() => getPrecinctOptions(galleries), [galleries])
+
+  useEffect(() => {
+    const rail = precinctRailRef.current
+    if (!rail) {
+      return undefined
+    }
+
+    function updateRailEdges() {
+      const left = rail.scrollLeft > 2
+      const right = rail.scrollLeft + rail.clientWidth < rail.scrollWidth - 2
+      setPrecinctRailEdges((current) =>
+        current.left === left && current.right === right ? current : { left, right }
+      )
+    }
+
+    function handleRailResize() {
+      rail
+        .querySelector('[aria-pressed="true"]')
+        ?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+      requestAnimationFrame(updateRailEdges)
+    }
+
+    updateRailEdges()
+    rail.addEventListener('scroll', updateRailEdges, { passive: true })
+    const resizeObserver = new ResizeObserver(handleRailResize)
+    resizeObserver.observe(rail)
+
+    return () => {
+      rail.removeEventListener('scroll', updateRailEdges)
+      resizeObserver.disconnect()
+    }
+  }, [precinctOptions.length])
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      precinctRailRef.current
+        ?.querySelector('[aria-pressed="true"]')
+        ?.scrollIntoView({ block: 'nearest', inline: 'center' })
+    })
+
+    return () => cancelAnimationFrame(frame)
+  }, [precinct])
 
   const filteredExhibitions = useMemo(
     () => filterExhibitions(galleries, exhibitions, { search, precinct, when }),
@@ -48,8 +94,27 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
     return counts
   }, [exhibitions, galleries, precinct])
 
-  // Keep the URL in sync so every window/precinct is a shareable, back-button-correct address.
+  // Reconcile same-route navigations (global search and browser Back) before the local
+  // filter-to-URL effect can re-assert stale client state.
   useEffect(() => {
+    const params = new URLSearchParams(searchParamsKey)
+    const nextWhen = normalizeWindow(params.get('when'))
+    const nextPrecinct = params.get('precinct') || 'all'
+    const nextSearch = params.get('search') || ''
+    if (nextWhen === when && nextPrecinct === precinct && nextSearch === search) return
+
+    syncingFromUrl.current = true
+    setWhen(nextWhen)
+    setPrecinct(nextPrecinct)
+    setSearch(nextSearch)
+  }, [searchParamsKey])
+
+  // Keep locally changed filters in the URL so every window/precinct is shareable.
+  useEffect(() => {
+    if (syncingFromUrl.current) {
+      syncingFromUrl.current = false
+      return
+    }
     const params = new URLSearchParams(searchParams.toString())
     if (when && when !== DEFAULT_WINDOW) params.set('when', when)
     else params.delete('when')
@@ -74,6 +139,15 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
     const qs = params.toString()
     return qs ? `/map?${qs}` : '/map'
   }, [precinct, when])
+
+  const listReturnHref = useMemo(() => {
+    const params = new URLSearchParams()
+    if (when && when !== DEFAULT_WINDOW) params.set('when', when)
+    if (precinct !== 'all') params.set('precinct', precinct)
+    if (search.trim()) params.set('search', search.trim())
+    const query = params.toString()
+    return query ? `${pathname}?${query}` : pathname
+  }, [pathname, precinct, search, when])
 
   // Display-only grouping for the list ledger; single unlabelled group when the window
   // has no date spine (on-now, this-weekend).
@@ -119,7 +193,14 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
       </nav>
 
       {/* PRECINCT — the single orthogonal pivot, a scrollable text-tab row */}
-      <div className="wo-precincts" role="group" aria-label="Precinct">
+      <div
+        ref={precinctRailRef}
+        className={`wo-precincts${precinctRailEdges.left ? ' has-overflow-left' : ''}${
+          precinctRailEdges.right ? ' has-overflow-right' : ''
+        }`}
+        role="group"
+        aria-label="Precinct"
+      >
         <button
           type="button"
           className={`text-tab${precinct === 'all' ? ' is-active' : ''}`}
@@ -194,6 +275,8 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
                       exhibition={exhibition}
                       gallery={getGalleryBySlug(galleries, exhibition.gallerySlug)}
                       status={getExhibitionStatus(exhibition, today)}
+                      returnHref={listReturnHref}
+                      returnLabel={windowLabel}
                     />
                   </li>
                 ))}
@@ -208,6 +291,8 @@ export default function WhatsOnPageClient({ galleries, exhibitions, initialFilte
                 exhibition={exhibition}
                 gallery={getGalleryBySlug(galleries, exhibition.gallerySlug)}
                 status={getExhibitionStatus(exhibition, today)}
+                returnHref={listReturnHref}
+                returnLabel={windowLabel}
               />
             ))}
           </div>

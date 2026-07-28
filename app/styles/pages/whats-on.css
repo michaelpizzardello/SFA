@@ -10,12 +10,37 @@
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    scroll-padding-inline: var(--space-5);
   }
   .wo-precincts::-webkit-scrollbar {
     display: none;
   }
   .wo-precincts > * {
     flex: none;
+  }
+  .wo-precincts.has-overflow-right {
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 32px), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 32px), transparent 100%);
+  }
+  .wo-precincts.has-overflow-left {
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 32px, #000 100%);
+    mask-image: linear-gradient(to right, transparent 0, #000 32px, #000 100%);
+  }
+  .wo-precincts.has-overflow-left.has-overflow-right {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 32px,
+      #000 calc(100% - 32px),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 32px,
+      #000 calc(100% - 32px),
+      transparent 100%
+    );
   }
 
   /* applied row — mono count + removable search token (§5.2.5) */

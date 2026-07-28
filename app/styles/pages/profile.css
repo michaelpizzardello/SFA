@@ -77,15 +77,21 @@
     position: sticky;
     top: 0;
     z-index: var(--z-toolbar);
-    display: flex;
-    gap: var(--space-5);
     margin-top: var(--space-5);
     border-bottom: 1px solid var(--hairline);
     background: var(--paper);
+  }
+  .gxp-tabs__inner {
+    width: 100%;
+    max-width: var(--container);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+    display: flex;
+    gap: var(--space-5);
     overflow-x: auto;
     scrollbar-width: none;
   }
-  .gxp-tabs::-webkit-scrollbar {
+  .gxp-tabs__inner::-webkit-scrollbar {
     display: none;
   }
   /* anchored sections clear the sticky strip when jumped to */

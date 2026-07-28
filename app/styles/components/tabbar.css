@@ -1,4 +1,4 @@
-/* @layer components — mobile tab bar (§4.3). Hidden ≥768; stays visible on /map. */
+/* @layer components — mobile tab bar (§4.3). Hidden ≥768 and on the full-screen map. */
 @layer components {
   .tabbar {
     position: fixed;
@@ -35,6 +35,9 @@
   }
   .tabbar a[aria-current='page'] {
     color: var(--ink-900);
+  }
+  .tabbar.is-map-route {
+    display: none;
   }
   @media (min-width: 768px) {
     .tabbar {

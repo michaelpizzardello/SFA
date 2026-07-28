@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import { addDaysISO, compareISO, formatDateRange } from '../lib/utils/date'
-import { getExhibitionStatus } from '../lib/utils/exhibitions'
+import {
+  dedupeExhibitions,
+  getCanonicalExhibitionSlug,
+  getExhibitionStatus
+} from '../lib/utils/exhibitions'
 import { filterExhibitions, filterGalleries } from '../lib/utils/filters'
+import { addReturnContext } from '../lib/utils/navigation'
+import { foldSearchText } from '../lib/utils/text'
 
 const galleries = [
   {
@@ -93,6 +99,44 @@ describe('exhibition status', () => {
         '2026-04-29'
       )
     ).toBe('past')
+  })
+})
+
+describe('exhibition duplicate handling', () => {
+  it('collapses equivalent prefixed titles and keeps the richer record', () => {
+    const duplicatePair = [
+      {
+        id: 'legacy',
+        slug: 'gallery-lily-mortensen-boundless',
+        gallerySlug: 'gallery',
+        artist: '',
+        title: 'Lily Mortensen: Grænseløs (Boundless)',
+        startDate: '2026-04-17',
+        endDate: '2026-05-16'
+      },
+      {
+        id: 'canonical',
+        slug: 'gallery-boundless',
+        gallerySlug: 'gallery',
+        artist: 'Lily Mortensen',
+        title: 'Grænseløs (Boundless)',
+        startDate: '2026-04-17',
+        endDate: '2026-05-16',
+        imageUrl: '/boundless.webp'
+      }
+    ]
+
+    expect(dedupeExhibitions(duplicatePair).map((exhibition) => exhibition.id)).toEqual([
+      'canonical'
+    ])
+  })
+
+  it('redirects the known Lily Mortensen legacy slug', () => {
+    expect(
+      getCanonicalExhibitionSlug(
+        'gallery-144-formerly-outsider-lily-mortensen-gr-nsel-s-boundless'
+      )
+    ).toBe('gallery-144-formerly-outsider-gr-nsel-s-boundless')
   })
 })
 
@@ -202,5 +246,32 @@ describe('gallery and exhibition filtering', () => {
         today: '2026-03-08'
       }).map((exhibition) => exhibition.id)
     ).toEqual(['e2'])
+  })
+})
+
+describe('return navigation', () => {
+  it('encodes a filtered return path and label', () => {
+    expect(
+      addReturnContext(
+        '/exhibition/example',
+        '/whats-on?when=opening-this-week&search=Gallery 144',
+        'Opening This Week'
+      )
+    ).toBe(
+      '/exhibition/example?returnTo=%2Fwhats-on%3Fwhen%3Dopening-this-week%26search%3DGallery+144&returnLabel=Opening+This+Week'
+    )
+  })
+
+  it('leaves links unchanged without complete return context', () => {
+    expect(addReturnContext('/exhibition/example', '', '')).toBe('/exhibition/example')
+  })
+})
+
+describe('search text folding', () => {
+  it('matches catalogue diacritics and non-decomposing letters', () => {
+    expect(foldSearchText('Trésor')).toBe('tresor')
+    expect(foldSearchText('Féth Fíada')).toBe('feth fiada')
+    expect(foldSearchText('Grænseløs')).toBe('graenselos')
+    expect(foldSearchText('Munuŋgurr')).toBe('mununggurr')
   })
 })

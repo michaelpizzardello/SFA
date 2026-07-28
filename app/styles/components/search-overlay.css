@@ -41,15 +41,15 @@
   }
 
   @media (max-width: 767px) {
-    /* header is static <768 — the overlay pins to the top of the viewport instead */
+    /* Keep the fixed search surface fully visible below the mobile header. */
     .search-overlay {
       position: fixed;
-      top: 0;
+      top: var(--header-h);
       left: 0;
       right: 0;
     }
     .search-overlay__scrim {
-      inset: 0;
+      inset: var(--header-h) 0 0;
     }
   }
 }

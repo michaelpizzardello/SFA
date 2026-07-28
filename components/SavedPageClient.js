@@ -39,6 +39,8 @@ export default function SavedPageClient({ exhibitions, galleries }) {
                     exhibition={e}
                     gallery={getGalleryBySlug(galleries, e.gallerySlug)}
                     status={getExhibitionStatus(e)}
+                    returnHref="/saved"
+                    returnLabel="Saved"
                   />
                 ))}
               </div>

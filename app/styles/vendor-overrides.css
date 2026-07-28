@@ -81,16 +81,23 @@
 .marker-cluster-small,
 .marker-cluster-medium,
 .marker-cluster-large {
+  width: 48px !important;
+  height: 48px !important;
   background: none;
 }
 .marker-cluster-small div,
 .marker-cluster-medium div,
 .marker-cluster-large div {
+  width: 36px;
+  height: 36px;
+  margin: 6px;
+  border-radius: 999px;
+  text-align: center;
   background: var(--paper);
   border: 1px solid var(--hairline-strong);
 }
-.marker-cluster span {
-  font: 500 var(--t-mono) / 28px var(--font-mono), monospace;
+.marker-cluster span[aria-hidden='true'] {
+  font: 500 var(--t-mono) / 34px var(--font-mono), monospace;
   color: var(--ink-900);
   font-variant-numeric: tabular-nums;
 }

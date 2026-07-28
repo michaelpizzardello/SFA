@@ -25,16 +25,18 @@ export default function GalleryTabs({ tabs }) {
 
   return (
     <nav className="gxp-tabs" aria-label="Sections">
-      {tabs.map((t) => (
-        <a
-          key={t.id}
-          href={`#${t.id}`}
-          className={`text-tab${active === t.id ? ' is-active' : ''}`}
-          aria-current={active === t.id ? 'true' : undefined}
-        >
-          {t.label}
-        </a>
-      ))}
+      <div className="gxp-tabs__inner">
+        {tabs.map((t) => (
+          <a
+            key={t.id}
+            href={`#${t.id}`}
+            className={`text-tab${active === t.id ? ' is-active' : ''}`}
+            aria-current={active === t.id ? 'true' : undefined}
+          >
+            {t.label}
+          </a>
+        ))}
+      </div>
     </nav>
   )
 }

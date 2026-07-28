@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import BackLinkButton from './BackLinkButton'
 import FilterSlidersIcon from './icons/FilterSlidersIcon'
@@ -10,7 +10,9 @@ import { formatDateRange, todayISOInSydney } from '../lib/utils/date'
 import { filterExhibitions, filterMapGalleries, getPrecinctOptions } from '../lib/utils/filters'
 import { getExhibitionSlug, getExhibitionStatus, getGalleryBySlug } from '../lib/utils/exhibitions'
 import { serializeBounds, SYDNEY_CENTER, SYDNEY_DEFAULT_ZOOM } from '../lib/utils/map'
+import { addReturnContext } from '../lib/utils/navigation'
 import { TIME_WINDOWS, getWindowLabel, isTimeWindow } from '../lib/utils/windows'
+import { useDialog } from './useDialog'
 
 const LIST_SCROLL_STORAGE_KEY = 'saf_map_list_scroll'
 const DETENT_ORDER = ['collapsed', 'half', 'full']
@@ -92,6 +94,18 @@ function createMarkerIcon(L, galleryName = '', selected = false) {
   })
 }
 
+function createClusterIcon(L, cluster) {
+  const count = cluster.getChildCount()
+  const sizeClass = count < 10 ? 'small' : count < 100 ? 'medium' : 'large'
+  const noun = count === 1 ? 'gallery' : 'galleries'
+
+  return L.divIcon({
+    className: `marker-cluster marker-cluster-${sizeClass}`,
+    html: `<div><span aria-hidden="true">${count}</span><span class="visually-hidden">${count} ${noun} — zoom in</span></div>`,
+    iconSize: L.point(48, 48)
+  })
+}
+
 function createUserLocationIcon(L) {
   return L.divIcon({
     className: 'user-location-marker',
@@ -125,8 +139,8 @@ function getViewportHeight() {
     return raw
   }
 
-  // <768 the fixed map shell bottom-insets by the visible tab bar (§4.3, map.css);
-  // detents must size to the shell, not the viewport, or the full sheet overshoots.
+  // Account for any visible bottom navigation; the full-screen map hides it, so this is
+  // normally zero but keeps detent sizing safe if the shared shell changes.
   const tabbar = document.querySelector('.tabbar')
   return raw - (tabbar?.offsetHeight ?? 0)
 }
@@ -166,6 +180,7 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
   const [mapView, setMapView] = useState(initialFilters.mapView)
   const [mapMoved, setMapMoved] = useState(false)
   const [selectedSlug, setSelectedSlug] = useState(initialFilters.selectedSlug || null)
+  const [mapReady, setMapReady] = useState(false)
   const [mapError, setMapError] = useState(false)
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [sheetDetent, setSheetDetent] = useState(normalizeDetent(initialFilters.sheetDetent))
@@ -181,6 +196,9 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
   const pathname = usePathname()
   const router = useRouter()
   const searchParams = useSearchParams()
+  const mapReturnHref = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`
+  const closeFilters = useCallback(() => setFiltersOpen(false), [])
+  const filterSheetRef = useDialog(filtersOpen, closeFilters)
 
   const mapContainerRef = useRef(null)
   const mapRef = useRef(null)
@@ -190,11 +208,18 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
   const leafletRef = useRef(null)
   const topOverlayRef = useRef(null)
   const resultsScrollRef = useRef(null)
+  const sheetHandleRef = useRef(null)
+  const selectionCardRef = useRef(null)
+  const focusSelectionOnOpenRef = useRef(false)
   const moveDebounceRef = useRef(null)
   const suppressNextMoveendRef = useRef(false)
-  const initialMoveHandledRef = useRef(false)
+  const userMovedMapRef = useRef(false)
+  const mapInteractionCleanupRef = useRef(null)
   const sheetDragStateRef = useRef(null)
   const sheetDragMovedRef = useRef(false)
+  const lastOpenDetentRef = useRef(
+    initialFilters.sheetDetent === 'full' ? 'full' : 'half'
+  )
   const listTouchStateRef = useRef(null)
   const handleTouchDragActiveRef = useRef(false)
   const selectionDragStateRef = useRef(null)
@@ -313,7 +338,19 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
     return filters
   }, [areaEnabled, exhibitionMode, precinct, search, when])
 
-  const resultsLabel = exhibitionMode ? 'Exhibitions' : 'Galleries'
+  const resultCount = exhibitionMode ? resultExhibitions.length : resultGalleries.length
+  const resultNoun = exhibitionMode
+    ? resultCount === 1
+      ? 'exhibition'
+      : 'exhibitions'
+    : resultCount === 1
+      ? 'gallery'
+      : 'galleries'
+  const resultsLabel = `${resultCount} ${resultNoun} in this area`
+  const sheetToggleLabel =
+    sheetDetent === 'collapsed'
+      ? `Open map results: ${resultsLabel}`
+      : `Collapse map results: ${resultsLabel}`
   const activeSheetHeight = Math.round(sheetDragHeight ?? detentHeights[sheetDetent] ?? detentHeights.collapsed)
   const sheetIsPeeking = sheetDetent === 'collapsed' && activeSheetHeight > detentHeights.collapsed + 14
   const sheetInlineStyle = useMemo(
@@ -328,6 +365,12 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
     }),
     [selectionDragOffset]
   )
+
+  useEffect(() => {
+    if (sheetDetent !== 'collapsed') {
+      lastOpenDetentRef.current = sheetDetent
+    }
+  }, [sheetDetent])
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString())
@@ -476,10 +519,70 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
         const clusterLayer = L.markerClusterGroup({
           showCoverageOnHover: false,
           removeOutsideVisibleBounds: true,
-          maxClusterRadius: 40
+          maxClusterRadius: 40,
+          iconCreateFunction: (cluster) => createClusterIcon(L, cluster)
         })
 
         map.addLayer(clusterLayer)
+
+        const mapContainer = map.getContainer()
+        const markUserMovement = () => {
+          userMovedMapRef.current = true
+        }
+        const markZoomControlMovement = (event) => {
+          if (event.target instanceof Element && event.target.closest('.leaflet-control-zoom')) {
+            markUserMovement()
+          }
+        }
+        const markKeyboardMovement = (event) => {
+          if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', '+', '-', '='].includes(event.key)) {
+            markUserMovement()
+          }
+          if (
+            ['Enter', ' '].includes(event.key) &&
+            event.target instanceof Element &&
+            event.target.closest('.marker-cluster')
+          ) {
+            markUserMovement()
+          }
+        }
+        const activateClusterWithSpace = (event) => {
+          if (
+            event.key === ' ' &&
+            event.target instanceof Element &&
+            event.target.closest('.marker-cluster')
+          ) {
+            event.preventDefault()
+            event.target.closest('.marker-cluster').click()
+            requestAnimationFrame(() => {
+              mapContainer.focus({ preventScroll: true })
+            })
+          }
+        }
+        const markTouchZoom = (event) => {
+          if (event.touches.length > 1) {
+            markUserMovement()
+          }
+        }
+
+        map.on('dragstart', markUserMovement)
+        clusterLayer.on('clusterclick', markUserMovement)
+        mapContainer.addEventListener('wheel', markUserMovement, { passive: true })
+        mapContainer.addEventListener('dblclick', markUserMovement)
+        mapContainer.addEventListener('keydown', markKeyboardMovement)
+        mapContainer.addEventListener('keydown', activateClusterWithSpace)
+        mapContainer.addEventListener('click', markZoomControlMovement, true)
+        mapContainer.addEventListener('touchstart', markTouchZoom, { passive: true })
+        mapInteractionCleanupRef.current = () => {
+          map.off('dragstart', markUserMovement)
+          clusterLayer.off('clusterclick', markUserMovement)
+          mapContainer.removeEventListener('wheel', markUserMovement)
+          mapContainer.removeEventListener('dblclick', markUserMovement)
+          mapContainer.removeEventListener('keydown', markKeyboardMovement)
+          mapContainer.removeEventListener('keydown', activateClusterWithSpace)
+          mapContainer.removeEventListener('click', markZoomControlMovement, true)
+          mapContainer.removeEventListener('touchstart', markTouchZoom)
+        }
 
         map.on('moveend', () => {
           if (moveDebounceRef.current) {
@@ -493,22 +596,24 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
             setMapView({ lat: center.lat, lng: center.lng, zoom })
             setViewportBounds(toBoundsObject(map.getBounds()))
 
-            if (!initialMoveHandledRef.current) {
-              initialMoveHandledRef.current = true
-              return
-            }
-
             if (suppressNextMoveendRef.current) {
               suppressNextMoveendRef.current = false
+              userMovedMapRef.current = false
               return
             }
 
+            if (!userMovedMapRef.current) {
+              return
+            }
+
+            userMovedMapRef.current = false
             setMapMoved(true)
           }, 300)
         })
 
         mapRef.current = map
         clusterRef.current = clusterLayer
+        setMapReady(true)
         setMapError(false)
 
         requestAnimationFrame(() => {
@@ -529,7 +634,7 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
 
   useEffect(() => {
     const L = leafletRef.current
-    if (!L || !clusterRef.current) {
+    if (!mapReady || !L || !clusterRef.current) {
       return
     }
 
@@ -554,7 +659,7 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
     if (selectedSlug && !markerBySlugRef.current.has(selectedSlug)) {
       setSelectedSlug(null)
     }
-  }, [resultGalleries, selectedSlug])
+  }, [mapReady, resultGalleries])
 
   useEffect(() => {
     const L = leafletRef.current
@@ -571,6 +676,10 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
 
   useEffect(() => {
     if (selectedGallery) {
+      if (focusSelectionOnOpenRef.current) {
+        focusSelectionOnOpenRef.current = false
+        requestAnimationFrame(() => selectionCardRef.current?.focus())
+      }
       return
     }
 
@@ -590,6 +699,8 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
         mapRef.current.removeLayer(userLocationMarkerRef.current)
       }
 
+      mapInteractionCleanupRef.current?.()
+
       if (mapRef.current) {
         mapRef.current.remove()
       }
@@ -604,7 +715,8 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
       markerBySlugRef.current.clear()
       userLocationMarkerRef.current = null
       leafletRef.current = null
-      initialMoveHandledRef.current = false
+      userMovedMapRef.current = false
+      mapInteractionCleanupRef.current = null
       setHasUserLocation(false)
     }
   }, [])
@@ -673,6 +785,7 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
   }
 
   function clearSelectedGallery() {
+    const shouldRestoreSheetFocus = !isDesktopMapLayout()
     setSelectedSlug(null)
     setSelectionDragOffset(0)
     setSelectionIsDragging(false)
@@ -681,6 +794,41 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
 
     if (mapRef.current) {
       mapRef.current.closePopup()
+    }
+
+    if (shouldRestoreSheetFocus) {
+      requestAnimationFrame(() => sheetHandleRef.current?.focus())
+    }
+  }
+
+  function selectGalleryOnMap(gallery) {
+    const isDesktop = isDesktopMapLayout()
+    focusSelectionOnOpenRef.current = !isDesktop
+    setSelectedSlug(gallery.slug)
+    setSelectionDragOffset(0)
+    setSelectionIsDragging(false)
+
+    if (!isDesktop) {
+      setSheetDetent('collapsed')
+    }
+
+    const map = mapRef.current
+    const marker = markerBySlugRef.current.get(gallery.slug)
+    const cluster = clusterRef.current
+    if (!map || !marker) {
+      return
+    }
+
+    const centerMarker = () => {
+      suppressNextMoveendRef.current = true
+      map.panTo(marker.getLatLng(), { animate: true })
+    }
+
+    suppressNextMoveendRef.current = true
+    if (typeof cluster?.zoomToShowLayer === 'function') {
+      cluster.zoomToShowLayer(marker, centerMarker)
+    } else {
+      centerMarker()
     }
   }
 
@@ -1283,8 +1431,9 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
       </div>
 
       {filtersOpen ? (
-        <div className="scrim map-filter-scrim" role="presentation" onClick={() => setFiltersOpen(false)}>
+        <div className="scrim map-filter-scrim" role="presentation" onClick={closeFilters}>
           <section
+            ref={filterSheetRef}
             className="sheet"
             role="dialog"
             aria-modal="true"
@@ -1293,7 +1442,7 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
           >
             <div className="sheet__head">
               <h2>Map filters</h2>
-              <button type="button" className="btn btn--text" onClick={() => setFiltersOpen(false)}>
+              <button type="button" className="btn btn--text" onClick={closeFilters}>
                 Close
               </button>
             </div>
@@ -1363,9 +1512,12 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
 
       {selectedGallery ? (
         <article
+          ref={selectionCardRef}
           className={`map-selection-card map-selection-floating${selectionIsDragging ? ' is-dragging' : ''}`}
           style={selectionInlineStyle}
+          aria-labelledby="map-selection-title"
           aria-live="polite"
+          tabIndex={-1}
           onPointerDown={handleSelectionPointerDown}
           onPointerMove={handleSelectionPointerMove}
           onPointerUp={handleSelectionPointerUp}
@@ -1386,7 +1538,7 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
               ×
             </button>
           </div>
-          <h2 className="map-selection-name">{selectedGallery.name}</h2>
+          <h2 id="map-selection-title" className="map-selection-name">{selectedGallery.name}</h2>
           <p className="map-selection-meta">
             {[selectedGallery.precinct, selectedGallery.suburb]
               .filter(Boolean)
@@ -1401,7 +1553,11 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
                 <li key={exhibition.id}>
                   <Link
                     className="map-selection-show"
-                    href={`/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`}
+                    href={addReturnContext(
+                      `/exhibition/${encodeURIComponent(getExhibitionSlug(exhibition))}`,
+                      mapReturnHref,
+                      'Map'
+                    )}
                   >
                     <span className={`map-selection-show__status${status === 'current' ? ' is-current' : ''}`}>
                       {status === 'current' ? 'On now' : 'Opening soon'}
@@ -1432,8 +1588,11 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
         aria-label="Map results"
       >
         <button
+          ref={sheetHandleRef}
           type="button"
           className="map-sheet-handle"
+          aria-expanded={sheetDetent !== 'collapsed'}
+          aria-label={sheetToggleLabel}
           onPointerDown={handleSheetPointerDown}
           onPointerMove={handleSheetPointerMove}
           onPointerUp={handleSheetPointerUp}
@@ -1449,16 +1608,11 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
             }
 
             if (sheetDetent === 'collapsed') {
-              setSheetDetent('half')
+              setSheetDetent(lastOpenDetentRef.current)
               return
             }
 
-            if (sheetDetent === 'half') {
-              setSheetDetent('full')
-              return
-            }
-
-            setSheetDetent('half')
+            setSheetDetent('collapsed')
           }}
         >
           <span className="map-sheet-grab" aria-hidden="true" />
@@ -1508,7 +1662,11 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
                   <li key={exhibition.id} className="map-sheet-item">
                     <Link
                       className="map-row"
-                      href={`/exhibition/${encodeURIComponent(exhibitionSlug)}`}
+                      href={addReturnContext(
+                        `/exhibition/${encodeURIComponent(exhibitionSlug)}`,
+                        mapReturnHref,
+                        'Map'
+                      )}
                     >
                       <h2 className="map-row__title">{exhibition.title}</h2>
                       <p className="map-row__meta">{formatDateRange(exhibition.startDate, exhibition.endDate)}</p>
@@ -1528,14 +1686,16 @@ export default function MapPageClient({ galleries, exhibitions, initialFilters }
             <ul className="map-sheet-list">
               {resultGalleries.map((gallery) => (
                 <li key={gallery.id} className={`map-sheet-item${selectedSlug === gallery.slug ? ' is-selected' : ''}`}>
-                  <Link
+                  <button
+                    type="button"
                     className="map-row"
-                    href={`/gallery/${encodeURIComponent(gallery.slug)}`}
+                    aria-label={`Select ${gallery.name} on map`}
+                    onClick={() => selectGalleryOnMap(gallery)}
                   >
                     <h2 className="map-row__name">{gallery.name}</h2>
                     <p className="map-row__meta">{gallery.precinct}</p>
                     <p className="map-row__meta">{gallery.address}</p>
-                  </Link>
+                  </button>
                 </li>
               ))}
             </ul>

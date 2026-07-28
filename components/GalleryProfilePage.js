@@ -116,9 +116,11 @@ export default function GalleryProfilePage({ gallery, groupedExhibitions }) {
             <ShareButton title={gallery.name} className="btn btn--text" />
           </div>
         </header>
+      </div>
 
-        {tabs.length >= 2 ? <GalleryTabs tabs={tabs} /> : null}
+      {tabs.length >= 2 ? <GalleryTabs tabs={tabs} /> : null}
 
+      <div className="container">
         {current.length ? (
           <section id="exhibitions" className="gxp-section">
             <header className="section-head">

@@ -14,6 +14,24 @@ export default function ExhibitionBackLink({ galleryName, galleryHref }) {
 
   useEffect(() => {
     try {
+      const currentUrl = new URL(window.location.href)
+      const requestedHref = currentUrl.searchParams.get('returnTo')
+      const requestedLabel = currentUrl.searchParams.get('returnLabel')
+      if (requestedHref && requestedLabel && requestedHref.startsWith('/') && !requestedHref.startsWith('//')) {
+        const target = new URL(requestedHref, window.location.origin)
+        const allowedPath =
+          target.pathname === '/whats-on' ||
+          target.pathname === '/map' ||
+          target.pathname === '/galleries' ||
+          target.pathname === '/saved' ||
+          target.pathname.startsWith('/gallery/')
+        if (target.origin === window.location.origin && allowedPath) {
+          setLabel(requestedLabel.slice(0, 60))
+          setHref(`${target.pathname}${target.search}${target.hash}`)
+          return
+        }
+      }
+
       const ref = document.referrer
       if (!ref) return
       const url = new URL(ref)

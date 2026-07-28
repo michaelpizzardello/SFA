@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
 import SearchIcon from './icons/SearchIcon'
 import StarIcon from './icons/StarIcon'
 import InstagramIcon from './icons/InstagramIcon'
@@ -39,17 +39,41 @@ function TabIcon({ name }) {
 
 export default function SiteNav() {
   const pathname = usePathname()
+  const router = useRouter()
   const [searchOpen, setSearchOpen] = useState(false)
+  const searchButtonRef = useRef(null)
+  const searchInputRef = useRef(null)
 
   const isMapRoute = pathname.startsWith('/map')
 
   useEffect(() => setSearchOpen(false), [pathname])
   useEffect(() => {
     if (!searchOpen) return undefined
-    const onKey = (e) => e.key === 'Escape' && setSearchOpen(false)
+    searchInputRef.current?.focus()
+    const onKey = (e) => {
+      if (e.key !== 'Escape') return
+      setSearchOpen(false)
+      requestAnimationFrame(() => searchButtonRef.current?.focus())
+    }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
   }, [searchOpen])
+
+  const closeSearch = () => {
+    setSearchOpen(false)
+    requestAnimationFrame(() => searchButtonRef.current?.focus())
+  }
+
+  const goToSearchResults = (rawQuery) => {
+    const query = String(rawQuery || '').trim()
+    setSearchOpen(false)
+    router.push(query ? `/whats-on?search=${encodeURIComponent(query)}` : '/whats-on')
+  }
+
+  const submitSearch = (event) => {
+    event.preventDefault()
+    goToSearchResults(searchInputRef.current?.value)
+  }
 
   // Dashboard, auth and console routes render their own chrome — no public header/tabbar there.
   if (isChromelessRoute(pathname)) return null
@@ -71,6 +95,7 @@ export default function SiteNav() {
 
         <div className="header__right">
           <button
+            ref={searchButtonRef}
             type="button"
             className="header__icon-btn"
             aria-label="Search"
@@ -101,25 +126,29 @@ export default function SiteNav() {
 
       {searchOpen ? (
         <>
-          <div className="search-overlay__scrim" onClick={() => setSearchOpen(false)} role="presentation" />
+          <div className="search-overlay__scrim" onClick={closeSearch} role="presentation" />
           <div className="search-overlay">
-            <form className="search-overlay__inner container" action="/whats-on" role="search">
+            <form className="search-overlay__inner container" action="/whats-on" role="search" onSubmit={submitSearch}>
               <label className="visually-hidden" htmlFor="site-search">
                 Search
               </label>
               <input
+                ref={searchInputRef}
                 id="site-search"
                 className="field field--line search-overlay__input"
                 type="search"
                 name="search"
                 placeholder="Search exhibitions, galleries, precincts"
+                enterKeyHint="search"
+                onKeyDown={(event) => {
+                  if (event.key !== 'Enter') return
+                  event.preventDefault()
+                  goToSearchResults(event.currentTarget.value)
+                }}
                 autoFocus
               />
-              <button type="button" className="search-overlay__close" onClick={() => setSearchOpen(false)}>
+              <button type="button" className="search-overlay__close" onClick={closeSearch}>
                 Close
-              </button>
-              <button type="submit" className="visually-hidden">
-                Search
               </button>
             </form>
           </div>
