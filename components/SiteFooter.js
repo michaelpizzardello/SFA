@@ -2,16 +2,51 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import InstagramIcon from './icons/InstagramIcon'
 import { SAF_INSTAGRAM } from '../lib/site'
+import { createBrowserSupabase } from '../lib/supabase/client'
 import { isChromelessRoute } from '../lib/utils/chrome'
 
 // Public footer (light, §4.2) — rendered as a SIBLING of <main>. Gallery access lives HERE
 // (not the top header) — the public audience never signs in; galleries do, occasionally.
 // (Admin console is intentionally NOT here — it's internal tooling reached from the dashboard.)
-export default function SiteFooter({ signedIn = false }) {
+export default function SiteFooter() {
   const pathname = usePathname()
-  if (isChromelessRoute(pathname) || pathname.startsWith('/map')) return null
+  const [signedIn, setSignedIn] = useState(false)
+  const isHidden = isChromelessRoute(pathname) || pathname.startsWith('/map')
+
+  useEffect(() => {
+    if (isHidden) return undefined
+
+    let mounted = true
+    let subscription
+
+    try {
+      const supabase = createBrowserSupabase()
+
+      supabase.auth
+        .getSession()
+        .then(({ data }) => {
+          if (mounted) setSignedIn(Boolean(data.session))
+        })
+        .catch(() => {})
+
+      const authListener = supabase.auth.onAuthStateChange((_event, session) => {
+        if (mounted) setSignedIn(Boolean(session))
+      })
+      subscription = authListener.data.subscription
+    } catch {
+      // Public browsing remains available if auth is not configured.
+    }
+
+    return () => {
+      mounted = false
+      subscription?.unsubscribe()
+    }
+  }, [isHidden])
+
+  if (isHidden) return null
 
   const year = new Date().getFullYear()
 

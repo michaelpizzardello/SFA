@@ -34,7 +34,11 @@ export async function middleware(request) {
 
 export const config = {
   matcher: [
-    // everything except Next internals and static asset files
-    '/((?!_next/static|_next/image|favicon.ico|icon.svg|.*\\.(?:png|jpg|jpeg|webp|svg|gif|ico|css|js|map)$).*)'
+    // Public routes do not need a network auth refresh. Keep the session gate
+    // where identity is required or an auth page reads the refreshed session.
+    '/dashboard/:path*',
+    '/console/:path*',
+    '/login',
+    '/reset-password'
   ]
 }

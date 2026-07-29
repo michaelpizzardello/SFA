@@ -42,7 +42,6 @@ import './styles/vendor-overrides.css'
 
 import SiteNav from '../components/SiteNav'
 import SiteFooter from '../components/SiteFooter'
-import { getAuthContext } from '../lib/auth/roles'
 
 // Fraunces = serif (prose, wordmark, monogram). Manrope = sans (UI, names). Spline = mono (facts).
 // These MUST stay the direct next/font variables — a nested alias breaks `font:` shorthand.
@@ -74,9 +73,7 @@ export const metadata = {
     'Sydney Art Finder is your guide to galleries, exhibitions, and opening nights across Sydney.'
 }
 
-export default async function RootLayout({ children }) {
-  const { user } = await getAuthContext()
-
+export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${fraunces.variable} ${manrope.variable} ${mono.variable}`}>
@@ -88,7 +85,7 @@ export default async function RootLayout({ children }) {
           <main id="main" tabIndex={-1} className="shell-main">
             {children}
           </main>
-          <SiteFooter signedIn={Boolean(user)} />
+          <SiteFooter />
         </div>
         <Analytics />
       </body>
