@@ -108,7 +108,7 @@ export default function ExhibitionProfilePage({ exhibition, gallery, allExhibiti
 
         {exhibition.imageUrl ? (
           <figure className="exl-plate">
-            <img src={exhibition.imageUrl} alt={exhibition.title} loading="lazy" decoding="async" />
+            <img src={exhibition.imageUrl} alt={exhibition.title} decoding="async" />
           </figure>
         ) : null}
 

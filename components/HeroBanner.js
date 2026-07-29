@@ -9,13 +9,27 @@ import { splitTitle } from '../lib/utils/splitTitle'
 // Auto-rotating featured-exhibition banner (Ocula-style). Slides = [{exhibition, gallery}] with images.
 export default function HeroBanner({ slides }) {
   const [index, setIndex] = useState(0)
-  const [paused, setPaused] = useState(false)
+  const [rotationEnabled, setRotationEnabled] = useState(true)
+  const [hoverPaused, setHoverPaused] = useState(false)
   const [loadedIndices, setLoadedIndices] = useState(() => new Set([0]))
+  const failedIndicesRef = useRef(new Set())
+  const slideRequestRef = useRef(0)
   const count = slides.length
 
   function showSlide(nextIndex) {
-    const safeNextIndex = ((nextIndex % count) + count) % count
+    let safeNextIndex = ((nextIndex % count) + count) % count
+    for (let offset = 0; offset < count; offset += 1) {
+      const candidate = (safeNextIndex + offset) % count
+      if (!failedIndicesRef.current.has(candidate)) {
+        safeNextIndex = candidate
+        break
+      }
+    }
 
+    if (failedIndicesRef.current.size >= count) return
+
+    const requestId = slideRequestRef.current + 1
+    slideRequestRef.current = requestId
     if (loadedIndices.has(safeNextIndex)) {
       setIndex(safeNextIndex)
       return
@@ -25,19 +39,23 @@ export default function HeroBanner({ slides }) {
     image.decoding = 'async'
     image.onload = () => {
       setLoadedIndices((current) => new Set(current).add(safeNextIndex))
-      setIndex(safeNextIndex)
+      if (slideRequestRef.current === requestId) setIndex(safeNextIndex)
+    }
+    image.onerror = () => {
+      failedIndicesRef.current.add(safeNextIndex)
+      if (slideRequestRef.current === requestId) showSlide(safeNextIndex + 1)
     }
     image.src = slides[safeNextIndex].exhibition.imageUrl
   }
 
   useEffect(() => {
-    if (count <= 1 || paused) return undefined
+    if (count <= 1 || !rotationEnabled || hoverPaused) return undefined
     if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
       return undefined
     }
     const timer = setInterval(() => showSlide(index + 1), 5500)
     return () => clearInterval(timer)
-  }, [count, index, loadedIndices, paused])
+  }, [count, hoverPaused, index, loadedIndices, rotationEnabled])
 
   const touchStartX = useRef(null)
   const go = (dir) => showSlide(index + dir)
@@ -59,10 +77,9 @@ export default function HeroBanner({ slides }) {
       className="home-hero"
       aria-roledescription="carousel"
       aria-label="Featured exhibitions"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocusCapture={() => setPaused(true)}
-      onBlurCapture={() => setPaused(false)}
+      onMouseEnter={() => setHoverPaused(true)}
+      onMouseLeave={() => setHoverPaused(false)}
+      onFocusCapture={() => setRotationEnabled(false)}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
@@ -100,18 +117,27 @@ export default function HeroBanner({ slides }) {
       })}
 
       {count > 1 ? (
-        <div className="home-hero__dots" role="tablist" aria-label="Choose featured exhibition">
-          {slides.map((s, idx) => (
-            <button
-              key={s.exhibition.id}
-              type="button"
-              role="tab"
-              aria-selected={idx === safeIndex}
-              aria-label={`Show featured exhibition ${idx + 1} of ${count}`}
-              className={`home-hero__dot${idx === safeIndex ? ' is-active' : ''}`}
-              onClick={() => showSlide(idx)}
-            />
-          ))}
+        <div className="home-hero__controls">
+          <button
+            type="button"
+            className="home-hero__rotation"
+            aria-label={rotationEnabled ? 'Pause featured exhibitions' : 'Play featured exhibitions'}
+            onClick={() => setRotationEnabled((enabled) => !enabled)}
+          >
+            {rotationEnabled ? 'Pause' : 'Play'}
+          </button>
+          <div className="home-hero__dots" role="group" aria-label="Choose featured exhibition">
+            {slides.map((s, idx) => (
+              <button
+                key={s.exhibition.id}
+                type="button"
+                aria-pressed={idx === safeIndex}
+                aria-label={`Show featured exhibition ${idx + 1} of ${count}`}
+                className={`home-hero__dot${idx === safeIndex ? ' is-active' : ''}`}
+                onClick={() => showSlide(idx)}
+              />
+            ))}
+          </div>
         </div>
       ) : null}
     </section>

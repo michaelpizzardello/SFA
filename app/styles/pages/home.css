@@ -84,13 +84,30 @@
     text-underline-offset: 3px;
   }
 
-  .home-hero__dots {
+  .home-hero__controls {
     position: absolute;
     right: clamp(var(--space-4), 4vw, var(--space-7));
     bottom: clamp(var(--space-4), 4vw, var(--space-7));
     display: flex;
-    gap: 8px;
+    align-items: center;
+    gap: var(--space-4);
     z-index: 3;
+  }
+  .home-hero__rotation {
+    min-width: 44px;
+    min-height: 44px;
+    border: 0;
+    padding: 0 var(--space-2);
+    color: #fff;
+    background: transparent;
+    font: 500 var(--t-eyebrow) / 1 var(--font-mono), monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+  }
+  .home-hero__dots {
+    display: flex;
+    gap: 8px;
   }
   .home-hero__dot {
     position: relative;
