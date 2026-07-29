@@ -3,7 +3,14 @@ import GalleryProfilePage from '../../../components/GalleryProfilePage'
 import { loadSiteData } from '../../../lib/data/loadData'
 import { getExhibitionsByGallery, getExhibitionStatus, getGalleryBySlug } from '../../../lib/utils/exhibitions'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
+
+export async function generateStaticParams() {
+  const data = await loadSiteData()
+  return data.galleries
+    .filter((gallery) => gallery.slug)
+    .map((gallery) => ({ slug: gallery.slug }))
+}
 
 export default async function GalleryPage({ params }) {
   const routeParams = await params

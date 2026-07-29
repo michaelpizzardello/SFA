@@ -1,7 +1,7 @@
 import SavedPageClient from '../../components/SavedPageClient'
 import { loadSiteData } from '../../lib/data/loadData'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 export const metadata = {
   title: 'Saved | Sydney Art Finder'

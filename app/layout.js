@@ -73,6 +73,10 @@ export const metadata = {
     'Sydney Art Finder is your guide to galleries, exhibitions, and opening nights across Sydney.'
 }
 
+// The audience and primary data sources are Sydney-based. Dynamic routes inherit
+// this so user requests do not make a round trip through Vercel's US default.
+export const preferredRegion = 'syd1'
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">

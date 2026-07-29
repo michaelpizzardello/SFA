@@ -1,7 +1,7 @@
 import HomePage from '../components/HomePage'
 import { loadSiteData } from '../lib/data/loadData'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 export default async function Page() {
   const data = await loadSiteData()

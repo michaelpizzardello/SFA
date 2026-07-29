@@ -7,7 +7,14 @@ import {
   getGalleryBySlug
 } from '../../../lib/utils/exhibitions'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
+
+export async function generateStaticParams() {
+  const data = await loadSiteData()
+  return data.exhibitions
+    .filter((exhibition) => exhibition.slug)
+    .map((exhibition) => ({ slug: exhibition.slug }))
+}
 
 export default async function ExhibitionPage({ params }) {
   const routeParams = await params
