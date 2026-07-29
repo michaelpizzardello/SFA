@@ -10,19 +10,37 @@ import { splitTitle } from '../lib/utils/splitTitle'
 export default function HeroBanner({ slides }) {
   const [index, setIndex] = useState(0)
   const [paused, setPaused] = useState(false)
+  const [loadedIndices, setLoadedIndices] = useState(() => new Set([0]))
   const count = slides.length
+
+  function showSlide(nextIndex) {
+    const safeNextIndex = ((nextIndex % count) + count) % count
+
+    if (loadedIndices.has(safeNextIndex)) {
+      setIndex(safeNextIndex)
+      return
+    }
+
+    const image = new Image()
+    image.decoding = 'async'
+    image.onload = () => {
+      setLoadedIndices((current) => new Set(current).add(safeNextIndex))
+      setIndex(safeNextIndex)
+    }
+    image.src = slides[safeNextIndex].exhibition.imageUrl
+  }
 
   useEffect(() => {
     if (count <= 1 || paused) return undefined
     if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
       return undefined
     }
-    const timer = setInterval(() => setIndex((p) => (p + 1) % count), 5500)
+    const timer = setInterval(() => showSlide(index + 1), 5500)
     return () => clearInterval(timer)
-  }, [count, paused])
+  }, [count, index, loadedIndices, paused])
 
   const touchStartX = useRef(null)
-  const go = (dir) => setIndex((p) => (p + dir + count) % count)
+  const go = (dir) => showSlide(index + dir)
   function onTouchStart(e) {
     touchStartX.current = e.touches[0].clientX
   }
@@ -59,7 +77,15 @@ export default function HeroBanner({ slides }) {
             aria-hidden={!active}
             tabIndex={active ? 0 : -1}
           >
-            <img className="home-hero__img" src={exhibition.imageUrl} alt="" />
+            {loadedIndices.has(idx) ? (
+              <img
+                className="home-hero__img"
+                src={exhibition.imageUrl}
+                alt=""
+                decoding="async"
+                fetchPriority={idx === 0 ? 'high' : 'auto'}
+              />
+            ) : null}
             <span className="home-hero__scrim" aria-hidden="true" />
             <span className="home-hero__body">
               <span className="home-hero__eyebrow">On now</span>
@@ -83,7 +109,7 @@ export default function HeroBanner({ slides }) {
               aria-selected={idx === safeIndex}
               aria-label={`Show featured exhibition ${idx + 1} of ${count}`}
               className={`home-hero__dot${idx === safeIndex ? ' is-active' : ''}`}
-              onClick={() => setIndex(idx)}
+              onClick={() => showSlide(idx)}
             />
           ))}
         </div>

@@ -19,6 +19,7 @@ export default function CardImage({ src, className, alt = '' }) {
       src={src}
       alt={alt}
       loading="lazy"
+      decoding="async"
       onLoad={() => setLoaded(true)}
     />
   )

@@ -9,11 +9,10 @@ import {
 
 export const revalidate = 60
 
-export async function generateStaticParams() {
-  const data = await loadSiteData()
-  return data.exhibitions
-    .filter((exhibition) => exhibition.slug)
-    .map((exhibition) => ({ slug: exhibition.slug }))
+export function generateStaticParams() {
+  // Generate profiles on first request, then keep them in the ISR cache. Building
+  // hundreds at once would hammer the legacy Google Sheet source.
+  return []
 }
 
 export default async function ExhibitionPage({ params }) {

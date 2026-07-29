@@ -5,11 +5,10 @@ import { getExhibitionsByGallery, getExhibitionStatus, getGalleryBySlug } from '
 
 export const revalidate = 60
 
-export async function generateStaticParams() {
-  const data = await loadSiteData()
-  return data.galleries
-    .filter((gallery) => gallery.slug)
-    .map((gallery) => ({ slug: gallery.slug }))
+export function generateStaticParams() {
+  // Generate profiles on first request, then keep them in the ISR cache. Building
+  // hundreds at once would hammer the legacy Google Sheet source.
+  return []
 }
 
 export default async function GalleryPage({ params }) {
