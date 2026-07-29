@@ -11,10 +11,14 @@ export default function HeroBanner({ slides }) {
   const [index, setIndex] = useState(0)
   const [rotationEnabled, setRotationEnabled] = useState(true)
   const [hoverPaused, setHoverPaused] = useState(false)
+  const [focusPaused, setFocusPaused] = useState(false)
   const [loadedIndices, setLoadedIndices] = useState(() => new Set([0]))
   const failedIndicesRef = useRef(new Set())
   const slideRequestRef = useRef(0)
+  const rotationPointerIntentRef = useRef(null)
   const count = slides.length
+  const rotationControlActive = rotationEnabled && !focusPaused
+  const rotationActive = rotationControlActive && !hoverPaused
 
   function showSlide(nextIndex) {
     let safeNextIndex = ((nextIndex % count) + count) % count
@@ -49,13 +53,17 @@ export default function HeroBanner({ slides }) {
   }
 
   useEffect(() => {
-    if (count <= 1 || !rotationEnabled || hoverPaused) return undefined
-    if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
-      return undefined
+    const motionPreference = window.matchMedia?.('(prefers-reduced-motion: reduce)')
+    if (motionPreference?.matches) {
+      setRotationEnabled(false)
     }
+  }, [])
+
+  useEffect(() => {
+    if (count <= 1 || !rotationActive) return undefined
     const timer = setInterval(() => showSlide(index + 1), 5500)
     return () => clearInterval(timer)
-  }, [count, hoverPaused, index, loadedIndices, rotationEnabled])
+  }, [count, index, loadedIndices, rotationActive])
 
   const touchStartX = useRef(null)
   const go = (dir) => showSlide(index + dir)
@@ -79,7 +87,7 @@ export default function HeroBanner({ slides }) {
       aria-label="Featured exhibitions"
       onMouseEnter={() => setHoverPaused(true)}
       onMouseLeave={() => setHoverPaused(false)}
-      onFocusCapture={() => setRotationEnabled(false)}
+      onFocusCapture={() => setFocusPaused(true)}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
@@ -101,6 +109,10 @@ export default function HeroBanner({ slides }) {
                 alt=""
                 decoding="async"
                 fetchPriority={idx === 0 ? 'high' : 'auto'}
+                onError={() => {
+                  failedIndicesRef.current.add(idx)
+                  if (idx === safeIndex) showSlide(idx + 1)
+                }}
               />
             ) : null}
             <span className="home-hero__scrim" aria-hidden="true" />
@@ -121,10 +133,22 @@ export default function HeroBanner({ slides }) {
           <button
             type="button"
             className="home-hero__rotation"
-            aria-label={rotationEnabled ? 'Pause featured exhibitions' : 'Play featured exhibitions'}
-            onClick={() => setRotationEnabled((enabled) => !enabled)}
+            aria-label={rotationControlActive ? 'Pause featured exhibitions' : 'Play featured exhibitions'}
+            onPointerDown={() => {
+              rotationPointerIntentRef.current = rotationControlActive
+            }}
+            onClick={() => {
+              const wasActive = rotationPointerIntentRef.current ?? rotationControlActive
+              rotationPointerIntentRef.current = null
+              if (wasActive) {
+                setRotationEnabled(false)
+              } else {
+                setRotationEnabled(true)
+                setFocusPaused(false)
+              }
+            }}
           >
-            {rotationEnabled ? 'Pause' : 'Play'}
+            {rotationControlActive ? 'Pause' : 'Play'}
           </button>
           <div className="home-hero__dots" role="group" aria-label="Choose featured exhibition">
             {slides.map((s, idx) => (
